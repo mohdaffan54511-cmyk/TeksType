@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import logo from "../TeksType.png";
+import logo from "../TypeTeks.png";
 const WORDS = {
   words: [
     "home", "now", "even", "used", "said", "government", "once", "any", "to", "and",
@@ -147,12 +147,12 @@ export default function App() {
  const [noBackspace, setNoBackspace] = useState(false);
 
   const [best, setBest] = useState(() => {
-    return Number(localStorage.getItem("TeksType_best") || 0);
+    return Number(localStorage.getItem("TypeTeks_best") || 0);
   });
 
   const [history, setHistory] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem("TeksType_history") || "[]");
+      return JSON.parse(localStorage.getItem("TypeTeks_history") || "[]");
     } catch {
       return [];
     }
@@ -202,7 +202,7 @@ export default function App() {
 
     setBest((oldBest) => {
       const nextBest = Math.max(oldBest, finalWpm);
-      localStorage.setItem("TeksType_best", String(nextBest));
+      localStorage.setItem("TypeTeks_best", String(nextBest));
       return nextBest;
     });
 
@@ -217,7 +217,7 @@ export default function App() {
 
     setHistory((oldHistory) => {
       const nextHistory = [entry, ...oldHistory].slice(0, 6);
-      localStorage.setItem("TeksType_history", JSON.stringify(nextHistory));
+      localStorage.setItem("TypeTeks_history", JSON.stringify(nextHistory));
       return nextHistory;
     });
   }, [correctChars, duration, liveAcc, mode, score]);
@@ -419,9 +419,9 @@ export default function App() {
 
       <header className="topbar">
         <div className="brand">
-          <img src={logo} alt=" TeksType Logo" className="logo-img" />
+          <img src={logo} alt=" TypeTeks Logo" className="logo-img" />
           <div>
-            <div className="brand-title">TeksType</div>
+            <div className="brand-title">TypeTeks</div>
             <div className="brand-sub"></div>
           </div>
         </div>
