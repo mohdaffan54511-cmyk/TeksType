@@ -1264,4 +1264,120 @@ kbd {
     gap: 16px;
   }
 }
+@media (max-width: 600px) {
+  .app {
+    padding: 24px 16px 70px;
+  }
+
+  .topbar {
+    padding: 18px 0 12px;
+    gap: 16px;
+  }
+
+  .brand {
+    width: 100%;
+  }
+
+  .logo-img {
+    width: 56px;
+    height: 56px;
+  }
+
+  .brand-title {
+    font-size: 28px;
+    letter-spacing: -1px;
+  }
+
+  .top-actions {
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .key-hint {
+    font-size: 14px;
+  }
+
+  .mode-pill {
+    padding: 13px 20px;
+    font-size: 14px;
+    letter-spacing: 4px;
+  }
+
+  .hero {
+    margin-top: 26px;
+  }
+
+  .mini {
+    font-size: 12px;
+    letter-spacing: 6px;
+    line-height: 1.5;
+  }
+
+  .hero h1 {
+    font-size: 44px;
+    line-height: 0.95;
+    letter-spacing: -2.5px;
+    text-align: center;
+  }
+
+  .start-note {
+    margin-top: 26px;
+  }
+
+  .start-note b {
+    font-size: 12px;
+    letter-spacing: 5px;
+  }
+
+  .start-note p {
+    font-size: 18px;
+  }
+
+  .panel {
+    margin-top: 36px;
+    padding: 28px 20px;
+    border-radius: 24px;
+  }
+
+  .panel-title {
+    font-size: 13px;
+    letter-spacing: 6px;
+    margin-bottom: 20px;
+  }
+
+  .button-row {
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .button-row button {
+    padding: 12px 15px;
+    font-size: 14px;
+    letter-spacing: 2px;
+    border-radius: 15px;
+  }
+
+  .typing-wrap {
+    margin-top: 38px;
+  }
+
+  .typing-card {
+    padding: 24px 18px;
+    border-radius: 22px;
+  }
+
+  .typing-text {
+    font-size: 23px;
+    line-height: 1.7;
+  }
+
+  .stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stat-value {
+    font-size: 30px;
+  }
+}
 `;
