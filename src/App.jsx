@@ -249,8 +249,8 @@ export default function App() {
   const [maxStreak, setMaxStreak] = useState(0);
 
   const [sound, setSound] = useState(true);
- const [noBackspace, setNoBackspace] = useState(false);
-const [activePage, setActivePage] = useState(null);
+  const [noBackspace, setNoBackspace] = useState(false);
+  const [activePage, setActivePage] = useState(null);
   const [best, setBest] = useState(() => {
     return Number(localStorage.getItem("TypeTeks_best") || 0);
   });
@@ -516,7 +516,10 @@ const [activePage, setActivePage] = useState(null);
   ref={appRef}
   tabIndex={0}
   className="app"
-  onPointerDown={() => prepareSounds()}
+  onPointerDown={() => {
+    appRef.current?.focus();
+    prepareSounds();
+  }}
 >
       <style>{css}</style>
 
@@ -1517,4 +1520,103 @@ kbd {
     font-size: 30px;
   }
 }
+.legal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: #ffffff;
+  color: #001033;
+  overflow-y: auto;
+  padding: 42px 70px;
+}
+
+.legal-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #ffffff;
+  color: #001033;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.legal-page h2 {
+  font-size: 38px;
+  line-height: 1.1;
+  margin: 0 0 30px;
+  color: #001033;
+  letter-spacing: -1px;
+}
+
+.legal-section {
+  margin-top: 34px;
+}
+
+.legal-section h3 {
+  font-size: 18px;
+  margin: 0 0 14px;
+  color: #000;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.legal-section p {
+  font-size: 18px;
+  line-height: 1.55;
+  margin: 12px 0;
+  color: #000;
+  font-weight: 500;
+}
+
+.legal-close {
+  position: fixed;
+  top: 22px;
+  right: 28px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: #001033;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.legal-close:hover {
+  background: rgb(208, 241, 0);
+  color: #001033;
+}
+
+.footer-link {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (max-width: 600px) {
+  .legal-overlay {
+    padding: 28px 18px;
+  }
+
+  .legal-page h2 {
+    font-size: 32px;
+  }
+
+  .legal-section h3 {
+    font-size: 15px;
+  }
+
+  .legal-section p {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .legal-close {
+    top: 14px;
+    right: 14px;
+    width: 38px;
+    height: 38px;
+    font-size: 24px;
+  }
+}
+
 `;
