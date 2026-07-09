@@ -145,7 +145,7 @@ export default function App() {
 
   const [sound, setSound] = useState(true);
  const [noBackspace, setNoBackspace] = useState(false);
-
+const [activePage, setActivePage] = useState(null);
   const [best, setBest] = useState(() => {
     return Number(localStorage.getItem("TypeTeks_best") || 0);
   });
@@ -604,15 +604,46 @@ export default function App() {
           </div>
         </section>
       )}
-            <footer className="footer">
-        <nav className="footer-links" aria-label="Footer navigation">
-          <a href="/contact" className="footer-link">Contact</a>
-          <a href="/support" className="footer-link">Support</a>
-          <a href="/terms" className="footer-link">Terms</a>
-          <a href="/security" className="footer-link">Security</a>
-          <a href="/privacy" className="footer-link">Privacy</a>
-        </nav>
-      </footer>
+          <footer className="footer">
+  <nav className="footer-links" aria-label="Footer navigation">
+    <button type="button" className="footer-link" onClick={() => setActivePage("contact")}>
+      Contact
+    </button>
+    <button type="button" className="footer-link" onClick={() => setActivePage("support")}>
+      Support
+    </button>
+    <button type="button" className="footer-link" onClick={() => setActivePage("terms")}>
+      Terms
+    </button>
+    <button type="button" className="footer-link" onClick={() => setActivePage("security")}>
+      Security
+    </button>
+    <button type="button" className="footer-link" onClick={() => setActivePage("privacy")}>
+      Privacy
+    </button>
+  </nav>
+</footer>
+
+{activePage && (
+  <section className="legal-overlay" onClick={() => setActivePage(null)}>
+    <article className="legal-page" onClick={(e) => e.stopPropagation()}>
+      <button className="legal-close" onClick={() => setActivePage(null)}>
+        ×
+      </button>
+
+      <h2>{INFO_PAGES[activePage].title}</h2>
+
+      {INFO_PAGES[activePage].sections.map((section, index) => (
+        <div className="legal-section" key={index}>
+          <h3>{section.heading}</h3>
+          {section.text.map((paragraph, pIndex) => (
+            <p key={pIndex}>{paragraph}</p>
+          ))}
+        </div>
+      ))}
+    </article>
+  </section>
+)}
     </main>
   );
 }
