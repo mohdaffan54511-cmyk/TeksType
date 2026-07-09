@@ -519,16 +519,22 @@ export default function App() {
   className="app"
   onPointerDown={() => {
     prepareSounds();
-
-    if (window.matchMedia("(pointer: coarse)").matches) {
-      mobileInputRef.current?.focus();
-    } else {
-      appRef.current?.focus();
-    }
+    mobileInputRef.current?.focus();
   }}
 >
       <style>{css}</style>
-
+<textarea
+  ref={mobileInputRef}
+  className="mobile-keyboard-input"
+  autoCapitalize="none"
+  autoCorrect="off"
+  spellCheck="false"
+  inputMode="text"
+  onKeyDown={handleKey}
+  onInput={(e) => {
+    e.currentTarget.value = "";
+  }}
+/>
       <div className="grid-bg" />
 
       <header className="topbar">
@@ -1626,3 +1632,18 @@ kbd {
 }
 
 `;
+.mobile-keyboard-input {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 46px;
+  opacity: 0.01;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: transparent;
+  font-size: 16px;
+  z-index: 20;
+  resize: none;
+}
