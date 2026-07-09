@@ -592,12 +592,15 @@ const [activePage, setActivePage] = useState(null);
   }
 
   return (
-    <main
-      ref={appRef}
-      tabIndex={0}
-      className="app"
-      onPointerDown={() => prepareSounds()}
-    >
+   <main
+  ref={appRef}
+  tabIndex={0}
+  className="app"
+  onPointerDown={() => {
+    prepareSounds();
+    mobileInputRef.current?.focus();
+  }}
+>
       <style>{css}</style>
 
       <div className="grid-bg" />
@@ -1644,13 +1647,7 @@ kbd {
   }
 }
 
-.mobile-type-dock {
-  display: none;
-}
 
-.mobile-focus-btn {
-  display: none;
-}
 
 @media (max-width: 900px) {
   .mobile-type-dock {
@@ -1716,5 +1713,60 @@ kbd {
     margin-bottom: 130px !important;
   }
 }
+.mobile-keyboard-input {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: transparent;
+  font-size: 16px;
+  z-index: -1;
+}
 
+@media (max-width: 900px) {
+  .hero,
+  .controls,
+  .best-box,
+  .footer {
+    display: none !important;
+  }
+
+  .app {
+    min-height: 100dvh !important;
+    padding: 18px 24px 80px !important;
+    overflow-y: auto !important;
+  }
+
+  .topbar {
+    padding: 12px 0 18px !important;
+    margin-bottom: 24px !important;
+  }
+
+  .typing-wrap {
+    margin-top: 38px !important;
+    padding-bottom: 120px !important;
+  }
+
+  .typing-text {
+    font-size: 31px !important;
+    line-height: 1.65 !important;
+    letter-spacing: -0.5px !important;
+  }
+
+  .restart {
+    margin: 48px auto 80px !important;
+    display: block !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .typing-text {
+    font-size: 29px !important;
+  }
+}
 `;
