@@ -1688,24 +1688,6 @@ kbd {
   ...
 }
 
-.mobile-keyboard-input {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 46px;
-  opacity: 0.01;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: transparent;
-  font-size: 16px;
-  z-index: 20;
-  resize: none;
-}
-.mobile-type-dock {
-  display: none;
-}
 
 .mobile-keyboard-input {
   width: 100%;
@@ -1772,6 +1754,70 @@ kbd {
   .results,
   .footer {
     margin-bottom: 90px;
+  }
+}
+.mobile-type-dock {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .mobile-type-dock {
+    position: fixed;
+    left: 14px;
+    right: 14px;
+    bottom: calc(env(safe-area-inset-bottom) + 12px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 20px;
+    background: rgba(7, 18, 50, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.42);
+    backdrop-filter: blur(16px);
+  }
+
+  .mobile-keyboard-input {
+    flex: 1;
+    min-width: 0;
+    height: 48px;
+    opacity: 1;
+    position: static;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    outline: none;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.07);
+    color: #ffffff;
+    padding: 0 14px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+  }
+
+  .mobile-keyboard-input::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .mobile-focus-btn {
+    height: 48px;
+    min-width: 84px;
+    border: none;
+    border-radius: 16px;
+    background: rgb(208, 241, 0);
+    color: rgb(10, 10, 10);
+    font-size: 14px;
+    font-weight: 950;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+  }
+
+  .app {
+    padding-bottom: 120px !important;
+  }
+
+  .footer {
+    margin-bottom: 120px !important;
   }
 }
 `;
