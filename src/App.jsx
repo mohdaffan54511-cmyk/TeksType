@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import logo from "../TeksType.png";
 const WORDS = {
   words: [
     "home", "now", "even", "used", "said", "government", "once", "any", "to", "and",
@@ -493,6 +492,21 @@ const [activePage, setActivePage] = useState(null);
     }, 250);
   }, []);
 
+  const handleMobileBeforeInput = useCallback((e) => {
+    const key = e.nativeEvent?.data;
+
+    if (!key) return;
+
+    e.preventDefault();
+    processTypedKey(key);
+
+    requestAnimationFrame(() => {
+      if (mobileInputRef.current) {
+        mobileInputRef.current.value = "";
+      }
+    });
+  }, [processTypedKey]);
+
   const handleMobileInput = useCallback((e) => {
     const value = e.currentTarget.value;
     if (!value) return;
@@ -501,16 +515,7 @@ const [activePage, setActivePage] = useState(null);
     const lastChar = chars[chars.length - 1];
 
     processTypedKey(lastChar);
-
     e.currentTarget.value = "";
-
-    requestAnimationFrame(() => {
-      try {
-        mobileInputRef.current?.focus({ preventScroll: true });
-      } catch {
-        mobileInputRef.current?.focus();
-      }
-    });
   }, [processTypedKey]);
 
   const handleMobileKeyDown = useCallback((e) => {
@@ -599,7 +604,7 @@ const [activePage, setActivePage] = useState(null);
 
       <header className="topbar">
         <div className="brand">
-          <img src={logo} alt=" TypeTeks Logo" className="logo-img" />
+          <div className="logo-badge" aria-hidden="true">T</div>
           <div>
             <div className="brand-title">TypeTeks</div>
             <div className="brand-sub"></div>
@@ -842,7 +847,8 @@ const [activePage, setActivePage] = useState(null);
           autoComplete="off"
           spellCheck={false}
           className="mobile-keyboard-input"
-          placeholder="Tap TYPE, then keep typing"
+          placeholder="Keep typing here..."
+          onBeforeInput={handleMobileBeforeInput}
           onInput={handleMobileInput}
           onKeyDown={handleMobileKeyDown}
         />
@@ -944,6 +950,19 @@ body {
   display: block;
   border-radius: 14px;
   filter: drop-shadow(0 0 18px rgba(208, 241, 0, 0.22));
+}
+.logo-badge {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  color: var(--dark);
+  background: var(--green);
+  font-weight: 950;
+  font-size: 30px;
+  letter-spacing: -2px;
+  box-shadow: 0 0 24px rgba(208, 241, 0, 0.28);
 }
 .brand-title {
   font-size: 23px;
@@ -1521,7 +1540,8 @@ kbd {
     width: 100%;
   }
 
-  .logo-img {
+  .logo-img,
+  .logo-badge {
     width: 56px;
     height: 56px;
   }
