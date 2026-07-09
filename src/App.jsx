@@ -32,7 +32,112 @@ const WORDS = {
     "mindset", "momentum", "progress", "mastery", "habit", "vision", "action"
   ]
 };
+const INFO_PAGES = {
+  privacy: {
+    title: "Privacy Policy",
+    sections: [
+      {
+        heading: "Introduction",
+        text: [
+          "This Privacy Policy explains how TypeTeks collects, uses, and protects information when you use our website.",
+          "TypeTeks is a typing practice website designed to help users improve typing speed, accuracy, focus, and consistency.",
+          "By using TypeTeks, you agree to this Privacy Policy."
+        ],
+      },
+      {
+        heading: "1. What Information Do We Collect?",
+        text: [
+          "TypeTeks does not require users to create an account, submit passwords, upload documents, or provide sensitive personal information.",
+          "The website may store typing practice data in your own browser, such as best WPM, accuracy, score, selected mode, and recent history.",
+          "This data is stored locally on your device using browser localStorage."
+        ],
+      },
+      {
+        heading: "2. How We Use This Information",
+        text: [
+          "We use local browser data only to improve your typing experience, show your best score, and display recent practice sessions."
+        ],
+      },
+      {
+        heading: "3. Local Storage",
+        text: [
+          "Your typing results are saved on your own device. TypeTeks does not sell your data.",
+          "You can delete this data anytime by clearing your browser cache or site data."
+        ],
+      },
+      {
+        heading: "4. Third-Party Services",
+        text: [
+          "TypeTeks may be hosted using services such as Cloudflare. These services may process technical data for security and performance."
+        ],
+      },
+      {
+        heading: "5. Contact Us",
+        text: [
+          "If you have questions about this Privacy Policy, contact us at: contact@typeteks.online"
+        ],
+      },
+    ],
+  },
 
+  terms: {
+    title: "Terms of Use",
+    sections: [
+      {
+        heading: "1. Use of Website",
+        text: [
+          "TypeTeks is provided as a typing practice tool for learning and productivity.",
+          "By using this website, you agree to use it responsibly and not misuse, copy, attack, or disrupt the service."
+        ],
+      },
+      {
+        heading: "2. No Guarantee",
+        text: [
+          "We try to keep TypeTeks fast and useful, but we do not guarantee that the website will always be error-free or available."
+        ],
+      },
+    ],
+  },
+
+  contact: {
+    title: "Contact",
+    sections: [
+      {
+        heading: "Get in Touch",
+        text: [
+          "Have feedback, suggestions, or partnership ideas?",
+          "Email: contact@typeteks.online"
+        ],
+      },
+    ],
+  },
+
+  support: {
+    title: "Support",
+    sections: [
+      {
+        heading: "Need Help?",
+        text: [
+          "Use Tab to restart a session, select your typing mode, choose time, and start typing.",
+          "If sound does not work, make sure your browser tab is not muted and click the TEST SOUND button."
+        ],
+      },
+    ],
+  },
+
+  security: {
+    title: "Security",
+    sections: [
+      {
+        heading: "Security",
+        text: [
+          "TypeTeks runs mainly inside your browser and does not ask for sensitive details like passwords, payment information, or private documents.",
+          "The website is served through secure HTTPS hosting."
+        ],
+      },
+    ],
+  },
+};
 function makeText(mode) {
   const pool = WORDS[mode] || WORDS.words;
   const count = mode === "bigrams" ? 55 : mode === "trigrams" ? 48 : 42;
