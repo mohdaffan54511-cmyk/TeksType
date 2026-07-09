@@ -1301,8 +1301,6 @@ kbd {
     min-height: auto !important;
     overflow-y: auto !important;
   }
-  .
-
   .topbar {
     padding: 18px 0 12px;
     gap: 16px;
