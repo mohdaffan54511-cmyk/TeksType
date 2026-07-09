@@ -268,6 +268,7 @@ export default function App() {
   const startTsRef = useRef(null);
   const lastKeyTsRef = useRef(null);
   const appRef = useRef(null);
+  const mobileInputRef = useRef(null);
   const finishedRef = useRef(false);
 
   const liveWpm = useMemo(() => {
@@ -512,13 +513,18 @@ export default function App() {
   }
 
   return (
-    <main
+<main
   ref={appRef}
   tabIndex={0}
   className="app"
   onPointerDown={() => {
-    appRef.current?.focus();
     prepareSounds();
+
+    if (window.matchMedia("(pointer: coarse)").matches) {
+      mobileInputRef.current?.focus();
+    } else {
+      appRef.current?.focus();
+    }
   }}
 >
       <style>{css}</style>
