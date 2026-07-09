@@ -1266,8 +1266,11 @@ kbd {
 }
 @media (max-width: 600px) {
   .app {
-    padding: 24px 16px 70px;
+    padding: 14px 14px 80px !important;
+    min-height: auto !important;
+    overflow-y: auto !important;
   }
+  .
 
   .topbar {
     padding: 18px 0 12px;
