@@ -269,6 +269,7 @@ export default function App() {
   const lastKeyTsRef = useRef(null);
   const appRef = useRef(null);
   const mobileInputRef = useRef(null);
+  const [mobileValue, setMobileValue] = useState("");
   const finishedRef = useRef(false);
 
   const liveWpm = useMemo(() => {
@@ -369,7 +370,53 @@ export default function App() {
 
     return () => clearInterval(timer);
   }, [running, finished, duration, finishTest]);
+const processTypedKey = useCallback((key) => {
+  if (!key) return;
 
+  if (!running) {
+    setRunning(true);
+    startTsRef.current = performance.now();
+    lastKeyTsRef.current = performance.now();
+  }
+
+  if (input.length >= text.length) return;
+
+  const index = input.length;
+  const expected = text[index];
+
+  const now = performance.now();
+  const delta = lastKeyTsRef.current ? now - lastKeyTsRef.current : 0;
+  lastKeyTsRef.current = now;
+
+  setTimings((prev) => ({
+    ...prev,
+    [index]: delta,
+  }));
+
+  const isCorrect = key === expected;
+
+  setTotalKeystrokes((x) => x + 1);
+
+  if (isCorrect) {
+    setCorrectChars((x) => x + 1);
+    setStreak((s) => {
+      const next = s + 1;
+      setMaxStreak((m) => Math.max(m, next));
+      return next;
+    });
+    playClick("correct", sound);
+  } else {
+    setStreak(0);
+    playClick("wrong", sound);
+  }
+
+  const nextInput = input + key;
+  setInput(nextInput);
+
+  if (nextInput.length >= text.length) {
+    setTimeout(() => finishTest(), 50);
+  }
+}, [finishTest, input, running, sound, text]); 
   const handleKey = useCallback((e) => {
     if (e.ctrlKey || e.altKey || e.metaKey) return;
 
@@ -413,56 +460,33 @@ export default function App() {
   return;
 }
 
-    if (e.key.length !== 1) return;
+if (e.key.length !== 1) return;
 
-    e.preventDefault();
+e.preventDefault();
+processTypedKey(e.key);
+ }, [input, noBackspace, processTypedKey, reset, text]);
+const focusMobileInput = useCallback(() => {
+  mobileInputRef.current?.focus();
+}, []);
 
-    if (!running) {
-      setRunning(true);
-      startTsRef.current = performance.now();
-      lastKeyTsRef.current = performance.now();
+const handleMobileInput = useCallback((e) => {
+  const value = e.target.value;
+  if (!value) return;
+
+  const lastChar = value[value.length - 1];
+  processTypedKey(lastChar);
+
+  setMobileValue("");
+}, [processTypedKey]);
+
+const handleMobileKeyDown = useCallback((e) => {
+  if (e.key === "Backspace") {
+    if (!noBackspace) {
+      setInput((prev) => prev.slice(0, -1));
     }
-
-    if (input.length >= text.length) return;
-
-    const key = e.key;
-    const index = input.length;
-    const expected = text[index];
-
-    const now = performance.now();
-    const delta = lastKeyTsRef.current ? now - lastKeyTsRef.current : 0;
-    lastKeyTsRef.current = now;
-
-    setTimings((prev) => ({
-      ...prev,
-      [index]: delta,
-    }));
-
-    const isCorrect = key === expected;
-
-    setTotalKeystrokes((x) => x + 1);
-
-    if (isCorrect) {
-      setCorrectChars((x) => x + 1);
-      setStreak((s) => {
-        const next = s + 1;
-        setMaxStreak((m) => Math.max(m, next));
-        return next;
-      });
-      playClick("correct", sound);
-    } else {
-      setStreak(0);
-      playClick("wrong", sound);
-    }
-
-    const nextInput = input + key;
-    setInput(nextInput);
-
-    if (nextInput.length >= text.length) {
-      setTimeout(() => finishTest(), 50);
-    }
-  }, [finishTest, input, noBackspace, reset, running, sound, text]);
-
+    setMobileValue("");
+  }
+}, [noBackspace]);
   useEffect(() => {
     const node = appRef.current;
     if (!node) return;
@@ -621,7 +645,13 @@ export default function App() {
 </section>
 
       {!finished && (
-        <section className="typing-wrap" onClick={() => appRef.current?.focus()}>
+        <section
+  className="typing-wrap"
+  onClick={() => {
+    appRef.current?.focus();
+    mobileInputRef.current?.focus();
+  }}
+>
           <div className="typing-text">{renderTypingText()}</div>
         </section>
       )}
@@ -764,6 +794,30 @@ export default function App() {
     </article>
   </section>
 )}
+  <div className="mobile-type-dock">
+  <input
+    ref={mobileInputRef}
+    type="text"
+    inputMode="text"
+    autoCapitalize="off"
+    autoCorrect="off"
+    autoComplete="off"
+    spellCheck={false}
+    className="mobile-keyboard-input"
+    placeholder="Tap here to type..."
+    value={mobileValue}
+    onChange={handleMobileInput}
+    onKeyDown={handleMobileKeyDown}
+  />
+
+  <button
+    type="button"
+    className="mobile-focus-btn"
+    onClick={focusMobileInput}
+  >
+    TYPE
+  </button>
+</div>
     </main>
   );
 }
@@ -1649,7 +1703,76 @@ kbd {
   z-index: 20;
   resize: none;
 }
+.mobile-type-dock {
+  display: none;
+}
 
-`;
+.mobile-keyboard-input {
+  width: 100%;
+}
+
+.mobile-focus-btn {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .mobile-type-dock {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: calc(env(safe-area-inset-bottom) + 10px);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(7, 18, 50, 0.96);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+  }
+
+  .mobile-keyboard-input {
+    flex: 1;
+    min-width: 0;
+    height: 46px;
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.06);
+    color: #ffffff;
+    font-size: 16px;
+    padding: 0 14px;
+    outline: none;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+  }
+
+  .mobile-keyboard-input::placeholder {
+    color: rgba(255,255,255,0.45);
+  }
+
+  .mobile-focus-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 46px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 14px;
+    background: rgb(208, 241, 0);
+    color: rgb(10, 10, 10);
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+  }
+
+  .best-box,
+  .restart,
+  .results,
+  .footer {
+    margin-bottom: 90px;
+  }
+}
 `;
 
