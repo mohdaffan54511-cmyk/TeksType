@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import logo from "../TeksType.png";
+
 const WORDS = {
   words: [
     "home", "now", "even", "used", "said", "government", "once", "any", "to", "and",
@@ -32,6 +33,7 @@ const WORDS = {
     "mindset", "momentum", "progress", "mastery", "habit", "vision", "action"
   ]
 };
+
 const INFO_PAGES = {
   privacy: {
     title: "Privacy Policy",
@@ -79,7 +81,6 @@ const INFO_PAGES = {
       },
     ],
   },
-
   terms: {
     title: "Terms of Use",
     sections: [
@@ -98,7 +99,6 @@ const INFO_PAGES = {
       },
     ],
   },
-
   contact: {
     title: "Contact",
     sections: [
@@ -111,20 +111,18 @@ const INFO_PAGES = {
       },
     ],
   },
-
   support: {
     title: "Support",
     sections: [
       {
         heading: "Need Help?",
         text: [
-          "Use Tab to restart a session, select your typing mode, choose time, and start typing.",
-          "If sound does not work, make sure your browser tab is not muted and click the TEST SOUND button."
+          "Tap TYPE on mobile to open the keyboard, then type the highlighted text.",
+          "Use Tab to restart a session on desktop. If sound does not work, make sure your browser tab is not muted and click TEST SOUND."
         ],
       },
     ],
   },
-
   security: {
     title: "Security",
     sections: [
@@ -138,6 +136,7 @@ const INFO_PAGES = {
     ],
   },
 };
+
 function makeText(mode) {
   const pool = WORDS[mode] || WORDS.words;
   const count = mode === "bigrams" ? 55 : mode === "trigrams" ? 48 : 42;
@@ -199,6 +198,7 @@ function buildHeatmap(target, input, timings) {
     .sort((a, b) => b.avgMs + b.errorRate * 3 - (a.avgMs + a.errorRate * 3))
     .slice(0, 8);
 }
+
 const keySounds = [];
 let soundReady = false;
 let soundIndex = 0;
@@ -232,6 +232,7 @@ function playClick(type, enabled = true) {
     console.log("Sound error:", error);
   }
 }
+
 export default function App() {
   const [mode, setMode] = useState("words");
   const [duration, setDuration] = useState(15);
@@ -251,6 +252,8 @@ export default function App() {
   const [sound, setSound] = useState(true);
   const [noBackspace, setNoBackspace] = useState(false);
   const [activePage, setActivePage] = useState(null);
+  const [mobileValue, setMobileValue] = useState("");
+
   const [best, setBest] = useState(() => {
     return Number(localStorage.getItem("TypeTeks_best") || 0);
   });
@@ -269,7 +272,7 @@ export default function App() {
   const lastKeyTsRef = useRef(null);
   const appRef = useRef(null);
   const mobileInputRef = useRef(null);
-  const [mobileValue, setMobileValue] = useState("");
+  const typingWrapRef = useRef(null);
   const finishedRef = useRef(false);
 
   const liveWpm = useMemo(() => {
@@ -334,6 +337,7 @@ export default function App() {
     setDuration(nextDuration);
     setText(makeText(nextMode));
     setInput("");
+    setMobileValue("");
 
     setRunning(false);
     setFinished(false);
@@ -370,53 +374,71 @@ export default function App() {
 
     return () => clearInterval(timer);
   }, [running, finished, duration, finishTest]);
-const processTypedKey = useCallback((key) => {
-  if (!key) return;
 
-  if (!running) {
-    setRunning(true);
-    startTsRef.current = performance.now();
-    lastKeyTsRef.current = performance.now();
-  }
+  const removeLastCharacter = useCallback(() => {
+    if (input.length <= 0) return;
 
-  if (input.length >= text.length) return;
+    const removeIndex = input.length - 1;
+    const wasCorrect = input[removeIndex] === text[removeIndex];
 
-  const index = input.length;
-  const expected = text[index];
+    setInput((prev) => prev.slice(0, -1));
+    setTotalKeystrokes((x) => Math.max(0, x - 1));
 
-  const now = performance.now();
-  const delta = lastKeyTsRef.current ? now - lastKeyTsRef.current : 0;
-  lastKeyTsRef.current = now;
+    if (wasCorrect) {
+      setCorrectChars((x) => Math.max(0, x - 1));
+    }
 
-  setTimings((prev) => ({
-    ...prev,
-    [index]: delta,
-  }));
+    setMobileValue("");
+  }, [input, text]);
 
-  const isCorrect = key === expected;
+  const processTypedKey = useCallback((key) => {
+    if (!key || finishedRef.current) return;
 
-  setTotalKeystrokes((x) => x + 1);
+    if (!running) {
+      setRunning(true);
+      startTsRef.current = performance.now();
+      lastKeyTsRef.current = performance.now();
+    }
 
-  if (isCorrect) {
-    setCorrectChars((x) => x + 1);
-    setStreak((s) => {
-      const next = s + 1;
-      setMaxStreak((m) => Math.max(m, next));
-      return next;
-    });
-    playClick("correct", sound);
-  } else {
-    setStreak(0);
-    playClick("wrong", sound);
-  }
+    if (input.length >= text.length) return;
 
-  const nextInput = input + key;
-  setInput(nextInput);
+    const index = input.length;
+    const expected = text[index];
 
-  if (nextInput.length >= text.length) {
-    setTimeout(() => finishTest(), 50);
-  }
-}, [finishTest, input, running, sound, text]); 
+    const now = performance.now();
+    const delta = lastKeyTsRef.current ? now - lastKeyTsRef.current : 0;
+    lastKeyTsRef.current = now;
+
+    setTimings((prev) => ({
+      ...prev,
+      [index]: delta,
+    }));
+
+    const isCorrect = key === expected;
+
+    setTotalKeystrokes((x) => x + 1);
+
+    if (isCorrect) {
+      setCorrectChars((x) => x + 1);
+      setStreak((s) => {
+        const next = s + 1;
+        setMaxStreak((m) => Math.max(m, next));
+        return next;
+      });
+      playClick("correct", sound);
+    } else {
+      setStreak(0);
+      playClick("wrong", sound);
+    }
+
+    const nextInput = input + key;
+    setInput(nextInput);
+
+    if (nextInput.length >= text.length) {
+      setTimeout(() => finishTest(), 50);
+    }
+  }, [finishTest, input, running, sound, text]);
+
   const handleKey = useCallback((e) => {
     if (e.ctrlKey || e.altKey || e.metaKey) return;
 
@@ -434,59 +456,69 @@ const processTypedKey = useCallback((key) => {
 
     if (finishedRef.current) return;
 
-    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)) {
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
       e.preventDefault();
+      return;
     }
 
-  if (e.key === "Backspace") {
-  e.preventDefault();
+    if (e.key === "Backspace") {
+      e.preventDefault();
 
-  if (!noBackspace) {
-    setInput((prev) => prev.slice(0, -1));
-
-    const removeIndex = input.length - 1;
-
-    if (removeIndex >= 0) {
-      const wasCorrect = input[removeIndex] === text[removeIndex];
-
-      setTotalKeystrokes((x) => Math.max(0, x - 1));
-
-      if (wasCorrect) {
-        setCorrectChars((x) => Math.max(0, x - 1));
+      if (!noBackspace) {
+        removeLastCharacter();
       }
+
+      return;
     }
-  }
 
-  return;
-}
+    if (e.key.length !== 1) return;
 
-if (e.key.length !== 1) return;
+    e.preventDefault();
+    processTypedKey(e.key);
+  }, [noBackspace, processTypedKey, removeLastCharacter, reset]);
 
-e.preventDefault();
-processTypedKey(e.key);
- }, [input, noBackspace, processTypedKey, reset, text]);
-const focusMobileInput = useCallback(() => {
-  mobileInputRef.current?.focus();
-}, []);
+  const focusMobileInput = useCallback(() => {
+    prepareSounds();
 
-const handleMobileInput = useCallback((e) => {
-  const value = e.target.value;
-  if (!value) return;
+    typingWrapRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
 
-  const lastChar = value[value.length - 1];
-  processTypedKey(lastChar);
+    setTimeout(() => {
+      try {
+        mobileInputRef.current?.focus({ preventScroll: true });
+      } catch {
+        mobileInputRef.current?.focus();
+      }
+    }, 140);
+  }, []);
 
-  setMobileValue("");
-}, [processTypedKey]);
+  const handleMobileInput = useCallback((e) => {
+    const value = e.currentTarget.value;
+    if (!value) return;
 
-const handleMobileKeyDown = useCallback((e) => {
-  if (e.key === "Backspace") {
-    if (!noBackspace) {
-      setInput((prev) => prev.slice(0, -1));
-    }
+    const chars = value.split("");
+    const lastChar = chars[chars.length - 1];
+
+    processTypedKey(lastChar);
+
+    e.currentTarget.value = "";
     setMobileValue("");
-  }
-}, [noBackspace]);
+  }, [processTypedKey]);
+
+  const handleMobileKeyDown = useCallback((e) => {
+    if (e.key === "Backspace") {
+      e.preventDefault();
+
+      if (!noBackspace) {
+        removeLastCharacter();
+      }
+
+      setMobileValue("");
+    }
+  }, [noBackspace, removeLastCharacter]);
+
   useEffect(() => {
     const node = appRef.current;
     if (!node) return;
@@ -537,33 +569,34 @@ const handleMobileKeyDown = useCallback((e) => {
   }
 
   return (
-<main
-  ref={appRef}
-  tabIndex={0}
-  className="app"
-  onPointerDown={() => {
-    prepareSounds();
-    mobileInputRef.current?.focus();
-  }}
->
+    <main
+      ref={appRef}
+      tabIndex={0}
+      className="app"
+      onPointerDown={() => prepareSounds()}
+    >
       <style>{css}</style>
-<textarea
-  ref={mobileInputRef}
-  className="mobile-keyboard-input"
-  autoCapitalize="none"
-  autoCorrect="off"
-  spellCheck="false"
-  inputMode="text"
-  onKeyDown={handleKey}
-  onInput={(e) => {
-    e.currentTarget.value = "";
-  }}
-/>
+
+      <textarea
+        ref={mobileInputRef}
+        className="mobile-hidden-input"
+        value={mobileValue}
+        aria-label="Mobile typing input"
+        autoCapitalize="none"
+        autoCorrect="off"
+        autoComplete="off"
+        spellCheck={false}
+        inputMode="text"
+        onInput={handleMobileInput}
+        onChange={() => {}}
+        onKeyDown={handleMobileKeyDown}
+      />
+
       <div className="grid-bg" />
 
       <header className="topbar">
         <div className="brand">
-          <img src={logo} alt=" TypeTeks Logo" className="logo-img" />
+          <img src={logo} alt="TypeTeks Logo" className="logo-img" />
           <div>
             <div className="brand-title">TypeTeks</div>
             <div className="brand-sub"></div>
@@ -582,7 +615,7 @@ const handleMobileKeyDown = useCallback((e) => {
 
       <section className={`hero ${running ? "fade" : ""}`}>
         <div>
-          <div className="mini"> MICRO-BLITZ · {duration}S · {mode.toUpperCase()}</div>
+          <div className="mini">MICRO-BLITZ · {duration}S · {mode.toUpperCase()}</div>
           <h1>
             Type at the speed
             <br />
@@ -590,10 +623,10 @@ const handleMobileKeyDown = useCallback((e) => {
           </h1>
         </div>
 
-       <div className="start-note">
-  <b>LOCK IN. TYPE FAST.</b>
-  <p>Every keystroke builds your speed  </p>
-</div>
+        <div className="start-note">
+          <b>LOCK IN. TYPE FAST.</b>
+          <p>Every keystroke builds your speed</p>
+        </div>
       </section>
 
       <section className={`controls ${running ? "hidden-soft" : ""}`}>
@@ -619,46 +652,44 @@ const handleMobileKeyDown = useCallback((e) => {
         <div className="row">
           <div className="label">◷ TIME</div>
 
-         {[15, 30, 60, 300].map((t) => (
-  <button
-    key={t}
-    onClick={() => reset(mode, t)}
-    className={duration === t ? "active" : ""}
-  >
-    {t === 300 ? "5 min" : `${t}s`}
-  </button>
-))}
+          {[15, 30, 60, 300].map((t) => (
+            <button
+              key={t}
+              onClick={() => reset(mode, t)}
+              className={duration === t ? "active" : ""}
+            >
+              {t === 300 ? "5 min" : `${t}s`}
+            </button>
+          ))}
 
           <button onClick={() => setSound((v) => !v)}>
-  {sound ? "SOUND ON" : "SOUND OFF"}
-</button>
+            {sound ? "SOUND ON" : "SOUND OFF"}
+          </button>
 
-<button
-  onClick={() => {
-    prepareSounds();
-    playClick("correct", true);
-  }}
->
-  TEST SOUND
-</button>
-</div>
-</section>
+          <button
+            onClick={() => {
+              prepareSounds();
+              playClick("correct", true);
+            }}
+          >
+            TEST SOUND
+          </button>
+        </div>
+      </section>
 
       {!finished && (
         <section
-  className="typing-wrap"
-  onClick={() => {
-    appRef.current?.focus();
-    mobileInputRef.current?.focus();
-  }}
->
+          ref={typingWrapRef}
+          className="typing-wrap"
+          onClick={focusMobileInput}
+        >
           <div className="typing-text">{renderTypingText()}</div>
         </section>
       )}
 
       {!finished && (
         <button className="restart" onClick={() => reset()}>
-           RESTART · <kbd>TAB</kbd>
+          RESTART · <kbd>TAB</kbd>
         </button>
       )}
 
@@ -676,7 +707,7 @@ const handleMobileKeyDown = useCallback((e) => {
             </div>
             <div>
               <span>Time</span>
-              <b>{duration}s</b>
+              <b>{duration === 300 ? "5 min" : `${duration}s`}</b>
             </div>
           </div>
         </section>
@@ -748,76 +779,73 @@ const handleMobileKeyDown = useCallback((e) => {
               <div className="history-row" key={i}>
                 <span>{h.date}</span>
                 <b>{h.wpm} WPM</b>
-                <small>{h.acc}% · {h.mode} · {h.duration}s</small>
+                <small>{h.acc}% · {h.mode} · {h.duration === 300 ? "5 min" : `${h.duration}s`}</small>
               </div>
             ))}
           </div>
         </section>
       )}
-          <footer className="footer">
-  <nav className="footer-links" aria-label="Footer navigation">
-    <button type="button" className="footer-link" onClick={() => setActivePage("contact")}>
-      Contact
-    </button>
-    <button type="button" className="footer-link" onClick={() => setActivePage("support")}>
-      Support
-    </button>
-    <button type="button" className="footer-link" onClick={() => setActivePage("terms")}>
-      Terms
-    </button>
-    <button type="button" className="footer-link" onClick={() => setActivePage("security")}>
-      Security
-    </button>
-    <button type="button" className="footer-link" onClick={() => setActivePage("privacy")}>
-      Privacy
-    </button>
-  </nav>
-</footer>
 
-{activePage && (
-  <section className="legal-overlay" onClick={() => setActivePage(null)}>
-    <article className="legal-page" onClick={(e) => e.stopPropagation()}>
-      <button className="legal-close" onClick={() => setActivePage(null)}>
-        ×
-      </button>
+      <footer className="footer">
+        <nav className="footer-links" aria-label="Footer navigation">
+          <button type="button" className="footer-link" onClick={() => setActivePage("contact")}>
+            Contact
+          </button>
+          <button type="button" className="footer-link" onClick={() => setActivePage("support")}>
+            Support
+          </button>
+          <button type="button" className="footer-link" onClick={() => setActivePage("terms")}>
+            Terms
+          </button>
+          <button type="button" className="footer-link" onClick={() => setActivePage("security")}>
+            Security
+          </button>
+          <button type="button" className="footer-link" onClick={() => setActivePage("privacy")}>
+            Privacy
+          </button>
+        </nav>
+      </footer>
 
-      <h2>{INFO_PAGES[activePage].title}</h2>
+      {activePage && (
+        <section className="legal-overlay" onClick={() => setActivePage(null)}>
+          <article className="legal-page" onClick={(e) => e.stopPropagation()}>
+            <button className="legal-close" onClick={() => setActivePage(null)}>
+              ×
+            </button>
 
-      {INFO_PAGES[activePage].sections.map((section, index) => (
-        <div className="legal-section" key={index}>
-          <h3>{section.heading}</h3>
-          {section.text.map((paragraph, pIndex) => (
-            <p key={pIndex}>{paragraph}</p>
-          ))}
+            <h2>{INFO_PAGES[activePage].title}</h2>
+
+            {INFO_PAGES[activePage].sections.map((section, index) => (
+              <div className="legal-section" key={index}>
+                <h3>{section.heading}</h3>
+                {section.text.map((paragraph, pIndex) => (
+                  <p key={pIndex}>{paragraph}</p>
+                ))}
+              </div>
+            ))}
+          </article>
+        </section>
+      )}
+
+      {!finished && (
+        <div className="mobile-type-dock">
+          <button
+            type="button"
+            className="mobile-fake-input"
+            onClick={focusMobileInput}
+          >
+            Tap TYPE, then start typing
+          </button>
+
+          <button
+            type="button"
+            className="mobile-focus-btn"
+            onClick={focusMobileInput}
+          >
+            TYPE
+          </button>
         </div>
-      ))}
-    </article>
-  </section>
-)}
-  <div className="mobile-type-dock">
-  <input
-    ref={mobileInputRef}
-    type="text"
-    inputMode="text"
-    autoCapitalize="off"
-    autoCorrect="off"
-    autoComplete="off"
-    spellCheck={false}
-    className="mobile-keyboard-input"
-    placeholder="Tap here to type..."
-    value={mobileValue}
-    onChange={handleMobileInput}
-    onKeyDown={handleMobileKeyDown}
-  />
-
-  <button
-    type="button"
-    className="mobile-focus-btn"
-    onClick={focusMobileInput}
-  >
-    TYPE
-  </button>
-</div>
+      )}
     </main>
   );
 }
@@ -858,6 +886,10 @@ body {
   font-family: "Helvetica Neue", Arial, sans-serif;
 }
 
+button {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
 .app {
   min-height: 100vh;
   color: var(--white);
@@ -884,6 +916,23 @@ body {
   opacity: 0.45;
 }
 
+.mobile-hidden-input {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  border: 0;
+  outline: 0;
+  padding: 0;
+  resize: none;
+  background: transparent;
+  color: transparent;
+  font-size: 16px;
+  z-index: -1;
+}
+
 .topbar {
   height: 86px;
   border-bottom: 1px solid var(--border-white);
@@ -908,6 +957,7 @@ body {
   border-radius: 14px;
   filter: drop-shadow(0 0 18px rgba(208, 241, 0, 0.22));
 }
+
 .brand-title {
   font-size: 23px;
   font-weight: 950;
@@ -1049,7 +1099,6 @@ kbd {
   letter-spacing: 0.22em;
   cursor: pointer;
   font-weight: 850;
-  font-family: "Helvetica Neue", Arial, sans-serif;
   border-radius: 14px;
 }
 
@@ -1072,6 +1121,8 @@ kbd {
   max-width: 1120px;
   width: 100%;
   overflow: visible;
+  min-height: 260px;
+  scroll-margin-top: 120px;
 }
 
 .typing-text {
@@ -1087,7 +1138,7 @@ kbd {
   letter-spacing: 0px;
   text-align: left;
   user-select: none;
--webkit-user-select: none;
+  -webkit-user-select: none;
 }
 
 .word {
@@ -1146,7 +1197,6 @@ kbd {
   cursor: pointer;
   position: relative;
   z-index: 2;
-  font-family: "Helvetica Neue", Arial, sans-serif;
   font-weight: 800;
   border-radius: 14px;
 }
@@ -1331,6 +1381,7 @@ kbd {
 .history-row b {
   color: var(--green);
 }
+
 .footer {
   position: relative;
   z-index: 2;
@@ -1353,6 +1404,10 @@ kbd {
 }
 
 .footer-link {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: "Helvetica Neue", Arial, sans-serif;
   color: var(--white-40);
   font-size: 13px;
   font-weight: 800;
@@ -1372,6 +1427,76 @@ kbd {
   outline-offset: 5px;
   border-radius: 6px;
 }
+
+.legal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #ffffff;
+  color: #001033;
+  overflow-y: auto;
+  padding: 42px 70px;
+}
+
+.legal-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #ffffff;
+  color: #001033;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.legal-page h2 {
+  font-size: 38px;
+  line-height: 1.1;
+  margin: 0 0 30px;
+  color: #001033;
+  letter-spacing: -1px;
+}
+
+.legal-section {
+  margin-top: 34px;
+}
+
+.legal-section h3 {
+  font-size: 18px;
+  margin: 0 0 14px;
+  color: #000;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.legal-section p {
+  font-size: 18px;
+  line-height: 1.55;
+  margin: 12px 0;
+  color: #000;
+  font-weight: 500;
+}
+
+.legal-close {
+  position: fixed;
+  top: 22px;
+  right: 28px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: #001033;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.legal-close:hover {
+  background: rgb(208, 241, 0);
+  color: #001033;
+}
+
+.mobile-type-dock {
+  display: none;
+}
+
 @media (max-width: 900px) {
   .footer {
     margin-top: 58px;
@@ -1386,8 +1511,9 @@ kbd {
     font-size: 12px;
     letter-spacing: 0.08em;
   }
+
   .app {
-    padding: 0 22px 110px;
+    padding: 0 22px 140px;
     overflow-y: auto;
   }
 
@@ -1468,16 +1594,70 @@ kbd {
     justify-content: center;
     gap: 16px;
   }
+
+  .mobile-type-dock {
+    position: fixed;
+    left: 14px;
+    right: 14px;
+    bottom: calc(env(safe-area-inset-bottom) + 12px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 20px;
+    background: rgba(7, 18, 50, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.42);
+    backdrop-filter: blur(16px);
+  }
+
+  .mobile-fake-input {
+    flex: 1;
+    min-width: 0;
+    height: 48px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    outline: none;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.72);
+    padding: 0 14px;
+    font-size: 15px;
+    font-weight: 800;
+    text-align: left;
+  }
+
+  .mobile-focus-btn {
+    height: 48px;
+    min-width: 84px;
+    border: none;
+    border-radius: 16px;
+    background: rgb(208, 241, 0);
+    color: rgb(10, 10, 10);
+    font-size: 14px;
+    font-weight: 950;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+  }
+
+  .restart,
+  .best-box,
+  .results,
+  .footer {
+    margin-bottom: 108px;
+  }
 }
+
 @media (max-width: 600px) {
   .app {
-    padding: 14px 14px 80px !important;
+    padding: 14px 14px 140px !important;
     min-height: auto !important;
     overflow-y: auto !important;
   }
+
   .topbar {
-    padding: 18px 0 12px;
-    gap: 16px;
+    padding: 14px 0 12px;
+    gap: 12px;
   }
 
   .brand {
@@ -1485,97 +1665,108 @@ kbd {
   }
 
   .logo-img {
-    width: 56px;
-    height: 56px;
+    width: 50px;
+    height: 50px;
   }
 
   .brand-title {
-    font-size: 28px;
+    font-size: 26px;
     letter-spacing: -1px;
   }
 
   .top-actions {
     width: 100%;
     justify-content: space-between;
-    gap: 10px;
+    gap: 8px;
   }
 
-  .key-hint {
-    font-size: 14px;
+  .top-actions span {
+    font-size: 12px;
   }
 
-  .mode-pill {
-    padding: 13px 20px;
-    font-size: 14px;
-    letter-spacing: 4px;
+  kbd {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .settings-btn {
+    padding: 11px 16px;
+    font-size: 13px;
+    letter-spacing: 3px;
   }
 
   .hero {
-    margin-top: 26px;
+    margin-top: 22px;
   }
 
   .mini {
-    font-size: 12px;
-    letter-spacing: 6px;
+    font-size: 10px;
+    letter-spacing: 5px;
     line-height: 1.5;
   }
 
   .hero h1 {
-    font-size: 44px;
+    font-size: 38px;
     line-height: 0.95;
-    letter-spacing: -2.5px;
+    letter-spacing: -2px;
     text-align: center;
+    margin: 20px 0 0;
   }
 
   .start-note {
-    margin-top: 26px;
+    margin-top: 18px;
   }
 
   .start-note b {
-    font-size: 12px;
-    letter-spacing: 5px;
+    font-size: 10px;
+    letter-spacing: 4px;
   }
 
   .start-note p {
-    font-size: 18px;
+    font-size: 15px;
+    margin-top: 8px;
   }
 
-  .panel {
-    margin-top: 36px;
-    padding: 28px 20px;
-    border-radius: 24px;
+  .controls {
+    margin-top: 22px;
+    padding: 18px 14px;
+    border-radius: 22px;
   }
 
-  .panel-title {
-    font-size: 13px;
-    letter-spacing: 6px;
-    margin-bottom: 20px;
-  }
-
-  .button-row {
-    gap: 10px;
+  .row {
     justify-content: center;
+    gap: 9px;
   }
 
-  .button-row button {
-    padding: 12px 15px;
-    font-size: 14px;
-    letter-spacing: 2px;
+  .label {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .controls button {
+    padding: 11px 15px;
+    font-size: 13px;
+    letter-spacing: 0.16em;
     border-radius: 15px;
   }
 
   .typing-wrap {
-    margin-top: 38px;
-  }
-
-  .typing-card {
-    padding: 24px 18px;
-    border-radius: 22px;
+    margin-top: 42px;
+    min-height: 310px;
   }
 
   .typing-text {
-    font-size: 23px;
-    line-height: 1.7;
+    font-size: 21px;
+    line-height: 1.65;
+  }
+
+  .word {
+    margin-right: 2px;
+  }
+
+  .restart {
+    margin-top: 26px;
   }
 
   .stats {
@@ -1585,80 +1776,7 @@ kbd {
   .stat-value {
     font-size: 30px;
   }
-}
-.legal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 999;
-  background: #ffffff;
-  color: #001033;
-  overflow-y: auto;
-  padding: 42px 70px;
-}
 
-.legal-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  background: #ffffff;
-  color: #001033;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.legal-page h2 {
-  font-size: 38px;
-  line-height: 1.1;
-  margin: 0 0 30px;
-  color: #001033;
-  letter-spacing: -1px;
-}
-
-.legal-section {
-  margin-top: 34px;
-}
-
-.legal-section h3 {
-  font-size: 18px;
-  margin: 0 0 14px;
-  color: #000;
-  text-transform: uppercase;
-  font-weight: 800;
-}
-
-.legal-section p {
-  font-size: 18px;
-  line-height: 1.55;
-  margin: 12px 0;
-  color: #000;
-  font-weight: 500;
-}
-
-.legal-close {
-  position: fixed;
-  top: 22px;
-  right: 28px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: none;
-  background: #001033;
-  color: white;
-  font-size: 28px;
-  cursor: pointer;
-}
-
-.legal-close:hover {
-  background: rgb(208, 241, 0);
-  color: #001033;
-}
-
-.footer-link {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-family: "Helvetica Neue", Arial, sans-serif;
-}
-
-@media (max-width: 600px) {
   .legal-overlay {
     padding: 28px 18px;
   }
@@ -1683,142 +1801,25 @@ kbd {
     height: 38px;
     font-size: 24px;
   }
-}
-@media (max-width: 600px) {
-  ...
-}
 
-
-.mobile-keyboard-input {
-  width: 100%;
-}
-
-.mobile-focus-btn {
-  display: none;
-}
-
-@media (max-width: 900px) {
   .mobile-type-dock {
-    position: fixed;
-    left: 12px;
-    right: 12px;
-    bottom: calc(env(safe-area-inset-bottom) + 10px);
-    z-index: 999;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
+    left: 10px;
+    right: 10px;
+    padding: 8px;
     border-radius: 18px;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(7, 18, 50, 0.96);
-    backdrop-filter: blur(14px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
   }
 
-  .mobile-keyboard-input {
-    flex: 1;
-    min-width: 0;
+  .mobile-fake-input {
     height: 46px;
-    border: 1px solid rgba(255,255,255,0.10);
+    font-size: 13px;
     border-radius: 14px;
-    background: rgba(255,255,255,0.06);
-    color: #ffffff;
-    font-size: 16px;
-    padding: 0 14px;
-    outline: none;
-    font-family: "Helvetica Neue", Arial, sans-serif;
-  }
-
-  .mobile-keyboard-input::placeholder {
-    color: rgba(255,255,255,0.45);
   }
 
   .mobile-focus-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     height: 46px;
-    padding: 0 18px;
-    border: none;
+    min-width: 76px;
     border-radius: 14px;
-    background: rgb(208, 241, 0);
-    color: rgb(10, 10, 10);
-    font-size: 14px;
-    font-weight: 900;
-    letter-spacing: 0.14em;
-    cursor: pointer;
-  }
-
-  .best-box,
-  .restart,
-  .results,
-  .footer {
-    margin-bottom: 90px;
-  }
-}
-.mobile-type-dock {
-  display: none;
-}
-
-@media (max-width: 900px) {
-  .mobile-type-dock {
-    position: fixed;
-    left: 14px;
-    right: 14px;
-    bottom: calc(env(safe-area-inset-bottom) + 12px);
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    border-radius: 20px;
-    background: rgba(7, 18, 50, 0.96);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.42);
-    backdrop-filter: blur(16px);
-  }
-
-  .mobile-keyboard-input {
-    flex: 1;
-    min-width: 0;
-    height: 48px;
-    opacity: 1;
-    position: static;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    outline: none;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.07);
-    color: #ffffff;
-    padding: 0 14px;
-    font-size: 16px;
-    font-weight: 700;
-    font-family: "Helvetica Neue", Arial, sans-serif;
-  }
-
-  .mobile-keyboard-input::placeholder {
-    color: rgba(255, 255, 255, 0.45);
-  }
-
-  .mobile-focus-btn {
-    height: 48px;
-    min-width: 84px;
-    border: none;
-    border-radius: 16px;
-    background: rgb(208, 241, 0);
-    color: rgb(10, 10, 10);
-    font-size: 14px;
-    font-weight: 950;
-    letter-spacing: 0.14em;
-    cursor: pointer;
-  }
-
-  .app {
-    padding-bottom: 120px !important;
-  }
-
-  .footer {
-    margin-bottom: 120px !important;
+    font-size: 13px;
   }
 }
 `;
-
