@@ -1630,8 +1630,10 @@ kbd {
     font-size: 24px;
   }
 }
+@media (max-width: 600px) {
+  ...
+}
 
-`;
 .mobile-keyboard-input {
   position: fixed;
   left: 0;
@@ -1647,3 +1649,7 @@ kbd {
   z-index: 20;
   resize: none;
 }
+
+`;
+`;
+
