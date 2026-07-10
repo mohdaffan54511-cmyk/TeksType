@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-const logo = "/TeksType.png";
+import logo from "../TeksType.png";
 const WORDS = {
   words: [
     "home", "now", "even", "used", "said", "government", "once", "any", "to", "and",
@@ -30,9 +30,8 @@ const WORDS = {
   quotes: [
     "focus", "speed", "practice", "improve", "discipline", "clarity", "energy",
     "mindset", "momentum", "progress", "mastery", "habit", "vision", "action"
-  ],
+  ]
 };
-
 const INFO_PAGES = {
   privacy: {
     title: "Privacy Policy",
@@ -40,171 +39,199 @@ const INFO_PAGES = {
       {
         heading: "Introduction",
         text: [
-          "This Privacy Policy explains how TypeTeks handles information when you use our website.",
+          "This Privacy Policy explains how TypeTeks collects, uses, and protects information when you use our website.",
           "TypeTeks is a typing practice website designed to help users improve typing speed, accuracy, focus, and consistency.",
+          "By using TypeTeks, you agree to this Privacy Policy."
         ],
       },
       {
-        heading: "Information we store",
+        heading: "1. What Information Do We Collect?",
         text: [
-          "TypeTeks does not require an account and does not ask for passwords, payment information, or private documents.",
-          "Best WPM, recent sessions, and preferences may be stored locally in your browser.",
+          "TypeTeks does not require users to create an account, submit passwords, upload documents, or provide sensitive personal information.",
+          "The website may store typing practice data in your own browser, such as best WPM, accuracy, score, selected mode, and recent history.",
+          "This data is stored locally on your device using browser localStorage."
         ],
       },
       {
-        heading: "Local storage",
+        heading: "2. How We Use This Information",
         text: [
-          "Your typing progress is stored on your own device using browser localStorage.",
-          "You can remove it at any time by clearing this site's browser data.",
+          "We use local browser data only to improve your typing experience, show your best score, and display recent practice sessions."
         ],
       },
       {
-        heading: "Contact",
-        text: ["Questions can be sent to contact@typeteks.online."],
+        heading: "3. Local Storage",
+        text: [
+          "Your typing results are saved on your own device. TypeTeks does not sell your data.",
+          "You can delete this data anytime by clearing your browser cache or site data."
+        ],
+      },
+      {
+        heading: "4. Third-Party Services",
+        text: [
+          "TypeTeks may be hosted using services such as Cloudflare. These services may process technical data for security and performance."
+        ],
+      },
+      {
+        heading: "5. Contact Us",
+        text: [
+          "If you have questions about this Privacy Policy, contact us at: contact@typeteks.online"
+        ],
       },
     ],
   },
+
   terms: {
     title: "Terms of Use",
     sections: [
       {
-        heading: "Use of TypeTeks",
+        heading: "1. Use of Website",
         text: [
           "TypeTeks is provided as a typing practice tool for learning and productivity.",
-          "Please use the website responsibly and do not attempt to disrupt or misuse the service.",
+          "By using this website, you agree to use it responsibly and not misuse, copy, attack, or disrupt the service."
         ],
       },
       {
-        heading: "Availability",
+        heading: "2. No Guarantee",
         text: [
-          "We work to keep TypeTeks fast and reliable, but uninterrupted availability is not guaranteed.",
+          "We try to keep TypeTeks fast and useful, but we do not guarantee that the website will always be error-free or available."
         ],
       },
     ],
   },
+
   contact: {
     title: "Contact",
     sections: [
       {
-        heading: "Get in touch",
+        heading: "Get in Touch",
         text: [
           "Have feedback, suggestions, or partnership ideas?",
-          "Email: contact@typeteks.online",
+          "Email: contact@typeteks.online"
         ],
       },
     ],
   },
+
   support: {
     title: "Support",
     sections: [
       {
-        heading: "Need help?",
+        heading: "Need Help?",
         text: [
-          "On mobile, tap the typing area to open the keyboard.",
-          "On desktop, press Tab to restart and Esc to pause.",
+          "Use Tab to restart a session, select your typing mode, choose time, and start typing.",
+          "If sound does not work, make sure your browser tab is not muted and click the TEST SOUND button."
         ],
       },
     ],
   },
+
   security: {
     title: "Security",
     sections: [
       {
         heading: "Security",
         text: [
-          "TypeTeks runs mainly in your browser and does not request sensitive personal information.",
-          "The website is delivered over secure HTTPS hosting.",
+          "TypeTeks runs mainly inside your browser and does not ask for sensitive details like passwords, payment information, or private documents.",
+          "The website is served through secure HTTPS hosting."
         ],
       },
     ],
   },
 };
-
 function makeText(mode) {
   const pool = WORDS[mode] || WORDS.words;
   const count = mode === "bigrams" ? 55 : mode === "trigrams" ? 48 : 42;
-  return Array.from({ length: count }, () => pool[Math.floor(Math.random() * pool.length)]).join(" ");
+  const arr = [];
+
+  for (let i = 0; i < count; i++) {
+    arr.push(pool[Math.floor(Math.random() * pool.length)]);
+  }
+
+  return arr.join(" ");
 }
 
 function getAccuracy(correct, total) {
-  return total === 0 ? 100 : Math.round((correct / total) * 100);
+  if (total === 0) return 100;
+  return Math.round((correct / total) * 100);
 }
 
 function getWpm(correctChars, elapsedMs) {
   if (elapsedMs <= 0) return 0;
-  return Math.round(correctChars / 5 / (elapsedMs / 60000));
+  const min = elapsedMs / 60000;
+  return Math.round(correctChars / 5 / min);
 }
 
 function buildHeatmap(target, input, timings) {
   const map = {};
 
-  for (let i = 1; i < input.length; i += 1) {
+  for (let i = 1; i < input.length; i++) {
     const a = target[i - 1];
     const b = target[i];
+
     if (!a || !b || a === " " || b === " ") continue;
 
     const key = a + b;
     const correct = input[i] === target[i];
 
     if (!map[key]) {
-      map[key] = { combo: key, count: 0, totalMs: 0, errors: 0 };
+      map[key] = {
+        combo: key,
+        count: 0,
+        totalMs: 0,
+        errors: 0,
+      };
     }
 
-    map[key].count += 1;
+    map[key].count++;
     map[key].totalMs += timings[i] || 0;
-    if (!correct) map[key].errors += 1;
+
+    if (!correct) {
+      map[key].errors++;
+    }
   }
 
   return Object.values(map)
-    .map((item) => ({
-      ...item,
-      avgMs: Math.round(item.totalMs / item.count),
-      errorRate: Math.round((item.errors / item.count) * 100),
+    .map((x) => ({
+      ...x,
+      avgMs: Math.round(x.totalMs / x.count),
+      errorRate: Math.round((x.errors / x.count) * 100),
     }))
     .sort((a, b) => b.avgMs + b.errorRate * 3 - (a.avgMs + a.errorRate * 3))
     .slice(0, 8);
 }
+const keySounds = [];
+let soundReady = false;
+let soundIndex = 0;
 
-let audioContext = null;
+function prepareSounds() {
+  if (soundReady) return;
 
-function unlockAudio() {
-  try {
-    if (!audioContext) {
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioContext.state === "suspended") {
-      audioContext.resume();
-    }
-  } catch {
-    // Audio is optional.
+  for (let i = 0; i < 8; i++) {
+    const audio = new Audio("/sounds/key.mp3");
+    audio.volume = 0.8;
+    audio.preload = "auto";
+    keySounds.push(audio);
   }
+
+  soundReady = true;
 }
 
-function playClick(type, enabled) {
+function playClick(type, enabled = true) {
   if (!enabled) return;
 
   try {
-    unlockAudio();
-    if (!audioContext) return;
+    prepareSounds();
 
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    const now = audioContext.currentTime;
+    const audio = keySounds[soundIndex % keySounds.length];
+    soundIndex++;
 
-    oscillator.type = "triangle";
-    oscillator.frequency.setValueAtTime(type === "wrong" ? 155 : 560, now);
-    gain.gain.setValueAtTime(type === "wrong" ? 0.06 : 0.035, now);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
-
-    oscillator.connect(gain);
-    gain.connect(audioContext.destination);
-    oscillator.start(now);
-    oscillator.stop(now + 0.05);
-  } catch {
-    // Keep typing even if sound cannot play.
+    audio.currentTime = 0;
+    audio.volume = type === "wrong" ? 1 : 0.8;
+    audio.play();
+  } catch (error) {
+    console.log("Sound error:", error);
   }
 }
-
 export default function App() {
   const [mode, setMode] = useState("words");
   const [duration, setDuration] = useState(15);
@@ -217,14 +244,17 @@ export default function App() {
 
   const [correctChars, setCorrectChars] = useState(0);
   const [totalKeystrokes, setTotalKeystrokes] = useState(0);
+
   const [streak, setStreak] = useState(0);
   const [maxStreak, setMaxStreak] = useState(0);
 
-  const [soundOn, setSoundOn] = useState(true);
+  const [sound, setSound] = useState(true);
   const [noBackspace, setNoBackspace] = useState(false);
   const [activePage, setActivePage] = useState(null);
+  const [best, setBest] = useState(() => {
+    return Number(localStorage.getItem("TypeTeks_best") || 0);
+  });
 
-  const [best, setBest] = useState(() => Number(localStorage.getItem("TypeTeks_best") || 0));
   const [history, setHistory] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("TypeTeks_history") || "[]");
@@ -232,50 +262,35 @@ export default function App() {
       return [];
     }
   });
+
   const [timings, setTimings] = useState({});
 
-  const appRef = useRef(null);
-  const mobileInputRef = useRef(null);
-  const mobileRawRef = useRef("");
-  const musicRef = useRef(null);
   const startTsRef = useRef(null);
   const lastKeyTsRef = useRef(null);
+  const appRef = useRef(null);
   const finishedRef = useRef(false);
 
   const liveWpm = useMemo(() => {
     if (!running && !finished) return 0;
+
     const usedMs =
       running && startTsRef.current
         ? Math.max(1, performance.now() - startTsRef.current)
         : duration * 1000;
+
     return getWpm(correctChars, usedMs);
-  }, [correctChars, duration, finished, running, timeLeft]);
+  }, [correctChars, running, finished, duration, timeLeft]);
 
-  const liveAcc = useMemo(
-    () => getAccuracy(correctChars, totalKeystrokes),
-    [correctChars, totalKeystrokes]
-  );
+  const liveAcc = useMemo(() => {
+    return getAccuracy(correctChars, totalKeystrokes);
+  }, [correctChars, totalKeystrokes]);
 
-  const heatmap = useMemo(
-    () => (finished ? buildHeatmap(text, input, timings) : []),
-    [finished, input, text, timings]
-  );
+  const heatmap = useMemo(() => {
+    if (!finished) return [];
+    return buildHeatmap(text, input, timings);
+  }, [finished, text, input, timings]);
 
   const score = correctChars * 10 + maxStreak * 5 + liveWpm * 2;
-
-  const focusTyping = useCallback(() => {
-    unlockAudio();
-
-    if (window.matchMedia("(pointer: coarse)").matches) {
-      try {
-        mobileInputRef.current?.focus({ preventScroll: true });
-      } catch {
-        mobileInputRef.current?.focus();
-      }
-    } else {
-      appRef.current?.focus();
-    }
-  }, []);
 
   const finishTest = useCallback(() => {
     if (finishedRef.current) return;
@@ -312,41 +327,38 @@ export default function App() {
     });
   }, [correctChars, duration, liveAcc, mode, score]);
 
-  const reset = useCallback(
-    (nextMode = mode, nextDuration = duration) => {
-      setMode(nextMode);
-      setDuration(nextDuration);
-      setText(makeText(nextMode));
-      setInput("");
-      setRunning(false);
-      setFinished(false);
-      finishedRef.current = false;
-      setTimeLeft(nextDuration);
-      setCorrectChars(0);
-      setTotalKeystrokes(0);
-      setStreak(0);
-      setMaxStreak(0);
-      setTimings({});
+  const reset = useCallback((nextMode = mode, nextDuration = duration) => {
+    setMode(nextMode);
+    setDuration(nextDuration);
+    setText(makeText(nextMode));
+    setInput("");
 
-      startTsRef.current = null;
-      lastKeyTsRef.current = null;
-      mobileRawRef.current = "";
+    setRunning(false);
+    setFinished(false);
+    finishedRef.current = false;
+    setTimeLeft(nextDuration);
 
-      if (mobileInputRef.current) {
-        mobileInputRef.current.value = "";
-      }
+    setCorrectChars(0);
+    setTotalKeystrokes(0);
+    setStreak(0);
+    setMaxStreak(0);
+    setTimings({});
 
-      setTimeout(focusTyping, 80);
-    },
-    [duration, focusTyping, mode]
-  );
+    startTsRef.current = null;
+    lastKeyTsRef.current = null;
+
+    setTimeout(() => {
+      appRef.current?.focus();
+    }, 50);
+  }, [mode, duration]);
 
   useEffect(() => {
-    if (!running || finished) return undefined;
+    if (!running || finished) return;
 
     const timer = setInterval(() => {
       const elapsed = Math.floor((performance.now() - startTsRef.current) / 1000);
       const left = Math.max(0, duration - elapsed);
+
       setTimeLeft(left);
 
       if (left <= 0) {
@@ -355,179 +367,141 @@ export default function App() {
     }, 100);
 
     return () => clearInterval(timer);
-  }, [duration, finishTest, finished, running]);
+  }, [running, finished, duration, finishTest]);
 
-  const removeLastChar = useCallback(() => {
-    setInput((previous) => {
-      if (!previous.length) return previous;
+  const handleKey = useCallback((e) => {
+    if (e.ctrlKey || e.altKey || e.metaKey) return;
 
-      const removeIndex = previous.length - 1;
-      const wasCorrect = previous[removeIndex] === text[removeIndex];
+    if (e.key === "Tab") {
+      e.preventDefault();
+      reset();
+      return;
+    }
 
-      setTotalKeystrokes((value) => Math.max(0, value - 1));
+    if (e.key === "Escape") {
+      e.preventDefault();
+      setRunning(false);
+      return;
+    }
+
+    if (finishedRef.current) return;
+
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)) {
+      e.preventDefault();
+    }
+
+  if (e.key === "Backspace") {
+  e.preventDefault();
+
+  if (!noBackspace) {
+    setInput((prev) => prev.slice(0, -1));
+
+    const removeIndex = input.length - 1;
+
+    if (removeIndex >= 0) {
+      const wasCorrect = input[removeIndex] === text[removeIndex];
+
+      setTotalKeystrokes((x) => Math.max(0, x - 1));
+
       if (wasCorrect) {
-        setCorrectChars((value) => Math.max(0, value - 1));
+        setCorrectChars((x) => Math.max(0, x - 1));
       }
+    }
+  }
 
-      return previous.slice(0, -1);
-    });
-  }, [text]);
+  return;
+}
 
-  const processTypedKey = useCallback(
-    (key) => {
-      if (!key || key.length !== 1 || finishedRef.current) return;
+    if (e.key.length !== 1) return;
 
-      setInput((previous) => {
-        if (previous.length >= text.length) return previous;
+    e.preventDefault();
 
-        if (!startTsRef.current) {
-          setRunning(true);
-          startTsRef.current = performance.now();
-          lastKeyTsRef.current = performance.now();
-        }
+    if (!running) {
+      setRunning(true);
+      startTsRef.current = performance.now();
+      lastKeyTsRef.current = performance.now();
+    }
 
-        const index = previous.length;
-        const expected = text[index];
-        const now = performance.now();
-        const delta = lastKeyTsRef.current ? now - lastKeyTsRef.current : 0;
-        lastKeyTsRef.current = now;
+    if (input.length >= text.length) return;
 
-        setTimings((oldTimings) => ({ ...oldTimings, [index]: delta }));
-        setTotalKeystrokes((value) => value + 1);
+    const key = e.key;
+    const index = input.length;
+    const expected = text[index];
 
-        const isCorrect = key === expected;
+    const now = performance.now();
+    const delta = lastKeyTsRef.current ? now - lastKeyTsRef.current : 0;
+    lastKeyTsRef.current = now;
 
-        if (isCorrect) {
-          setCorrectChars((value) => value + 1);
-          setStreak((value) => {
-            const next = value + 1;
-            setMaxStreak((maxValue) => Math.max(maxValue, next));
-            return next;
-          });
-          playClick("correct", soundOn);
-        } else {
-          setStreak(0);
-          playClick("wrong", soundOn);
-        }
+    setTimings((prev) => ({
+      ...prev,
+      [index]: delta,
+    }));
 
-        const nextInput = previous + key;
+    const isCorrect = key === expected;
 
-        if (nextInput.length >= text.length) {
-          setTimeout(finishTest, 50);
-        }
+    setTotalKeystrokes((x) => x + 1);
 
-        return nextInput;
+    if (isCorrect) {
+      setCorrectChars((x) => x + 1);
+      setStreak((s) => {
+        const next = s + 1;
+        setMaxStreak((m) => Math.max(m, next));
+        return next;
       });
-    },
-    [finishTest, soundOn, text]
-  );
+      playClick("correct", sound);
+    } else {
+      setStreak(0);
+      playClick("wrong", sound);
+    }
 
-  const handleDesktopKey = useCallback(
-    (event) => {
-      if (event.ctrlKey || event.altKey || event.metaKey) return;
+    const nextInput = input + key;
+    setInput(nextInput);
 
-      if (event.key === "Tab") {
-        event.preventDefault();
-        reset();
-        return;
-      }
-
-      if (event.key === "Escape") {
-        event.preventDefault();
-        setRunning(false);
-        return;
-      }
-
-      if (finishedRef.current) return;
-
-      if (event.key === "Backspace") {
-        event.preventDefault();
-        if (!noBackspace) removeLastChar();
-        return;
-      }
-
-      if (event.key.length !== 1) return;
-
-      event.preventDefault();
-      processTypedKey(event.key);
-    },
-    [noBackspace, processTypedKey, removeLastChar, reset]
-  );
-
-  const handleMobileInput = useCallback(
-    (event) => {
-      const value = event.currentTarget.value;
-      const previousValue = mobileRawRef.current;
-
-      if (value.length > previousValue.length) {
-        const added = value.slice(previousValue.length);
-        for (const character of added) {
-          processTypedKey(character);
-        }
-      } else if (value.length < previousValue.length && !noBackspace) {
-        const count = previousValue.length - value.length;
-        for (let i = 0; i < count; i += 1) {
-          removeLastChar();
-        }
-      }
-
-      mobileRawRef.current = value;
-    },
-    [noBackspace, processTypedKey, removeLastChar]
-  );
-
-  const handleMobileKeyDown = useCallback(
-    (event) => {
-      event.stopPropagation();
-      if (event.key === "Backspace" && noBackspace) {
-        event.preventDefault();
-      }
-    },
-    [noBackspace]
-  );
+    if (nextInput.length >= text.length) {
+      setTimeout(() => finishTest(), 50);
+    }
+  }, [finishTest, input, noBackspace, reset, running, sound, text]);
 
   useEffect(() => {
     const node = appRef.current;
-    if (!node) return undefined;
+    if (!node) return;
 
     node.focus();
-    node.addEventListener("keydown", handleDesktopKey);
+    node.addEventListener("keydown", handleKey);
 
-    return () => node.removeEventListener("keydown", handleDesktopKey);
-  }, [handleDesktopKey]);
-
-  useEffect(() => {
     return () => {
-      musicRef.current?.pause();
+      node.removeEventListener("keydown", handleKey);
     };
-  }, []);
+  }, [handleKey]);
 
-  function charClass(index) {
-    if (index === input.length && !finished) return "char current";
-    if (index >= input.length) return "char muted";
-    return input[index] === text[index] ? "char correct" : "char wrong";
+  function charClass(i) {
+    if (i === input.length && !finished) return "char current";
+    if (i >= input.length) return "char muted";
+    if (input[i] === text[i]) return "char correct";
+    return "char wrong";
   }
 
   function renderTypingText() {
     let globalIndex = 0;
+    const words = text.split(" ");
 
-    return text.split(" ").map((word, wordIndex, words) => {
-      const letters = word.split("").map((character) => {
+    return words.map((word, wordIndex) => {
+      const letters = word.split("").map((ch) => {
         const index = globalIndex;
-        globalIndex += 1;
+        globalIndex++;
 
         return (
           <span key={index} className={charClass(index)}>
-            {character}
+            {ch}
           </span>
         );
       });
 
       const spaceIndex = globalIndex;
-      globalIndex += 1;
+      globalIndex++;
 
       return (
-        <span className="word" key={`${word}-${wordIndex}`}>
+        <span className="word" key={wordIndex}>
           {letters}
           {wordIndex < words.length - 1 && (
             <span className={charClass(spaceIndex)}>&nbsp;</span>
@@ -537,149 +511,131 @@ export default function App() {
     });
   }
 
-  const modeLabel = duration === 300 ? "5 MIN" : `${duration}S`;
-
   return (
     <main
-      ref={appRef}
-      tabIndex={0}
-      className={`app ${running || input.length > 0 ? "typing-active" : ""}`}
-      onPointerDown={focusTyping}
-    >
+  ref={appRef}
+  tabIndex={0}
+  className="app"
+  onPointerDown={() => {
+    appRef.current?.focus();
+    prepareSounds();
+  }}
+>
       <style>{css}</style>
-
-      <input
-        ref={mobileInputRef}
-        className="mobile-keyboard-input"
-        type="text"
-        inputMode="text"
-        autoCapitalize="off"
-        autoCorrect="off"
-        autoComplete="off"
-        spellCheck={false}
-        onInput={handleMobileInput}
-        onKeyDown={handleMobileKeyDown}
-        aria-label="Mobile typing input"
-      />
 
       <div className="grid-bg" />
 
       <header className="topbar">
         <div className="brand">
-          <img src={logo} alt="TypeTeks logo" className="logo-img" />
+          <img src={logo} alt=" TypeTeks Logo" className="logo-img" />
           <div>
             <div className="brand-title">TypeTeks</div>
-            <div className="brand-sub">Typing performance lab</div>
+            <div className="brand-sub"></div>
           </div>
         </div>
 
         <div className="top-actions">
-          <span className="desktop-hint"><kbd>Tab</kbd> restart</span>
-          <span className="desktop-hint"><kbd>Esc</kbd> pause</span>
-
-          <button
-            className="settings-btn"
-            type="button"
-            onClick={() => setNoBackspace((value) => !value)}
-          >
+          <span><kbd>Tab</kbd> restart</span>
+          <span>·</span>
+          <span><kbd>Esc</kbd> pause</span>
+          <button className="settings-btn" onClick={() => setNoBackspace((v) => !v)}>
             {noBackspace ? "NO BACKSPACE" : "STANDARD"}
           </button>
-
         </div>
       </header>
 
       <section className={`hero ${running ? "fade" : ""}`}>
         <div>
-          <div className="eyebrow">MICRO-BLITZ · {modeLabel} · {mode.toUpperCase()}</div>
+          <div className="mini"> MICRO-BLITZ · {duration}S · {mode.toUpperCase()}</div>
           <h1>
             Type at the speed
             <br />
             of <span>thought.</span>
           </h1>
-          <p className="hero-copy">
-            Build rhythm, accuracy, and speed with focused typing sessions.
-          </p>
         </div>
 
-        <div className="hero-card">
-          <span>LIVE GOAL</span>
-          <strong>Flow without friction.</strong>
-          <small>Tap the text and start typing.</small>
-        </div>
+       <div className="start-note">
+  <b>LOCK IN. TYPE FAST.</b>
+  <p>Every keystroke builds your speed  </p>
+</div>
       </section>
 
       <section className={`controls ${running ? "hidden-soft" : ""}`}>
-        <div className="control-group">
+        <div className="row">
           <div className="label">CONTENT</div>
-          <div className="control-buttons">
-            {["words", "bigrams", "trigrams", "code", "business", "quotes"].map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => reset(item, duration)}
-                className={mode === item ? "active" : ""}
-              >
-                {item.toUpperCase()}
-              </button>
-            ))}
-          </div>
-        </div>
 
-        <div className="control-group">
-          <div className="label">TIME</div>
-          <div className="control-buttons">
-            {[15, 30, 60, 300].map((value) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => reset(mode, value)}
-                className={duration === value ? "active" : ""}
-              >
-                {value === 300 ? "5 MIN" : `${value}S`}
-              </button>
-            ))}
-
-            <button type="button" onClick={() => setSoundOn((value) => !value)}>
-              {soundOn ? "SOUND ON" : "SOUND OFF"}
-            </button>
-
+          {["words", "bigrams", "trigrams", "code", "business", "quotes"].map((m) => (
             <button
-              type="button"
-              onClick={() => {
-                unlockAudio();
-                playClick("correct", true);
-              }}
+              key={m}
+              onClick={() => reset(m, duration)}
+              className={mode === m ? "active" : ""}
             >
-              TEST SOUND
+              {m === "words" && "T WORDS"}
+              {m === "bigrams" && "# BIGRAMS"}
+              {m === "trigrams" && "▦ TRIGRAMS"}
+              {m === "code" && "</> CODE"}
+              {m === "business" && "▣ BUSINESS"}
+              {m === "quotes" && "❞ QUOTES"}
             </button>
-          </div>
+          ))}
         </div>
-      </section>
+
+        <div className="row">
+          <div className="label">◷ TIME</div>
+
+         {[15, 30, 60, 300].map((t) => (
+  <button
+    key={t}
+    onClick={() => reset(mode, t)}
+    className={duration === t ? "active" : ""}
+  >
+    {t === 300 ? "5 min" : `${t}s`}
+  </button>
+))}
+
+          <button onClick={() => setSound((v) => !v)}>
+  {sound ? "SOUND ON" : "SOUND OFF"}
+</button>
+
+<button
+  onClick={() => {
+    prepareSounds();
+    playClick("correct", true);
+  }}
+>
+  TEST SOUND
+</button>
+</div>
+</section>
 
       {!finished && (
-        <section className="typing-shell" onClick={focusTyping}>
-          <div className="typing-topline">
-            <span>{modeLabel}</span>
-            <span>{mode.toUpperCase()}</span>
-            <button type="button" onClick={focusTyping}>TAP TO TYPE</button>
-          </div>
+        <section className="typing-wrap" onClick={() => appRef.current?.focus()}>
           <div className="typing-text">{renderTypingText()}</div>
         </section>
       )}
 
       {!finished && (
-        <button className="restart" type="button" onClick={() => reset()}>
-          RESTART SESSION
+        <button className="restart" onClick={() => reset()}>
+           RESTART · <kbd>TAB</kbd>
         </button>
       )}
 
       {!running && !finished && (
         <section className="best-box">
-          <div className="section-title">PERSONAL BESTS</div>
+          <div className="box-title">♜ PERSONAL BESTS</div>
           <div className="best-grid">
-            <div><span>Best WPM</span><b>{best}</b></div>
-            <div><span>Mode</span><b>{mode}</b></div>
-            <div><span>Time</span><b>{modeLabel}</b></div>
+            <div>
+              <span>Best WPM</span>
+              <b>{best}</b>
+            </div>
+            <div>
+              <span>Mode</span>
+              <b>{mode}</b>
+            </div>
+            <div>
+              <span>Time</span>
+              <b>{duration}s</b>
+            </div>
           </div>
         </section>
       )}
@@ -696,106 +652,128 @@ export default function App() {
         <section className="results">
           <div className="result-head">
             <div>
-              <div className="eyebrow">SESSION COMPLETE</div>
+              <div className="mini">SESSION COMPLETE</div>
               <h2>{liveWpm} WPM</h2>
-              <p>Accuracy {liveAcc}% · Score {score} · Best {Math.max(best, liveWpm)} WPM</p>
+              <p>
+                Accuracy {liveAcc}% · Score {score} · Best {Math.max(best, liveWpm)} WPM
+              </p>
             </div>
-            <button type="button" onClick={() => reset()}>NEW BLITZ</button>
+
+            <button onClick={() => reset()}>NEW BLITZ</button>
           </div>
 
           <div className="stats">
-            <div><span>WPM</span><b>{liveWpm}</b></div>
-            <div><span>Accuracy</span><b>{liveAcc}%</b></div>
-            <div><span>Max Streak</span><b>{maxStreak}</b></div>
-            <div><span>Score</span><b>{score}</b></div>
-          </div>
-
-          <div className="results-grid">
-            <div className="heatmap">
-              <h3>Slowest letter chunks</h3>
-              {heatmap.length === 0 && <p>No heatmap data yet.</p>}
-              {heatmap.map((item) => (
-                <div className="heat-row" key={item.combo}>
-                  <b>{item.combo}</b>
-                  <div><span style={{ width: `${Math.min(100, item.avgMs / 4)}%` }} /></div>
-                  <small>{item.avgMs}ms · {item.errorRate}%</small>
-                </div>
-              ))}
+            <div>
+              <span>WPM</span>
+              <b>{liveWpm}</b>
             </div>
-
-            <div className="history">
-              <h3>Recent sessions</h3>
-              {history.length === 0 && <p>No history yet.</p>}
-              {history.map((item, index) => (
-                <div className="history-row" key={`${item.date}-${index}`}>
-                  <span>{item.date}</span>
-                  <b>{item.wpm} WPM</b>
-                  <small>{item.acc}% · {item.mode}</small>
-                </div>
-              ))}
+            <div>
+              <span>Accuracy</span>
+              <b>{liveAcc}%</b>
+            </div>
+            <div>
+              <span>Max Streak</span>
+              <b>{maxStreak}</b>
+            </div>
+            <div>
+              <span>Score</span>
+              <b>{score}</b>
             </div>
           </div>
-        </section>
-      )}
 
-      <footer className="footer">
-        <div>
-          <strong>TypeTeks</strong>
-          <span>Practice with focus. Improve with proof.</span>
-        </div>
+          <div className="heatmap">
+            <h3>Slowest Letter Chunks</h3>
 
-        <nav className="footer-links" aria-label="Footer navigation">
-          {["contact", "support", "terms", "security", "privacy"].map((page) => (
-            <button
-              type="button"
-              className="footer-link"
-              key={page}
-              onClick={() => setActivePage(page)}
-            >
-              {page}
-            </button>
-          ))}
-        </nav>
-      </footer>
+            {heatmap.length === 0 && <p>No heatmap data yet.</p>}
 
-      {activePage && (
-        <section className="legal-overlay" onClick={() => setActivePage(null)}>
-          <article className="legal-page" onClick={(event) => event.stopPropagation()}>
-            <button className="legal-close" type="button" onClick={() => setActivePage(null)}>
-              ×
-            </button>
-            <h2>{INFO_PAGES[activePage].title}</h2>
-
-            {INFO_PAGES[activePage].sections.map((section) => (
-              <div className="legal-section" key={section.heading}>
-                <h3>{section.heading}</h3>
-                {section.text.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
+            {heatmap.map((item) => (
+              <div className="heat-row" key={item.combo}>
+                <b>{item.combo}</b>
+                <div>
+                  <span style={{ width: `${Math.min(100, item.avgMs / 4)}%` }} />
+                </div>
+                <small>{item.avgMs}ms · {item.errorRate}%</small>
               </div>
             ))}
-          </article>
+          </div>
+
+          <div className="history">
+            <h3>Recent Sessions</h3>
+
+            {history.length === 0 && <p>No history yet.</p>}
+
+            {history.map((h, i) => (
+              <div className="history-row" key={i}>
+                <span>{h.date}</span>
+                <b>{h.wpm} WPM</b>
+                <small>{h.acc}% · {h.mode} · {h.duration}s</small>
+              </div>
+            ))}
+          </div>
         </section>
       )}
+          <footer className="footer">
+  <nav className="footer-links" aria-label="Footer navigation">
+    <button type="button" className="footer-link" onClick={() => setActivePage("contact")}>
+      Contact
+    </button>
+    <button type="button" className="footer-link" onClick={() => setActivePage("support")}>
+      Support
+    </button>
+    <button type="button" className="footer-link" onClick={() => setActivePage("terms")}>
+      Terms
+    </button>
+    <button type="button" className="footer-link" onClick={() => setActivePage("security")}>
+      Security
+    </button>
+    <button type="button" className="footer-link" onClick={() => setActivePage("privacy")}>
+      Privacy
+    </button>
+  </nav>
+</footer>
+
+{activePage && (
+  <section className="legal-overlay" onClick={() => setActivePage(null)}>
+    <article className="legal-page" onClick={(e) => e.stopPropagation()}>
+      <button className="legal-close" onClick={() => setActivePage(null)}>
+        ×
+      </button>
+
+      <h2>{INFO_PAGES[activePage].title}</h2>
+
+      {INFO_PAGES[activePage].sections.map((section, index) => (
+        <div className="legal-section" key={index}>
+          <h3>{section.heading}</h3>
+          {section.text.map((paragraph, pIndex) => (
+            <p key={pIndex}>{paragraph}</p>
+          ))}
+        </div>
+      ))}
+    </article>
+  </section>
+)}
     </main>
   );
 }
 
 const css = `
 :root {
-  --lavender-50: #f7f3ff;
-  --lavender-100: #efe7ff;
-  --lavender-200: #ddccff;
-  --purple-400: #8b5cf6;
-  --purple-500: #6f4df6;
-  --purple-600: #5b3df0;
-  --purple-700: #4a23cf;
-  --violet-900: #180a38;
-  --ink: #151129;
-  --ink-soft: #625b79;
-  --white: #ffffff;
-  --line: rgba(74, 35, 207, 0.14);
-  --shadow: 0 24px 70px rgba(54, 31, 123, 0.18);
+  --blue: rgb(0, 80, 248);
+  --green: rgb(208, 241, 0);
+  --text: rgb(89, 96, 116);
+
+  --dark: rgb(10, 10, 10);
+  --dark-10: rgb(0, 16, 51);
+  --dark-20: rgb(27, 37, 64);
+
+  --white: rgb(255, 255, 255);
+  --white-10: rgb(250, 250, 250);
+  --white-20: rgb(237, 237, 237);
+  --white-30: rgb(217, 217, 217);
+  --white-40: rgb(199, 199, 199);
+
+  --border-dark: rgba(0, 0, 0, 0.08);
+  --border-white: rgba(255, 255, 255, 0.08);
 }
 
 * {
@@ -803,81 +781,51 @@ const css = `
 }
 
 html {
-  background: var(--lavender-50);
+  background: var(--dark);
 }
 
 body {
   margin: 0;
-  background: var(--lavender-50);
-  color: var(--ink);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--dark);
   overflow-x: hidden;
-}
-
-button,
-input {
-  font: inherit;
-}
-
-button {
-  -webkit-tap-highlight-color: transparent;
+  overflow-y: auto;
+  font-family: "Helvetica Neue", Arial, sans-serif;
 }
 
 .app {
   min-height: 100vh;
-  position: relative;
-  overflow-x: hidden;
-  padding: 0 clamp(18px, 5vw, 78px) 90px;
+  color: var(--white);
   background:
-    radial-gradient(circle at 10% 5%, rgba(139, 92, 246, 0.18), transparent 28%),
-    radial-gradient(circle at 92% 8%, rgba(111, 77, 246, 0.16), transparent 30%),
-    linear-gradient(180deg, #fcfaff 0%, #f7f3ff 48%, #f1eaff 100%);
+    radial-gradient(circle at 20% 20%, rgba(0, 80, 248, 0.22), transparent 34%),
+    radial-gradient(circle at 80% 10%, rgba(208, 241, 0, 0.12), transparent 28%),
+    linear-gradient(135deg, var(--dark), var(--dark-10) 55%, var(--dark));
+  font-family: "Helvetica Neue", Arial, sans-serif;
   outline: none;
+  position: relative;
+  padding: 0 7vw 120px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .grid-bg {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  opacity: 0.28;
-  background-image:
-    linear-gradient(rgba(74, 35, 207, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(74, 35, 207, 0.05) 1px, transparent 1px);
-  background-size: 72px 72px;
-}
-
-.mobile-keyboard-input {
-  position: fixed;
-  left: 50%;
-  bottom: 0;
-  width: 1px;
-  height: 1px;
-  opacity: 0.001;
-  border: 0;
-  padding: 0;
-  font-size: 16px;
-  z-index: -1;
+  background:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+  opacity: 0.45;
 }
 
 .topbar {
-  min-height: 92px;
+  height: 86px;
+  border-bottom: 1px solid var(--border-white);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  border-bottom: 1px solid rgba(255,255,255,0.9);
   position: relative;
   z-index: 2;
-}
-
-.topbar::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(91,61,240,0.42), transparent);
 }
 
 .brand {
@@ -890,261 +838,190 @@ button {
   width: 58px;
   height: 58px;
   object-fit: contain;
-  border-radius: 18px;
-  box-shadow: 0 16px 28px rgba(74,35,207,0.22);
-  background: var(--white);
+  display: block;
+  border-radius: 14px;
+  filter: drop-shadow(0 0 18px rgba(208, 241, 0, 0.22));
 }
-
 .brand-title {
-  font-size: 24px;
-  font-weight: 900;
-  letter-spacing: -0.04em;
+  font-size: 23px;
+  font-weight: 950;
+  letter-spacing: -1px;
+  color: var(--white);
 }
 
-.brand-sub {
-  margin-top: 3px;
-  color: var(--ink-soft);
-  font-size: 11px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  font-weight: 700;
+.brand-sub,
+.mini,
+.label {
+  color: var(--white-40);
+  font-size: 12px;
+  letter-spacing: 0.35em;
+  font-weight: 800;
 }
 
 .top-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.desktop-hint {
-  color: var(--ink-soft);
-  font-size: 12px;
+  gap: 14px;
+  color: var(--white-40);
+  font-size: 13px;
 }
 
 kbd {
-  border: 1px solid var(--line);
-  background: rgba(255,255,255,0.8);
-  color: var(--purple-700);
-  padding: 5px 8px;
-  border-radius: 8px;
-  box-shadow: 0 6px 14px rgba(74,35,207,0.08);
+  background: var(--dark-20);
+  border: 1px solid var(--border-white);
+  border-radius: 6px;
+  padding: 4px 8px;
+  color: var(--white-20);
 }
 
 .settings-btn {
-  border: 1px solid rgba(74,35,207,0.16);
-  color: var(--purple-700);
-  background: rgba(255,255,255,0.78);
-  padding: 11px 16px;
-  border-radius: 14px;
-  font-size: 12px;
-  font-weight: 850;
-  letter-spacing: 0.08em;
+  background: rgba(255,255,255,0.04);
+  color: var(--white-20);
+  border: 1px solid var(--border-white);
+  padding: 12px 22px;
+  letter-spacing: 0.25em;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(74,35,207,0.08);
-  transition: 0.2s ease;
+  border-radius: 12px;
 }
 
 .settings-btn:hover {
-  transform: translateY(-2px);
-  border-color: var(--purple-500);
+  border-color: rgba(208, 241, 0, 0.5);
+  color: var(--green);
 }
 
-
 .hero {
-  padding: 72px 0 34px;
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.6fr);
-  gap: 36px;
+  margin-top: 64px;
+  display: flex;
+  justify-content: space-between;
   align-items: end;
+  transition: 0.25s ease;
   position: relative;
   z-index: 2;
-  transition: 0.25s ease;
 }
 
 .hero.fade {
   opacity: 0;
   transform: translateY(-12px);
-  height: 0;
-  padding: 0;
-  overflow: hidden;
   pointer-events: none;
-}
-
-.eyebrow {
-  color: var(--purple-600);
-  font-weight: 850;
-  font-size: 12px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  height: 0;
+  margin: 0;
+  overflow: hidden;
 }
 
 .hero h1 {
-  margin: 18px 0 16px;
-  font-size: clamp(54px, 7vw, 104px);
+  font-size: clamp(50px, 6.5vw, 92px);
   line-height: 0.88;
-  letter-spacing: -0.065em;
+  margin: 18px 0 0;
+  letter-spacing: -6px;
   font-weight: 950;
-  color: var(--ink);
+  color: var(--white);
 }
 
 .hero h1 span {
-  background: linear-gradient(135deg, var(--purple-400), var(--purple-700));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 10px 26px rgba(91,61,240,0.2));
+  color: var(--green);
+  text-shadow: 0 0 28px rgba(208, 241, 0, 0.45);
 }
 
-.hero-copy {
-  max-width: 620px;
-  color: var(--ink-soft);
-  font-size: 18px;
-  line-height: 1.65;
+.start-note {
+  color: var(--white-40);
+  text-align: right;
+  margin-bottom: 12px;
 }
 
-.hero-card {
-  padding: 24px;
-  border-radius: 24px;
-  color: var(--white);
-  background:
-    linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0)),
-    linear-gradient(135deg, var(--purple-600), var(--violet-900));
-  box-shadow: 0 28px 60px rgba(74,35,207,0.26);
-  transform: perspective(800px) rotateY(-5deg) rotateX(3deg);
-  border: 1px solid rgba(255,255,255,0.2);
+.start-note b {
+  color: var(--white-20);
+  letter-spacing: 0.35em;
+  font-size: 12px;
 }
 
-.hero-card span,
-.hero-card small {
-  display: block;
-  color: rgba(255,255,255,0.72);
-}
-
-.hero-card span {
-  font-size: 11px;
-  letter-spacing: 0.18em;
-}
-
-.hero-card strong {
-  display: block;
-  margin: 14px 0 8px;
-  font-size: 24px;
+.start-note p {
+  color: var(--text);
+  letter-spacing: 0.04em;
 }
 
 .controls {
+  margin-top: 34px;
+  border: 1px solid var(--border-white);
+  padding: 18px;
   position: relative;
   z-index: 2;
-  display: grid;
-  gap: 18px;
-  padding: 22px;
-  border: 1px solid rgba(255,255,255,0.88);
-  border-radius: 28px;
-  background: rgba(255,255,255,0.74);
+  transition: 0.2s ease;
+  background: rgba(27, 37, 64, 0.38);
   backdrop-filter: blur(18px);
-  box-shadow: var(--shadow);
+  border-radius: 22px;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.25);
 }
 
 .hidden-soft {
   opacity: 0;
-  height: 0;
-  overflow: hidden;
-  padding: 0;
-  margin: 0;
   pointer-events: none;
+  transform: translateY(-10px);
+  height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
   border: 0;
 }
 
-.control-group {
-  display: grid;
-  grid-template-columns: 110px 1fr;
-  gap: 16px;
+.row {
+  display: flex;
   align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 8px 0;
 }
 
 .label {
-  color: var(--purple-700);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.18em;
+  width: 90px;
 }
 
-.control-buttons {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.control-buttons button {
-  border: 1px solid rgba(74,35,207,0.12);
-  color: var(--ink-soft);
-  background: var(--white);
-  padding: 11px 16px;
-  border-radius: 14px;
-  font-size: 12px;
-  font-weight: 850;
+.controls button {
+  background: rgba(10, 10, 10, 0.58);
+  color: var(--white-40);
+  border: 1px solid var(--border-white);
+  padding: 12px 20px;
+  letter-spacing: 0.22em;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(74,35,207,0.08);
-  transition: 0.2s ease;
+  font-weight: 850;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  border-radius: 14px;
 }
 
-.control-buttons button:hover {
-  transform: translateY(-2px);
-  color: var(--purple-700);
-}
-
-.control-buttons button.active {
+.controls button:hover {
   color: var(--white);
-  border-color: transparent;
-  background: linear-gradient(135deg, var(--purple-500), var(--purple-700));
-  box-shadow: 0 14px 28px rgba(91,61,240,0.28);
+  border-color: rgba(255,255,255,0.22);
 }
 
-.typing-shell {
-  margin-top: 34px;
+.controls button.active {
+  color: var(--dark);
+  background: var(--green);
+  border-color: var(--green);
+  box-shadow: 0 0 28px rgba(208, 241, 0, 0.22);
+}
+
+.typing-wrap {
   position: relative;
   z-index: 2;
-  padding: clamp(24px, 4vw, 46px);
-  border-radius: 30px;
-  border: 1px solid rgba(255,255,255,0.9);
-  background:
-    linear-gradient(145deg, rgba(255,255,255,0.94), rgba(244,238,255,0.88));
-  box-shadow: var(--shadow);
-  cursor: text;
-}
-
-.typing-topline {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 24px;
-  color: var(--purple-600);
-  font-size: 11px;
-  font-weight: 850;
-  letter-spacing: 0.13em;
-}
-
-.typing-topline button {
-  margin-left: auto;
-  border: 0;
-  color: var(--white);
-  background: linear-gradient(135deg, var(--purple-500), var(--purple-700));
-  padding: 9px 14px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 850;
-  cursor: pointer;
+  margin-top: 70px;
+  max-width: 1120px;
+  width: 100%;
+  overflow: visible;
 }
 
 .typing-text {
-  color: rgba(21,17,41,0.28);
-  font-size: clamp(26px, 3.1vw, 42px);
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(24px, 2.3vw, 34px);
   line-height: 1.65;
-  letter-spacing: -0.03em;
-  font-weight: 800;
+  color: rgba(255,255,255,0.28);
+  font-weight: 750;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  letter-spacing: 0px;
+  text-align: left;
   user-select: none;
-  -webkit-user-select: none;
+-webkit-user-select: none;
 }
 
 .word {
@@ -1157,69 +1034,78 @@ kbd {
   transition: color 0.04s linear, background 0.04s linear;
 }
 
+.char.muted {
+  color: rgba(255,255,255,0.28);
+}
+
 .char.correct {
-  color: var(--ink);
+  color: var(--white);
 }
 
 .char.wrong {
-  color: #ef476f;
-  background: rgba(239,71,111,0.12);
-  border-radius: 5px;
+  color: #ff4b6e;
+  background: rgba(255, 75, 110, 0.16);
+  border-radius: 4px;
 }
 
 .char.current {
-  color: var(--purple-600);
+  color: var(--green);
 }
 
 .char.current::before {
   content: "";
   position: absolute;
-  left: -3px;
+  left: -4px;
   top: -5px;
   bottom: -5px;
   width: 3px;
-  border-radius: 999px;
-  background: var(--purple-500);
-  box-shadow: 0 0 16px rgba(111,77,246,0.55);
+  background: var(--blue);
+  border-radius: 8px;
+  box-shadow: 0 0 18px rgba(0, 80, 248, 0.9);
   animation: caret 0.8s infinite;
 }
 
 @keyframes caret {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.25; }
+  50% { opacity: 0.3; }
 }
 
 .restart {
-  display: block;
-  margin: 26px auto 0;
-  border: 1px solid rgba(74,35,207,0.14);
-  color: var(--purple-700);
-  background: rgba(255,255,255,0.82);
-  padding: 13px 18px;
-  border-radius: 14px;
-  font-weight: 850;
+  margin-top: 44px;
+  background: rgba(27, 37, 64, 0.55);
+  color: var(--white-30);
+  border: 1px solid var(--border-white);
+  padding: 14px 18px;
+  letter-spacing: 0.22em;
   cursor: pointer;
-}
-
-.best-box,
-.results {
   position: relative;
   z-index: 2;
-  margin-top: 28px;
-  padding: 28px;
-  border-radius: 28px;
-  border: 1px solid rgba(255,255,255,0.9);
-  background: rgba(255,255,255,0.78);
-  backdrop-filter: blur(18px);
-  box-shadow: var(--shadow);
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-weight: 800;
+  border-radius: 14px;
 }
 
-.section-title {
-  margin-bottom: 16px;
-  color: var(--purple-700);
+.restart:hover {
+  color: var(--green);
+  border-color: rgba(208, 241, 0, 0.45);
+}
+
+.best-box {
+  margin-top: 42px;
+  border: 1px solid var(--border-white);
+  background: rgba(27, 37, 64, 0.35);
+  padding: 22px;
+  position: relative;
+  z-index: 2;
+  border-radius: 22px;
+}
+
+.box-title {
+  color: var(--white-40);
+  letter-spacing: 0.3em;
   font-size: 12px;
   font-weight: 900;
-  letter-spacing: 0.18em;
+  margin-bottom: 16px;
 }
 
 .best-grid,
@@ -1231,407 +1117,506 @@ kbd {
 
 .best-grid div,
 .stats div {
-  padding: 20px;
-  border-radius: 20px;
-  background: linear-gradient(145deg, #ffffff, #f1eaff);
-  border: 1px solid rgba(74,35,207,0.1);
-  box-shadow: 0 14px 28px rgba(74,35,207,0.1);
+  background: rgba(10, 10, 10, 0.45);
+  border: 1px solid var(--border-white);
+  padding: 18px;
+  border-radius: 18px;
 }
 
 .best-grid span,
 .stats span {
   display: block;
-  color: var(--ink-soft);
-  font-size: 11px;
+  color: var(--text);
+  font-size: 12px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  letter-spacing: 0.13em;
   margin-bottom: 8px;
+  font-weight: 800;
 }
 
 .best-grid b,
 .stats b {
   font-size: 30px;
-  color: var(--ink);
+  color: var(--white);
 }
 
 .live-pill {
   position: fixed;
-  left: 50%;
   bottom: 18px;
+  left: 50%;
   transform: translateX(-50%);
-  z-index: 20;
-  display: flex;
-  gap: 20px;
-  padding: 12px 18px;
-  border-radius: 999px;
+  background: rgba(0, 16, 51, 0.9);
+  border: 1px solid rgba(0, 80, 248, 0.45);
   color: var(--white);
-  background: linear-gradient(135deg, var(--purple-600), var(--violet-900));
-  box-shadow: 0 18px 40px rgba(74,35,207,0.3);
-  font-weight: 850;
+  padding: 12px 22px;
+  display: flex;
+  gap: 28px;
+  z-index: 5;
+  box-shadow: 0 0 30px rgba(0, 80, 248, 0.18);
+  font-weight: 900;
+  border-radius: 999px;
+}
+
+.live-pill span:first-child {
+  color: var(--green);
+}
+
+.results {
+  position: relative;
+  z-index: 2;
+  margin-top: 52px;
+  border: 1px solid var(--border-white);
+  background: rgba(27, 37, 64, 0.42);
+  padding: 28px;
+  max-height: none;
+  overflow: visible;
+  border-radius: 26px;
 }
 
 .result-head {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 24px;
 }
 
 .result-head h2 {
-  margin: 10px 0 6px;
-  font-size: clamp(54px, 7vw, 86px);
-  letter-spacing: -0.06em;
-  color: var(--purple-700);
+  font-size: 70px;
+  margin: 10px 0 0;
+  letter-spacing: -4px;
+  color: var(--green);
+  font-weight: 950;
+  text-shadow: 0 0 24px rgba(208, 241, 0, 0.25);
 }
 
 .result-head p {
-  color: var(--ink-soft);
+  color: var(--white-40);
 }
 
 .result-head button {
-  border: 0;
+  background: var(--blue);
   color: var(--white);
-  background: linear-gradient(135deg, var(--purple-500), var(--purple-700));
-  padding: 14px 20px;
-  border-radius: 14px;
-  font-weight: 850;
+  border: none;
+  padding: 15px 24px;
+  font-weight: 950;
   cursor: pointer;
+  border-radius: 16px;
+  box-shadow: 0 0 28px rgba(0, 80, 248, 0.25);
 }
 
 .stats {
   grid-template-columns: repeat(4, 1fr);
-  margin-top: 24px;
-}
-
-.results-grid {
-  display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 24px;
-  margin-top: 26px;
+  margin-bottom: 28px;
 }
 
 .heatmap,
 .history {
-  padding: 20px;
-  border-radius: 22px;
-  background: linear-gradient(145deg, #ffffff, #f4efff);
-  border: 1px solid rgba(74,35,207,0.1);
+  margin-top: 26px;
 }
 
 .heatmap h3,
 .history h3 {
-  margin-top: 0;
-  color: var(--ink);
+  color: var(--white);
+  margin-bottom: 14px;
 }
 
 .heat-row {
   display: grid;
-  grid-template-columns: 52px 1fr 110px;
-  gap: 12px;
+  grid-template-columns: 80px 1fr 120px;
+  gap: 14px;
   align-items: center;
   margin-bottom: 10px;
 }
 
 .heat-row b {
-  color: var(--purple-700);
+  color: var(--green);
+  font-size: 20px;
 }
 
 .heat-row div {
-  height: 9px;
+  height: 10px;
+  background: rgba(255,255,255,0.08);
   overflow: hidden;
   border-radius: 999px;
-  background: var(--lavender-200);
 }
 
 .heat-row div span {
   display: block;
   height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--purple-400), var(--purple-700));
+  background: var(--blue);
+  border-radius: 999px;
 }
 
-.heat-row small,
-.history-row {
-  color: var(--ink-soft);
+.heat-row small {
+  color: var(--white-40);
+  text-align: right;
 }
 
 .history-row {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 10px;
+  grid-template-columns: 1fr 120px 160px;
+  gap: 12px;
   padding: 12px 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--border-white);
+  color: var(--white-40);
 }
 
-.history-row small {
-  grid-column: 1 / -1;
+.history-row b {
+  color: var(--green);
 }
-
 .footer {
-  margin-top: 54px;
-  padding-top: 28px;
-  border-top: 1px solid rgba(74,35,207,0.13);
   position: relative;
   z-index: 2;
+  width: 100%;
+  margin-top: 80px;
+  padding: 28px 0 0;
   display: flex;
-  justify-content: space-between;
-  gap: 24px;
+  justify-content: center;
   align-items: center;
-}
-
-.footer > div {
-  display: grid;
-  gap: 5px;
-}
-
-.footer > div span {
-  color: var(--ink-soft);
-  font-size: 13px;
+  border-top: 1px solid var(--border-white);
 }
 
 .footer-links {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(18px, 4vw, 46px);
   flex-wrap: wrap;
-  gap: 10px;
+  text-align: center;
 }
 
 .footer-link {
-  border: 0;
-  color: var(--purple-700);
-  background: transparent;
+  color: var(--white-40);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  font-size: 11px;
-  font-weight: 850;
-  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
-.legal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  overflow-y: auto;
-  padding: 40px;
-  background: rgba(24,10,56,0.48);
-  backdrop-filter: blur(12px);
+.footer-link:hover {
+  color: var(--green);
+  transform: translateY(-1px);
 }
 
-.legal-page {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: clamp(28px, 5vw, 56px);
-  border-radius: 28px;
-  background: var(--white);
-  box-shadow: 0 40px 90px rgba(24,10,56,0.34);
-  position: relative;
+.footer-link:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 5px;
+  border-radius: 6px;
 }
-
-.legal-page h2 {
-  margin-top: 0;
-  font-size: clamp(38px, 5vw, 62px);
-  letter-spacing: -0.04em;
-  color: var(--ink);
-}
-
-.legal-section {
-  margin-top: 28px;
-}
-
-.legal-section h3 {
-  color: var(--purple-700);
-}
-
-.legal-section p {
-  color: var(--ink-soft);
-  line-height: 1.7;
-}
-
-.legal-close {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  width: 42px;
-  height: 42px;
-  border: 0;
-  border-radius: 50%;
-  color: var(--white);
-  background: var(--purple-700);
-  font-size: 26px;
-  cursor: pointer;
-}
-
 @media (max-width: 900px) {
+  .footer {
+    margin-top: 58px;
+    padding-top: 24px;
+  }
+
+  .footer-links {
+    gap: 14px 20px;
+  }
+
+  .footer-link {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+  }
+  .app {
+    padding: 0 22px 110px;
+    overflow-y: auto;
+  }
+
   .topbar {
-    padding: 16px 0;
-    align-items: flex-start;
+    height: auto;
+    padding: 18px 0;
     flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 
   .top-actions {
-    justify-content: flex-start;
+    flex-wrap: wrap;
   }
 
   .hero {
-    grid-template-columns: 1fr;
-    padding-top: 48px;
+    margin-top: 35px;
+    display: block;
   }
 
-  .hero-card {
-    transform: none;
+  .hero h1 {
+    font-size: 48px;
+    letter-spacing: -2px;
   }
 
-  .control-group {
-    grid-template-columns: 1fr;
+  .start-note {
+    text-align: left;
+    margin-top: 20px;
   }
 
-  .results-grid {
-    grid-template-columns: 1fr;
+  .typing-wrap {
+    margin-top: 55px;
   }
 
+  .typing-text {
+    font-size: 25px;
+    line-height: 1.65;
+    letter-spacing: 0px;
+  }
+
+  .label {
+    width: 100%;
+  }
+
+  .controls button {
+    padding: 10px 12px;
+    letter-spacing: 0.12em;
+  }
+
+  .best-grid,
   .stats {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
 
-  .footer {
-    align-items: flex-start;
-    flex-direction: column;
+  .result-head {
+    display: block;
+  }
+
+  .result-head h2 {
+    font-size: 52px;
+  }
+
+  .heat-row {
+    grid-template-columns: 54px 1fr;
+  }
+
+  .heat-row small {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+
+  .history-row {
+    grid-template-columns: 1fr;
+  }
+
+  .live-pill {
+    width: calc(100% - 30px);
+    justify-content: center;
+    gap: 16px;
   }
 }
-
 @media (max-width: 600px) {
   .app {
-    min-height: 100dvh;
-    padding: 0 16px 78px;
+    padding: 14px 14px 80px !important;
+    min-height: auto !important;
+    overflow-y: auto !important;
   }
-
   .topbar {
-    min-height: auto;
+    padding: 18px 0 12px;
+    gap: 16px;
   }
 
-  .brand-sub,
-  .desktop-hint {
-    display: none;
+  .brand {
+    width: 100%;
   }
 
   .logo-img {
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
   }
 
   .brand-title {
-    font-size: 24px;
+    font-size: 28px;
+    letter-spacing: -1px;
   }
 
   .top-actions {
     width: 100%;
-    gap: 8px;
+    justify-content: space-between;
+    gap: 10px;
   }
 
-  .settings-btn {
-    flex: 1;
-    min-width: 138px;
-    padding: 11px 12px;
+  .key-hint {
+    font-size: 14px;
+  }
+
+  .mode-pill {
+    padding: 13px 20px;
+    font-size: 14px;
+    letter-spacing: 4px;
   }
 
   .hero {
-    padding-top: 40px;
+    margin-top: 26px;
+  }
+
+  .mini {
+    font-size: 12px;
+    letter-spacing: 6px;
+    line-height: 1.5;
   }
 
   .hero h1 {
-    font-size: clamp(48px, 15vw, 70px);
+    font-size: 44px;
+    line-height: 0.95;
+    letter-spacing: -2.5px;
+    text-align: center;
   }
 
-  .hero-copy {
-    font-size: 16px;
+  .start-note {
+    margin-top: 26px;
   }
 
-  .hero-card {
-    display: none;
+  .start-note b {
+    font-size: 12px;
+    letter-spacing: 5px;
   }
 
-  .controls {
-    padding: 18px;
+  .start-note p {
+    font-size: 18px;
+  }
+
+  .panel {
+    margin-top: 36px;
+    padding: 28px 20px;
+    border-radius: 24px;
+  }
+
+  .panel-title {
+    font-size: 13px;
+    letter-spacing: 6px;
+    margin-bottom: 20px;
+  }
+
+  .button-row {
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .button-row button {
+    padding: 12px 15px;
+    font-size: 14px;
+    letter-spacing: 2px;
+    border-radius: 15px;
+  }
+
+  .typing-wrap {
+    margin-top: 38px;
+  }
+
+  .typing-card {
+    padding: 24px 18px;
     border-radius: 22px;
-  }
-
-  .control-buttons button {
-    flex: 1 1 calc(50% - 10px);
-    padding: 11px 10px;
-  }
-
-  .typing-shell {
-    margin-top: 22px;
-    padding: 20px 18px 28px;
-    border-radius: 22px;
-  }
-
-  .typing-topline {
-    margin-bottom: 18px;
-  }
-
-  .typing-topline button {
-    display: inline-flex;
   }
 
   .typing-text {
-    font-size: clamp(25px, 8vw, 34px);
-    line-height: 1.58;
-  }
-
-  .app.typing-active .hero,
-  .app.typing-active .controls,
-  .app.typing-active .best-box,
-  .app.typing-active .footer {
-    display: none;
-  }
-
-  .app.typing-active .topbar {
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .app.typing-active .brand-sub,
-  .app.typing-active .top-actions {
-    display: none;
-  }
-
-  .app.typing-active .typing-shell {
-    margin-top: 24px;
-  }
-
-  .best-grid {
-    grid-template-columns: 1fr;
+    font-size: 23px;
+    line-height: 1.7;
   }
 
   .stats {
     grid-template-columns: 1fr 1fr;
   }
 
-  .result-head {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .heat-row {
-    grid-template-columns: 42px 1fr;
-  }
-
-  .heat-row small {
-    grid-column: 1 / -1;
-  }
-
-  .live-pill {
-    width: calc(100% - 26px);
-    justify-content: center;
-    bottom: 12px;
-  }
-
-  .legal-overlay {
-    padding: 14px;
-  }
-
-  .legal-page {
-    padding: 28px 20px;
-    border-radius: 22px;
+  .stat-value {
+    font-size: 30px;
   }
 }
+.legal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: #ffffff;
+  color: #001033;
+  overflow-y: auto;
+  padding: 42px 70px;
+}
+
+.legal-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #ffffff;
+  color: #001033;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.legal-page h2 {
+  font-size: 38px;
+  line-height: 1.1;
+  margin: 0 0 30px;
+  color: #001033;
+  letter-spacing: -1px;
+}
+
+.legal-section {
+  margin-top: 34px;
+}
+
+.legal-section h3 {
+  font-size: 18px;
+  margin: 0 0 14px;
+  color: #000;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.legal-section p {
+  font-size: 18px;
+  line-height: 1.55;
+  margin: 12px 0;
+  color: #000;
+  font-weight: 500;
+}
+
+.legal-close {
+  position: fixed;
+  top: 22px;
+  right: 28px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: #001033;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.legal-close:hover {
+  background: rgb(208, 241, 0);
+  color: #001033;
+}
+
+.footer-link {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (max-width: 600px) {
+  .legal-overlay {
+    padding: 28px 18px;
+  }
+
+  .legal-page h2 {
+    font-size: 32px;
+  }
+
+  .legal-section h3 {
+    font-size: 15px;
+  }
+
+  .legal-section p {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .legal-close {
+    top: 14px;
+    right: 14px;
+    width: 38px;
+    height: 38px;
+    font-size: 24px;
+  }
+}
+
 `;
