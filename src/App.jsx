@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 const WORDS = {
   words: [
     "home", "now", "even", "used", "said", "government", "once", "any", "to", "and",
@@ -31,6 +32,7 @@ const WORDS = {
     "mindset", "momentum", "progress", "mastery", "habit", "vision", "action"
   ]
 };
+
 const INFO_PAGES = {
   privacy: {
     title: "Privacy Policy",
@@ -38,47 +40,36 @@ const INFO_PAGES = {
       {
         heading: "Introduction",
         text: [
-          "This Privacy Policy explains how TypeTeks collects, uses, and protects information when you use our website.",
-          "TypeTeks is a typing practice website designed to help users improve typing speed, accuracy, focus, and consistency.",
-          "By using TypeTeks, you agree to this Privacy Policy."
+          "This Privacy Policy explains how TypeTeks handles information when you use our website.",
+          "TypeTeks is a typing practice website designed to help users improve speed, accuracy, focus, and consistency."
         ],
       },
       {
         heading: "1. What Information Do We Collect?",
         text: [
           "TypeTeks does not require users to create an account, submit passwords, upload documents, or provide sensitive personal information.",
-          "The website may store typing practice data in your own browser, such as best WPM, accuracy, score, selected mode, and recent history.",
-          "This data is stored locally on your device using browser localStorage."
+          "The website may store typing practice data in your browser, such as best WPM, selected mode, and recent history."
         ],
       },
       {
-        heading: "2. How We Use This Information",
+        heading: "2. Local Storage",
         text: [
-          "We use local browser data only to improve your typing experience, show your best score, and display recent practice sessions."
+          "Your typing progress is saved on your own device using browser localStorage.",
+          "You can delete this data anytime by clearing your browser site data."
         ],
       },
       {
-        heading: "3. Local Storage",
-        text: [
-          "Your typing results are saved on your own device. TypeTeks does not sell your data.",
-          "You can delete this data anytime by clearing your browser cache or site data."
-        ],
-      },
-      {
-        heading: "4. Third-Party Services",
+        heading: "3. Third-Party Services",
         text: [
           "TypeTeks may be hosted using services such as Cloudflare. These services may process technical data for security and performance."
         ],
       },
       {
-        heading: "5. Contact Us",
-        text: [
-          "If you have questions about this Privacy Policy, contact us at: contact@typeteks.online"
-        ],
+        heading: "4. Contact",
+        text: ["If you have questions, contact us at: contact@typeteks.online"],
       },
     ],
   },
-
   terms: {
     title: "Terms of Use",
     sections: [
@@ -86,57 +77,50 @@ const INFO_PAGES = {
         heading: "1. Use of Website",
         text: [
           "TypeTeks is provided as a typing practice tool for learning and productivity.",
-          "By using this website, you agree to use it responsibly and not misuse, copy, attack, or disrupt the service."
+          "By using this website, you agree to use it responsibly and not misuse or disrupt the service."
         ],
       },
       {
         heading: "2. No Guarantee",
-        text: [
-          "We try to keep TypeTeks fast and useful, but we do not guarantee that the website will always be error-free or available."
-        ],
+        text: ["We try to keep TypeTeks useful and fast, but we do not guarantee that it will always be error-free or available."],
       },
     ],
   },
-
   contact: {
     title: "Contact",
     sections: [
       {
         heading: "Get in Touch",
-        text: [
-          "Have feedback, suggestions, or partnership ideas?",
-          "Email: contact@typeteks.online"
-        ],
+        text: ["Have feedback, suggestions, or partnership ideas?", "Email: contact@typeteks.online"],
       },
     ],
   },
-
   support: {
     title: "Support",
     sections: [
       {
         heading: "Need Help?",
         text: [
-          "Use Tab to restart a session, select your typing mode, choose time, and start typing.",
-          "If sound does not work, make sure your browser tab is not muted and click the TEST SOUND button."
+          "Tap anywhere on the typing area on mobile to open the keyboard.",
+          "Use Tab to restart a session on desktop. Use Esc to pause."
         ],
       },
     ],
   },
-
   security: {
     title: "Security",
     sections: [
       {
         heading: "Security",
         text: [
-          "TypeTeks runs mainly inside your browser and does not ask for sensitive details like passwords, payment information, or private documents.",
+          "TypeTeks runs mainly inside your browser and does not ask for passwords, payment information, or private documents.",
           "The website is served through secure HTTPS hosting."
         ],
       },
     ],
   },
 };
+
 function makeText(mode) {
   const pool = WORDS[mode] || WORDS.words;
   const count = mode === "bigrams" ? 55 : mode === "trigrams" ? 48 : 42;
@@ -198,6 +182,7 @@ function buildHeatmap(target, input, timings) {
     .sort((a, b) => b.avgMs + b.errorRate * 3 - (a.avgMs + a.errorRate * 3))
     .slice(0, 8);
 }
+
 const keySounds = [];
 let soundReady = false;
 let soundIndex = 0;
@@ -220,17 +205,16 @@ function playClick(type, enabled = true) {
 
   try {
     prepareSounds();
-
     const audio = keySounds[soundIndex % keySounds.length];
     soundIndex++;
-
     audio.currentTime = 0;
     audio.volume = type === "wrong" ? 1 : 0.8;
-    audio.play();
-  } catch (error) {
-    console.log("Sound error:", error);
+    audio.play().catch(() => {});
+  } catch {
+    // no-op
   }
 }
+
 export default function App() {
   const [mode, setMode] = useState("words");
   const [duration, setDuration] = useState(15);
@@ -248,8 +232,9 @@ export default function App() {
   const [maxStreak, setMaxStreak] = useState(0);
 
   const [sound, setSound] = useState(true);
- const [noBackspace, setNoBackspace] = useState(false);
-const [activePage, setActivePage] = useState(null);
+  const [noBackspace, setNoBackspace] = useState(false);
+  const [activePage, setActivePage] = useState(null);
+
   const [best, setBest] = useState(() => {
     return Number(localStorage.getItem("TypeTeks_best") || 0);
   });
@@ -268,7 +253,6 @@ const [activePage, setActivePage] = useState(null);
   const lastKeyTsRef = useRef(null);
   const appRef = useRef(null);
   const mobileInputRef = useRef(null);
-  const typingWrapRef = useRef(null);
   const finishedRef = useRef(false);
 
   const liveWpm = useMemo(() => {
@@ -292,6 +276,16 @@ const [activePage, setActivePage] = useState(null);
   }, [finished, text, input, timings]);
 
   const score = correctChars * 10 + maxStreak * 5 + liveWpm * 2;
+
+  const focusTyping = useCallback(() => {
+    prepareSounds();
+
+    if (window.matchMedia("(pointer: coarse)").matches) {
+      mobileInputRef.current?.focus();
+    } else {
+      appRef.current?.focus();
+    }
+  }, []);
 
   const finishTest = useCallback(() => {
     if (finishedRef.current) return;
@@ -348,10 +342,14 @@ const [activePage, setActivePage] = useState(null);
     startTsRef.current = null;
     lastKeyTsRef.current = null;
 
+    if (mobileInputRef.current) {
+      mobileInputRef.current.value = "";
+    }
+
     setTimeout(() => {
-      appRef.current?.focus();
-    }, 50);
-  }, [mode, duration]);
+      focusTyping();
+    }, 80);
+  }, [mode, duration, focusTyping]);
 
   useEffect(() => {
     if (!running || finished) return;
@@ -370,8 +368,26 @@ const [activePage, setActivePage] = useState(null);
     return () => clearInterval(timer);
   }, [running, finished, duration, finishTest]);
 
+  const removeLastChar = useCallback(() => {
+    setInput((prevInput) => {
+      if (!prevInput.length) return prevInput;
+
+      const removeIndex = prevInput.length - 1;
+      const wasCorrect = prevInput[removeIndex] === text[removeIndex];
+
+      setTotalKeystrokes((x) => Math.max(0, x - 1));
+
+      if (wasCorrect) {
+        setCorrectChars((x) => Math.max(0, x - 1));
+      }
+
+      return prevInput.slice(0, -1);
+    });
+  }, [text]);
+
   const processTypedKey = useCallback((key) => {
-    if (!key || finishedRef.current) return;
+    if (!key || key.length !== 1) return;
+    if (finishedRef.current) return;
 
     if (!running) {
       setRunning(true);
@@ -443,19 +459,7 @@ const [activePage, setActivePage] = useState(null);
       e.preventDefault();
 
       if (!noBackspace) {
-        const removeIndex = input.length - 1;
-
-        setInput((prev) => prev.slice(0, -1));
-
-        if (removeIndex >= 0) {
-          const wasCorrect = input[removeIndex] === text[removeIndex];
-
-          setTotalKeystrokes((x) => Math.max(0, x - 1));
-
-          if (wasCorrect) {
-            setCorrectChars((x) => Math.max(0, x - 1));
-          }
-        }
+        removeLastChar();
       }
 
       return;
@@ -465,82 +469,37 @@ const [activePage, setActivePage] = useState(null);
 
     e.preventDefault();
     processTypedKey(e.key);
-  }, [input, noBackspace, processTypedKey, reset, text]);
-
-  const focusMobileInput = useCallback(() => {
-    prepareSounds();
-
-    typingWrapRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-    });
-
-    requestAnimationFrame(() => {
-      try {
-        mobileInputRef.current?.focus({ preventScroll: true });
-      } catch {
-        mobileInputRef.current?.focus();
-      }
-    });
-
-    setTimeout(() => {
-      try {
-        mobileInputRef.current?.focus({ preventScroll: true });
-      } catch {
-        mobileInputRef.current?.focus();
-      }
-    }, 250);
-  }, []);
+  }, [noBackspace, processTypedKey, removeLastChar, reset]);
 
   const handleMobileBeforeInput = useCallback((e) => {
-    const key = e.nativeEvent?.data;
+    const data = e.nativeEvent?.data;
 
-    if (!key) return;
+    if (!data) return;
 
     e.preventDefault();
-    processTypedKey(key);
 
-    requestAnimationFrame(() => {
-      if (mobileInputRef.current) {
-        mobileInputRef.current.value = "";
-      }
-    });
-  }, [processTypedKey]);
+    for (const ch of data) {
+      processTypedKey(ch);
+    }
 
-  const handleMobileInput = useCallback((e) => {
-    const value = e.currentTarget.value;
-    if (!value) return;
-
-    const chars = Array.from(value);
-    const lastChar = chars[chars.length - 1];
-
-    processTypedKey(lastChar);
-    e.currentTarget.value = "";
+    setTimeout(() => {
+      mobileInputRef.current?.focus();
+    }, 0);
   }, [processTypedKey]);
 
   const handleMobileKeyDown = useCallback((e) => {
-    if (e.key !== "Backspace") return;
+    if (e.key === "Backspace") {
+      e.preventDefault();
 
-    e.preventDefault();
-
-    if (!noBackspace) {
-      const removeIndex = input.length - 1;
-
-      setInput((prev) => prev.slice(0, -1));
-
-      if (removeIndex >= 0) {
-        const wasCorrect = input[removeIndex] === text[removeIndex];
-
-        setTotalKeystrokes((x) => Math.max(0, x - 1));
-
-        if (wasCorrect) {
-          setCorrectChars((x) => Math.max(0, x - 1));
-        }
+      if (!noBackspace) {
+        removeLastChar();
       }
-    }
 
-    e.currentTarget.value = "";
-  }, [input, noBackspace, text]);
+      setTimeout(() => {
+        mobileInputRef.current?.focus();
+      }, 0);
+    }
+  }, [noBackspace, removeLastChar]);
 
   useEffect(() => {
     const node = appRef.current;
@@ -592,22 +551,32 @@ const [activePage, setActivePage] = useState(null);
   }
 
   return (
-   <main
-  ref={appRef}
-  tabIndex={0}
-  className="app"
-  onPointerDown={() => {
-    prepareSounds();
-    mobileInputRef.current?.focus();
-  }}
->
+    <main
+      ref={appRef}
+      tabIndex={0}
+      className="app"
+      onPointerDown={focusTyping}
+    >
       <style>{css}</style>
+
+      <input
+        ref={mobileInputRef}
+        className="mobile-keyboard-input"
+        type="text"
+        inputMode="text"
+        autoCapitalize="off"
+        autoCorrect="off"
+        autoComplete="off"
+        spellCheck={false}
+        onBeforeInput={handleMobileBeforeInput}
+        onKeyDown={handleMobileKeyDown}
+      />
 
       <div className="grid-bg" />
 
       <header className="topbar">
         <div className="brand">
-          <div className="logo-badge" aria-hidden="true">T</div>
+          <div className="logo-badge">T</div>
           <div>
             <div className="brand-title">TypeTeks</div>
             <div className="brand-sub"></div>
@@ -618,6 +587,7 @@ const [activePage, setActivePage] = useState(null);
           <span><kbd>Tab</kbd> restart</span>
           <span>·</span>
           <span><kbd>Esc</kbd> pause</span>
+
           <button className="settings-btn" onClick={() => setNoBackspace((v) => !v)}>
             {noBackspace ? "NO BACKSPACE" : "STANDARD"}
           </button>
@@ -626,7 +596,7 @@ const [activePage, setActivePage] = useState(null);
 
       <section className={`hero ${running ? "fade" : ""}`}>
         <div>
-          <div className="mini"> MICRO-BLITZ · {duration}S · {mode.toUpperCase()}</div>
+          <div className="mini">MICRO-BLITZ · {duration === 300 ? "5 MIN" : `${duration}S`} · {mode.toUpperCase()}</div>
           <h1>
             Type at the speed
             <br />
@@ -634,10 +604,10 @@ const [activePage, setActivePage] = useState(null);
           </h1>
         </div>
 
-       <div className="start-note">
-  <b>LOCK IN. TYPE FAST.</b>
-  <p>Every keystroke builds your speed  </p>
-</div>
+        <div className="start-note">
+          <b>LOCK IN. TYPE FAST.</b>
+          <p>Every keystroke builds your speed</p>
+        </div>
       </section>
 
       <section className={`controls ${running ? "hidden-soft" : ""}`}>
@@ -663,47 +633,40 @@ const [activePage, setActivePage] = useState(null);
         <div className="row">
           <div className="label">◷ TIME</div>
 
-         {[15, 30, 60, 300].map((t) => (
-  <button
-    key={t}
-    onClick={() => reset(mode, t)}
-    className={duration === t ? "active" : ""}
-  >
-    {t === 300 ? "5 min" : `${t}s`}
-  </button>
-))}
+          {[15, 30, 60, 300].map((t) => (
+            <button
+              key={t}
+              onClick={() => reset(mode, t)}
+              className={duration === t ? "active" : ""}
+            >
+              {t === 300 ? "5 min" : `${t}s`}
+            </button>
+          ))}
 
           <button onClick={() => setSound((v) => !v)}>
-  {sound ? "SOUND ON" : "SOUND OFF"}
-</button>
+            {sound ? "SOUND ON" : "SOUND OFF"}
+          </button>
 
-<button
-  onClick={() => {
-    prepareSounds();
-    playClick("correct", true);
-  }}
->
-  TEST SOUND
-</button>
-</div>
-</section>
+          <button
+            onClick={() => {
+              prepareSounds();
+              playClick("correct", true);
+            }}
+          >
+            TEST SOUND
+          </button>
+        </div>
+      </section>
 
       {!finished && (
-        <section
-          ref={typingWrapRef}
-          className="typing-wrap"
-          onClick={() => {
-            appRef.current?.focus();
-            focusMobileInput();
-          }}
-        >
+        <section className="typing-wrap" onClick={focusTyping}>
           <div className="typing-text">{renderTypingText()}</div>
         </section>
       )}
 
       {!finished && (
         <button className="restart" onClick={() => reset()}>
-           RESTART · <kbd>TAB</kbd>
+          RESTART · <kbd>TAB</kbd>
         </button>
       )}
 
@@ -721,7 +684,7 @@ const [activePage, setActivePage] = useState(null);
             </div>
             <div>
               <span>Time</span>
-              <b>{duration}s</b>
+              <b>{duration === 300 ? "5 min" : `${duration}s`}</b>
             </div>
           </div>
         </section>
@@ -793,52 +756,56 @@ const [activePage, setActivePage] = useState(null);
               <div className="history-row" key={i}>
                 <span>{h.date}</span>
                 <b>{h.wpm} WPM</b>
-                <small>{h.acc}% · {h.mode} · {h.duration}s</small>
+                <small>{h.acc}% · {h.mode} · {h.duration === 300 ? "5 min" : `${h.duration}s`}</small>
               </div>
             ))}
           </div>
         </section>
       )}
-          <footer className="footer">
-  <nav className="footer-links" aria-label="Footer navigation">
-    <button type="button" className="footer-link" onClick={() => setActivePage("contact")}>
-      Contact
-    </button>
-    <button type="button" className="footer-link" onClick={() => setActivePage("support")}>
-      Support
-    </button>
-    <button type="button" className="footer-link" onClick={() => setActivePage("terms")}>
-      Terms
-    </button>
-    <button type="button" className="footer-link" onClick={() => setActivePage("security")}>
-      Security
-    </button>
-    <button type="button" className="footer-link" onClick={() => setActivePage("privacy")}>
-      Privacy
-    </button>
-  </nav>
-</footer>
 
-{activePage && (
-  <section className="legal-overlay" onClick={() => setActivePage(null)}>
-    <article className="legal-page" onClick={(e) => e.stopPropagation()}>
-      <button className="legal-close" onClick={() => setActivePage(null)}>
-        ×
-      </button>
+      <footer className="footer">
+        <nav className="footer-links" aria-label="Footer navigation">
+          <button type="button" className="footer-link" onClick={() => setActivePage("contact")}>
+            Contact
+          </button>
+          <button type="button" className="footer-link" onClick={() => setActivePage("support")}>
+            Support
+          </button>
+          <button type="button" className="footer-link" onClick={() => setActivePage("terms")}>
+            Terms
+          </button>
+          <button type="button" className="footer-link" onClick={() => setActivePage("security")}>
+            Security
+          </button>
+          <button type="button" className="footer-link" onClick={() => setActivePage("privacy")}>
+            Privacy
+          </button>
+        </nav>
+      </footer>
 
-      <h2>{INFO_PAGES[activePage].title}</h2>
+      {activePage && (
+        <section className="legal-overlay" onClick={() => setActivePage(null)}>
+          <article className="legal-page" onClick={(e) => e.stopPropagation()}>
+            <button className="legal-close" onClick={() => setActivePage(null)}>
+              ×
+            </button>
 
-      {INFO_PAGES[activePage].sections.map((section, index) => (
-        <div className="legal-section" key={index}>
-          <h3>{section.heading}</h3>
-          {section.text.map((paragraph, pIndex) => (
-            <p key={pIndex}>{paragraph}</p>
-          ))}
-        </div>
-      ))}
-    </article>
-  </section>
-)}
+            <h2>{INFO_PAGES[activePage].title}</h2>
+
+            {INFO_PAGES[activePage].sections.map((section, index) => (
+              <div className="legal-section" key={index}>
+                <h3>{section.heading}</h3>
+                {section.text.map((paragraph, pIndex) => (
+                  <p key={pIndex}>{paragraph}</p>
+                ))}
+              </div>
+            ))}
+          </article>
+        </section>
+      )}
+    </main>
+  );
+}
 
 const css = `
 :root {
@@ -851,12 +818,10 @@ const css = `
   --dark-20: rgb(27, 37, 64);
 
   --white: rgb(255, 255, 255);
-  --white-10: rgb(250, 250, 250);
   --white-20: rgb(237, 237, 237);
   --white-30: rgb(217, 217, 217);
   --white-40: rgb(199, 199, 199);
 
-  --border-dark: rgba(0, 0, 0, 0.08);
   --border-white: rgba(255, 255, 255, 0.08);
 }
 
@@ -891,6 +856,21 @@ body {
   overflow-y: auto;
 }
 
+.mobile-keyboard-input {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0.01;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: transparent;
+  font-size: 16px;
+  z-index: 1;
+}
+
 .grid-bg {
   position: fixed;
   inset: 0;
@@ -918,27 +898,19 @@ body {
   gap: 14px;
 }
 
-.logo-img {
-  width: 58px;
-  height: 58px;
-  object-fit: contain;
-  display: block;
-  border-radius: 14px;
-  filter: drop-shadow(0 0 18px rgba(208, 241, 0, 0.22));
-}
 .logo-badge {
   width: 58px;
   height: 58px;
-  border-radius: 16px;
+  border-radius: 18px;
   display: grid;
   place-items: center;
-  color: var(--dark);
   background: var(--green);
+  color: var(--dark);
   font-weight: 950;
-  font-size: 30px;
-  letter-spacing: -2px;
-  box-shadow: 0 0 24px rgba(208, 241, 0, 0.28);
+  font-size: 32px;
+  box-shadow: 0 0 28px rgba(208, 241, 0, 0.22);
 }
+
 .brand-title {
   font-size: 23px;
   font-weight: 950;
@@ -979,6 +951,8 @@ kbd {
   letter-spacing: 0.25em;
   cursor: pointer;
   border-radius: 12px;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-weight: 800;
 }
 
 .settings-btn:hover {
@@ -1118,7 +1092,7 @@ kbd {
   letter-spacing: 0px;
   text-align: left;
   user-select: none;
--webkit-user-select: none;
+  -webkit-user-select: none;
 }
 
 .word {
@@ -1362,6 +1336,7 @@ kbd {
 .history-row b {
   color: var(--green);
 }
+
 .footer {
   position: relative;
   z-index: 2;
@@ -1391,6 +1366,10 @@ kbd {
   text-transform: uppercase;
   text-decoration: none;
   transition: color 0.2s ease, transform 0.2s ease;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: "Helvetica Neue", Arial, sans-serif;
 }
 
 .footer-link:hover {
@@ -1403,6 +1382,72 @@ kbd {
   outline-offset: 5px;
   border-radius: 6px;
 }
+
+.legal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: #ffffff;
+  color: #001033;
+  overflow-y: auto;
+  padding: 42px 70px;
+}
+
+.legal-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #ffffff;
+  color: #001033;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.legal-page h2 {
+  font-size: 38px;
+  line-height: 1.1;
+  margin: 0 0 30px;
+  color: #001033;
+  letter-spacing: -1px;
+}
+
+.legal-section {
+  margin-top: 34px;
+}
+
+.legal-section h3 {
+  font-size: 18px;
+  margin: 0 0 14px;
+  color: #000;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.legal-section p {
+  font-size: 18px;
+  line-height: 1.55;
+  margin: 12px 0;
+  color: #000;
+  font-weight: 500;
+}
+
+.legal-close {
+  position: fixed;
+  top: 22px;
+  right: 28px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: #001033;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.legal-close:hover {
+  background: var(--green);
+  color: #001033;
+}
+
 @media (max-width: 900px) {
   .footer {
     margin-top: 58px;
@@ -1417,6 +1462,7 @@ kbd {
     font-size: 12px;
     letter-spacing: 0.08em;
   }
+
   .app {
     padding: 0 22px 110px;
     overflow-y: auto;
@@ -1500,194 +1546,45 @@ kbd {
     gap: 16px;
   }
 }
+
 @media (max-width: 600px) {
   .app {
-    padding: 14px 14px 80px !important;
-    min-height: auto !important;
+    min-height: 100dvh !important;
+    padding: 14px 22px 90px !important;
     overflow-y: auto !important;
   }
+
   .topbar {
-    padding: 18px 0 12px;
-    gap: 16px;
+    padding: 14px 0 16px !important;
+    gap: 14px !important;
   }
 
-  .brand {
-    width: 100%;
-  }
-
-  .logo-img,
   .logo-badge {
-    width: 56px;
-    height: 56px;
+    width: 50px;
+    height: 50px;
+    font-size: 28px;
   }
 
   .brand-title {
-    font-size: 28px;
-    letter-spacing: -1px;
+    font-size: 27px !important;
   }
 
   .top-actions {
     width: 100%;
     justify-content: space-between;
-    gap: 10px;
+    gap: 8px;
   }
 
-  .key-hint {
-    font-size: 14px;
-  }
-
-  .mode-pill {
-    padding: 13px 20px;
-    font-size: 14px;
-    letter-spacing: 4px;
-  }
-
-  .hero {
-    margin-top: 26px;
-  }
-
-  .mini {
+  .top-actions span {
     font-size: 12px;
-    letter-spacing: 6px;
-    line-height: 1.5;
   }
 
-  .hero h1 {
-    font-size: 44px;
-    line-height: 0.95;
-    letter-spacing: -2.5px;
-    text-align: center;
+  .settings-btn {
+    padding: 10px 14px !important;
+    font-size: 12px !important;
+    letter-spacing: 0.16em !important;
   }
 
-  .start-note {
-    margin-top: 26px;
-  }
-
-  .start-note b {
-    font-size: 12px;
-    letter-spacing: 5px;
-  }
-
-  .start-note p {
-    font-size: 18px;
-  }
-
-  .panel {
-    margin-top: 36px;
-    padding: 28px 20px;
-    border-radius: 24px;
-  }
-
-  .panel-title {
-    font-size: 13px;
-    letter-spacing: 6px;
-    margin-bottom: 20px;
-  }
-
-  .button-row {
-    gap: 10px;
-    justify-content: center;
-  }
-
-  .button-row button {
-    padding: 12px 15px;
-    font-size: 14px;
-    letter-spacing: 2px;
-    border-radius: 15px;
-  }
-
-  .typing-wrap {
-    margin-top: 38px;
-  }
-
-  .typing-card {
-    padding: 24px 18px;
-    border-radius: 22px;
-  }
-
-  .typing-text {
-    font-size: 23px;
-    line-height: 1.7;
-  }
-
-  .stats {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .stat-value {
-    font-size: 30px;
-  }
-}
-
-
-
-@media (max-width: 900px) {
-  .mobile-type-dock {
-    position: fixed;
-    left: 14px;
-    right: 14px;
-    bottom: calc(env(safe-area-inset-bottom) + 12px);
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    border-radius: 20px;
-    background: rgba(7, 18, 50, 0.96);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.42);
-    backdrop-filter: blur(16px);
-  }
-
-  .mobile-keyboard-input {
-    flex: 1;
-    min-width: 0;
-    height: 48px;
-    opacity: 1;
-    position: static;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    outline: none;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.07);
-    color: #ffffff;
-    padding: 0 14px;
-    font-size: 16px;
-    font-weight: 800;
-    font-family: "Helvetica Neue", Arial, sans-serif;
-  }
-
-  .mobile-keyboard-input::placeholder {
-    color: rgba(255, 255, 255, 0.52);
-  }
-
-  .mobile-focus-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 48px;
-    min-width: 84px;
-    border: none;
-    border-radius: 16px;
-    background: rgb(208, 241, 0);
-    color: rgb(10, 10, 10);
-    font-size: 14px;
-    font-weight: 950;
-    letter-spacing: 0.14em;
-    cursor: pointer;
-    font-family: "Helvetica Neue", Arial, sans-serif;
-  }
-
-  .app {
-    padding-bottom: 130px !important;
-  }
-
-  .footer {
-    margin-bottom: 130px !important;
-  }
-}
-
-
-@media (max-width: 900px) {
   .hero,
   .controls,
   .best-box,
@@ -1695,37 +1592,56 @@ kbd {
     display: none !important;
   }
 
-  .app {
-    min-height: 100dvh !important;
-    padding: 18px 24px 80px !important;
-    overflow-y: auto !important;
-  }
-
-  .topbar {
-    padding: 12px 0 18px !important;
-    margin-bottom: 24px !important;
-  }
-
   .typing-wrap {
-    margin-top: 38px !important;
+    margin-top: 36px !important;
     padding-bottom: 120px !important;
   }
 
   .typing-text {
-    font-size: 31px !important;
-    line-height: 1.65 !important;
-    letter-spacing: -0.5px !important;
+    font-size: 30px !important;
+    line-height: 1.68 !important;
+    letter-spacing: -0.4px !important;
   }
 
   .restart {
-    margin: 48px auto 80px !important;
+    margin: 48px auto 90px !important;
     display: block !important;
+  }
+
+  .live-pill {
+    bottom: 14px;
+    font-size: 13px;
+  }
+
+  .legal-overlay {
+    padding: 28px 18px;
+  }
+
+  .legal-page h2 {
+    font-size: 32px;
+  }
+
+  .legal-section h3 {
+    font-size: 15px;
+  }
+
+  .legal-section p {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .legal-close {
+    top: 14px;
+    right: 14px;
+    width: 38px;
+    height: 38px;
+    font-size: 24px;
   }
 }
 
 @media (max-width: 420px) {
   .typing-text {
-    font-size: 29px !important;
+    font-size: 28px !important;
   }
 }
 `;
