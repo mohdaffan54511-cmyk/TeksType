@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-const MUSIC_SRC = "/bg-music.mp3.mp3";
+const MUSIC_SRC = "/bg-music.mp3";
 
 const WORDS = {
   words: [
@@ -68,13 +68,10 @@ const INFO_PAGES = {
       },
       {
         heading: "4. Contact",
-        text: [
-          "If you have questions, contact us at: contact@typeteks.online"
-        ],
+        text: ["If you have questions, contact us at: contact@typeteks.online"],
       },
     ],
   },
-
   terms: {
     title: "Terms of Use",
     sections: [
@@ -87,85 +84,68 @@ const INFO_PAGES = {
       },
       {
         heading: "2. No Guarantee",
-        text: [
-          "We try to keep TypeTeks useful and fast, but we do not guarantee that it will always be error-free or available."
-        ],
+        text: ["We try to keep TypeTeks useful and fast, but we do not guarantee that it will always be error-free or available."],
       },
     ],
   },
-
   contact: {
     title: "Contact",
     sections: [
-      {
-        heading: "Get in Touch",
-        text: [
-          "Have feedback, suggestions, or partnership ideas?",
-          "Email: contact@typeteks.online"
-        ],
-      },
+      { heading: "Get in Touch", text: ["Have feedback, suggestions, or partnership ideas?", "Email: contact@typeteks.online"] },
     ],
   },
-
   support: {
     title: "Support",
     sections: [
-      {
-        heading: "Need Help?",
-        text: [
-          "On mobile, tap the typing text to open the keyboard.",
-          "On desktop, use Tab to restart and Esc to pause."
-        ],
-      },
+      { heading: "Need Help?", text: ["On mobile, tap the typing text to open the keyboard.", "On desktop, use Tab to restart and Esc to pause."] },
     ],
   },
-
   security: {
     title: "Security",
     sections: [
-      {
-        heading: "Security",
-        text: [
-          "TypeTeks runs mainly inside your browser and does not ask for passwords, payment information, or private documents.",
-          "The website is served through secure HTTPS hosting."
-        ],
-      },
+      { heading: "Security", text: ["TypeTeks runs mainly inside your browser and does not ask for passwords, payment information, or private documents.", "The website is served through secure HTTPS hosting."] },
     ],
   },
 };
 
-const keySounds = [];
-let soundReady = false;
-let soundIndex = 0;
+let audioContext = null;
 
-function prepareSounds() {
-  if (soundReady) return;
+function unlockAudio() {
+  try {
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
 
-  for (let i = 0; i < 8; i += 1) {
-    const audio = new Audio("/sounds/key.mp3");
-    audio.volume = 0.8;
-    audio.preload = "auto";
-    keySounds.push(audio);
+    if (audioContext.state === "suspended") {
+      audioContext.resume();
+    }
+  } catch {
+    // Audio is optional.
   }
-
-  soundReady = true;
 }
 
 function playClick(type, enabled = true) {
   if (!enabled) return;
 
   try {
-    prepareSounds();
+    unlockAudio();
+    if (!audioContext) return;
 
-    const audio = keySounds[soundIndex % keySounds.length];
-    soundIndex += 1;
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    const now = audioContext.currentTime;
 
-    audio.currentTime = 0;
-    audio.volume = type === "wrong" ? 1 : 0.8;
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(type === "wrong" ? 150 : 520, now);
+    gain.gain.setValueAtTime(type === "wrong" ? 0.055 : 0.035, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
 
-    audio.play().catch(() => {});
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+    oscillator.start(now);
+    oscillator.stop(now + 0.05);
   } catch {
-    // Browser can block audio before first interaction.
+    // Keep typing even if audio fails.
   }
 }
 
@@ -173,11 +153,9 @@ function makeText(mode) {
   const pool = WORDS[mode] || WORDS.words;
   const count = mode === "bigrams" ? 55 : mode === "trigrams" ? 48 : 42;
   const arr = [];
-
   for (let i = 0; i < count; i += 1) {
     arr.push(pool[Math.floor(Math.random() * pool.length)]);
   }
-
   return arr.join(" ");
 }
 
@@ -188,38 +166,22 @@ function getAccuracy(correct, total) {
 
 function getWpm(correctChars, elapsedMs) {
   if (elapsedMs <= 0) return 0;
-
   const min = elapsedMs / 60000;
   return Math.round(correctChars / 5 / min);
 }
 
 function buildHeatmap(target, input, timings) {
   const map = {};
-
   for (let i = 1; i < input.length; i += 1) {
     const a = target[i - 1];
     const b = target[i];
-
     if (!a || !b || a === " " || b === " ") continue;
-
     const key = a + b;
     const correct = input[i] === target[i];
-
-    if (!map[key]) {
-      map[key] = {
-        combo: key,
-        count: 0,
-        totalMs: 0,
-        errors: 0,
-      };
-    }
-
+    if (!map[key]) map[key] = { combo: key, count: 0, totalMs: 0, errors: 0 };
     map[key].count += 1;
     map[key].totalMs += timings[i] || 0;
-
-    if (!correct) {
-      map[key].errors += 1;
-    }
+    if (!correct) map[key].errors += 1;
   }
 
   return Object.values(map)
@@ -228,9 +190,7 @@ function buildHeatmap(target, input, timings) {
       avgMs: Math.round(x.totalMs / x.count),
       errorRate: Math.round((x.errors / x.count) * 100),
     }))
-    .sort((a, b) => {
-      return b.avgMs + b.errorRate * 3 - (a.avgMs + a.errorRate * 3);
-    })
+    .sort((a, b) => b.avgMs + b.errorRate * 3 - (a.avgMs + a.errorRate * 3))
     .slice(0, 8);
 }
 
@@ -254,10 +214,7 @@ export default function App() {
   const [noBackspace, setNoBackspace] = useState(false);
   const [activePage, setActivePage] = useState(null);
 
-  const [best, setBest] = useState(() => {
-    return Number(localStorage.getItem("TypeTeks_best") || 0);
-  });
-
+  const [best, setBest] = useState(() => Number(localStorage.getItem("TypeTeks_best") || 0));
   const [history, setHistory] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("TypeTeks_history") || "[]");
@@ -265,7 +222,6 @@ export default function App() {
       return [];
     }
   });
-
   const [timings, setTimings] = useState({});
 
   const startTsRef = useRef(null);
@@ -278,29 +234,16 @@ export default function App() {
 
   const liveWpm = useMemo(() => {
     if (!running && !finished) return 0;
-
-    const usedMs =
-      running && startTsRef.current
-        ? Math.max(1, performance.now() - startTsRef.current)
-        : duration * 1000;
-
+    const usedMs = running && startTsRef.current ? Math.max(1, performance.now() - startTsRef.current) : duration * 1000;
     return getWpm(correctChars, usedMs);
   }, [correctChars, running, finished, duration, timeLeft]);
 
-  const liveAcc = useMemo(() => {
-    return getAccuracy(correctChars, totalKeystrokes);
-  }, [correctChars, totalKeystrokes]);
-
-  const heatmap = useMemo(() => {
-    if (!finished) return [];
-    return buildHeatmap(text, input, timings);
-  }, [finished, text, input, timings]);
-
+  const liveAcc = useMemo(() => getAccuracy(correctChars, totalKeystrokes), [correctChars, totalKeystrokes]);
+  const heatmap = useMemo(() => (finished ? buildHeatmap(text, input, timings) : []), [finished, text, input, timings]);
   const score = correctChars * 10 + maxStreak * 5 + liveWpm * 2;
 
   const focusTyping = useCallback(() => {
-    prepareSounds();
-
+    unlockAudio();
     if (window.matchMedia("(pointer: coarse)").matches) {
       mobileInputRef.current?.focus({ preventScroll: true });
     } else {
@@ -312,8 +255,11 @@ export default function App() {
     if (!bgMusicRef.current) {
       bgMusicRef.current = new Audio(MUSIC_SRC);
       bgMusicRef.current.loop = true;
-      bgMusicRef.current.volume = 0.16;
+      bgMusicRef.current.preload = "auto";
+      bgMusicRef.current.volume = 0.18;
     }
+
+    unlockAudio();
 
     if (musicOn) {
       bgMusicRef.current.pause();
@@ -321,26 +267,18 @@ export default function App() {
     } else {
       bgMusicRef.current
         .play()
-        .then(() => {
-          setMusicOn(true);
-        })
-        .catch((error) => {
-          console.log("Music blocked:", error);
-        });
+        .then(() => setMusicOn(true))
+        .catch((error) => console.log("Music blocked:", error));
     }
   }, [musicOn]);
 
   const finishTest = useCallback(() => {
     if (finishedRef.current) return;
-
     finishedRef.current = true;
     setRunning(false);
     setFinished(true);
 
-    const elapsed = startTsRef.current
-      ? Math.max(1, performance.now() - startTsRef.current)
-      : duration * 1000;
-
+    const elapsed = startTsRef.current ? Math.max(1, performance.now() - startTsRef.current) : duration * 1000;
     const finalWpm = getWpm(correctChars, elapsed);
 
     setBest((oldBest) => {
@@ -360,62 +298,40 @@ export default function App() {
 
     setHistory((oldHistory) => {
       const nextHistory = [entry, ...oldHistory].slice(0, 6);
-      localStorage.setItem(
-        "TypeTeks_history",
-        JSON.stringify(nextHistory)
-      );
+      localStorage.setItem("TypeTeks_history", JSON.stringify(nextHistory));
       return nextHistory;
     });
   }, [correctChars, duration, liveAcc, mode, score]);
 
-  const reset = useCallback(
-    (nextMode = mode, nextDuration = duration) => {
-      setMode(nextMode);
-      setDuration(nextDuration);
-      setText(makeText(nextMode));
-      setInput("");
+  const reset = useCallback((nextMode = mode, nextDuration = duration) => {
+    setMode(nextMode);
+    setDuration(nextDuration);
+    setText(makeText(nextMode));
+    setInput("");
+    setRunning(false);
+    setFinished(false);
+    finishedRef.current = false;
+    setTimeLeft(nextDuration);
+    setCorrectChars(0);
+    setTotalKeystrokes(0);
+    setStreak(0);
+    setMaxStreak(0);
+    setTimings({});
+    startTsRef.current = null;
+    lastKeyTsRef.current = null;
+    mobileRawRef.current = "";
+    if (mobileInputRef.current) mobileInputRef.current.value = "";
 
-      setRunning(false);
-      setFinished(false);
-      finishedRef.current = false;
-      setTimeLeft(nextDuration);
-
-      setCorrectChars(0);
-      setTotalKeystrokes(0);
-      setStreak(0);
-      setMaxStreak(0);
-      setTimings({});
-
-      startTsRef.current = null;
-      lastKeyTsRef.current = null;
-
-      mobileRawRef.current = "";
-
-      if (mobileInputRef.current) {
-        mobileInputRef.current.value = "";
-      }
-
-      setTimeout(() => {
-        focusTyping();
-      }, 80);
-    },
-    [duration, focusTyping, mode]
-  );
+    setTimeout(() => focusTyping(), 80);
+  }, [duration, focusTyping, mode]);
 
   useEffect(() => {
     if (!running || finished) return;
-
     const timer = setInterval(() => {
-      const elapsed = Math.floor(
-        (performance.now() - startTsRef.current) / 1000
-      );
-
+      const elapsed = Math.floor((performance.now() - startTsRef.current) / 1000);
       const left = Math.max(0, duration - elapsed);
       setTimeLeft(left);
-
-      if (left <= 0) {
-        finishTest();
-      }
+      if (left <= 0) finishTest();
     }, 100);
 
     return () => clearInterval(timer);
@@ -424,199 +340,124 @@ export default function App() {
   const removeLastChar = useCallback(() => {
     setInput((prevInput) => {
       if (!prevInput.length) return prevInput;
-
       const removeIndex = prevInput.length - 1;
-      const wasCorrect =
-        prevInput[removeIndex] === text[removeIndex];
-
+      const wasCorrect = prevInput[removeIndex] === text[removeIndex];
       setTotalKeystrokes((x) => Math.max(0, x - 1));
-
-      if (wasCorrect) {
-        setCorrectChars((x) => Math.max(0, x - 1));
-      }
-
+      if (wasCorrect) setCorrectChars((x) => Math.max(0, x - 1));
       return prevInput.slice(0, -1);
     });
   }, [text]);
 
-  const processTypedKey = useCallback(
-    (key) => {
-      if (!key || key.length !== 1 || finishedRef.current) {
-        return;
+  const processTypedKey = useCallback((key) => {
+    if (!key || key.length !== 1 || finishedRef.current) return;
+
+    setInput((prevInput) => {
+      if (prevInput.length >= text.length) return prevInput;
+
+      if (!startTsRef.current) {
+        setRunning(true);
+        startTsRef.current = performance.now();
+        lastKeyTsRef.current = performance.now();
       }
 
-      setInput((prevInput) => {
-        if (prevInput.length >= text.length) {
-          return prevInput;
-        }
+      const index = prevInput.length;
+      const expected = text[index];
+      const now = performance.now();
+      const delta = lastKeyTsRef.current ? now - lastKeyTsRef.current : 0;
+      lastKeyTsRef.current = now;
 
-        if (!startTsRef.current) {
-          setRunning(true);
-          startTsRef.current = performance.now();
-          lastKeyTsRef.current = performance.now();
-        }
+      setTimings((prev) => ({ ...prev, [index]: delta }));
 
-        const index = prevInput.length;
-        const expected = text[index];
+      const isCorrect = key === expected;
+      setTotalKeystrokes((x) => x + 1);
 
-        const now = performance.now();
-        const delta = lastKeyTsRef.current
-          ? now - lastKeyTsRef.current
-          : 0;
-
-        lastKeyTsRef.current = now;
-
-        setTimings((prev) => ({
-          ...prev,
-          [index]: delta,
-        }));
-
-        const isCorrect = key === expected;
-
-        setTotalKeystrokes((x) => x + 1);
-
-        if (isCorrect) {
-          setCorrectChars((x) => x + 1);
-
-          setStreak((s) => {
-            const next = s + 1;
-            setMaxStreak((m) => Math.max(m, next));
-            return next;
-          });
-
-          playClick("correct", sound);
-        } else {
-          setStreak(0);
-          playClick("wrong", sound);
-        }
-
-        const nextInput = prevInput + key;
-
-        if (nextInput.length >= text.length) {
-          setTimeout(() => {
-            finishTest();
-          }, 50);
-        }
-
-        return nextInput;
-      });
-    },
-    [finishTest, sound, text]
-  );
-
-  const handleKey = useCallback(
-    (e) => {
-      if (e.ctrlKey || e.altKey || e.metaKey) return;
-
-      if (e.key === "Tab") {
-        e.preventDefault();
-        reset();
-        return;
+      if (isCorrect) {
+        setCorrectChars((x) => x + 1);
+        setStreak((s) => {
+          const next = s + 1;
+          setMaxStreak((m) => Math.max(m, next));
+          return next;
+        });
+        playClick("correct", sound);
+      } else {
+        setStreak(0);
+        playClick("wrong", sound);
       }
 
-      if (e.key === "Escape") {
-        e.preventDefault();
-        setRunning(false);
-        return;
-      }
+      const nextInput = prevInput + key;
+      if (nextInput.length >= text.length) setTimeout(() => finishTest(), 50);
+      return nextInput;
+    });
+  }, [finishTest, sound, text]);
 
-      if (finishedRef.current) return;
+  const handleKey = useCallback((e) => {
+    if (e.ctrlKey || e.altKey || e.metaKey) return;
 
-      if (
-        ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(
-          e.key
-        )
-      ) {
-        e.preventDefault();
-      }
-
-      if (e.key === "Backspace") {
-        e.preventDefault();
-
-        if (!noBackspace) {
-          removeLastChar();
-        }
-
-        return;
-      }
-
-      if (e.key.length !== 1) return;
-
+    if (e.key === "Tab") {
       e.preventDefault();
-      processTypedKey(e.key);
-    },
-    [noBackspace, processTypedKey, removeLastChar, reset]
-  );
+      reset();
+      return;
+    }
 
-  const handleMobileInput = useCallback(
-    (e) => {
-      const value = e.currentTarget.value;
-      const oldValue = mobileRawRef.current;
+    if (e.key === "Escape") {
+      e.preventDefault();
+      setRunning(false);
+      return;
+    }
 
-      if (value.length > oldValue.length) {
-        const added = value.slice(oldValue.length);
+    if (finishedRef.current) return;
 
-        for (const ch of added) {
-          processTypedKey(ch);
-        }
-      }
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)) e.preventDefault();
 
-      if (value.length < oldValue.length && !noBackspace) {
-        const removeCount = oldValue.length - value.length;
+    if (e.key === "Backspace") {
+      e.preventDefault();
+      if (!noBackspace) removeLastChar();
+      return;
+    }
 
-        for (let i = 0; i < removeCount; i += 1) {
-          removeLastChar();
-        }
-      }
+    if (e.key.length !== 1) return;
+    e.preventDefault();
+    processTypedKey(e.key);
+  }, [noBackspace, processTypedKey, removeLastChar, reset]);
 
-      mobileRawRef.current = value;
-    },
-    [noBackspace, processTypedKey, removeLastChar]
-  );
+  const handleMobileInput = useCallback((e) => {
+    const value = e.currentTarget.value;
+    const oldValue = mobileRawRef.current;
 
-  const handleMobileKeyDown = useCallback(
-    (e) => {
-      e.stopPropagation();
+    if (value.length > oldValue.length) {
+      const added = value.slice(oldValue.length);
+      for (const ch of added) processTypedKey(ch);
+    }
 
-      if (e.key === "Backspace" && noBackspace) {
-        e.preventDefault();
-      }
-    },
-    [noBackspace]
-  );
+    if (value.length < oldValue.length && !noBackspace) {
+      const removeCount = oldValue.length - value.length;
+      for (let i = 0; i < removeCount; i += 1) removeLastChar();
+    }
+
+    mobileRawRef.current = value;
+  }, [noBackspace, processTypedKey, removeLastChar]);
+
+  const handleMobileKeyDown = useCallback((e) => {
+    e.stopPropagation();
+    if (e.key === "Backspace" && noBackspace) e.preventDefault();
+  }, [noBackspace]);
 
   useEffect(() => {
     const node = appRef.current;
-
     if (!node) return;
-
     node.focus();
     node.addEventListener("keydown", handleKey);
-
-    return () => {
-      node.removeEventListener("keydown", handleKey);
-    };
+    return () => node.removeEventListener("keydown", handleKey);
   }, [handleKey]);
 
   useEffect(() => {
-    return () => {
-      bgMusicRef.current?.pause();
-    };
+    return () => bgMusicRef.current?.pause();
   }, []);
 
   function charClass(i) {
-    if (i === input.length && !finished) {
-      return "char current";
-    }
-
-    if (i >= input.length) {
-      return "char muted";
-    }
-
-    if (input[i] === text[i]) {
-      return "char correct";
-    }
-
+    if (i === input.length && !finished) return "char current";
+    if (i >= input.length) return "char muted";
+    if (input[i] === text[i]) return "char correct";
     return "char wrong";
   }
 
@@ -628,7 +469,6 @@ export default function App() {
       const letters = word.split("").map((ch) => {
         const index = globalIndex;
         globalIndex += 1;
-
         return (
           <span key={index} className={charClass(index)}>
             {ch}
@@ -642,12 +482,7 @@ export default function App() {
       return (
         <span className="word" key={wordIndex}>
           {letters}
-
-          {wordIndex < words.length - 1 && (
-            <span className={charClass(spaceIndex)}>
-              &nbsp;
-            </span>
-          )}
+          {wordIndex < words.length - 1 && <span className={charClass(spaceIndex)}>&nbsp;</span>}
         </span>
       );
     });
@@ -657,9 +492,7 @@ export default function App() {
     <main
       ref={appRef}
       tabIndex={0}
-      className={`app ${
-        running || input.length > 0 ? "typing-active" : ""
-      }`}
+      className={`app ${running || input.length > 0 ? "typing-active" : ""}`}
       onPointerDown={focusTyping}
     >
       <style>{css}</style>
@@ -682,34 +515,21 @@ export default function App() {
       <header className="topbar">
         <div className="brand">
           <div className="logo-badge">T</div>
-
           <div>
             <div className="brand-title">TypeTeks</div>
           </div>
         </div>
 
         <div className="top-actions">
-          <span>
-            <kbd>Tab</kbd> restart
-          </span>
-
+          <span><kbd>Tab</kbd> restart</span>
           <span>·</span>
+          <span><kbd>Esc</kbd> pause</span>
 
-          <span>
-            <kbd>Esc</kbd> pause
-          </span>
-
-          <button
-            className="settings-btn"
-            onClick={() => setNoBackspace((v) => !v)}
-          >
+          <button className="settings-btn" onClick={() => setNoBackspace((v) => !v)}>
             {noBackspace ? "NO BACKSPACE" : "STANDARD"}
           </button>
 
-          <button
-            className="settings-btn music-btn"
-            onClick={toggleMusic}
-          >
+          <button className="settings-btn music-btn" onClick={toggleMusic}>
             {musicOn ? "MUSIC ON" : "MUSIC OFF"}
           </button>
         </div>
@@ -717,12 +537,7 @@ export default function App() {
 
       <section className={`hero ${running ? "fade" : ""}`}>
         <div>
-          <div className="mini">
-            MICRO-BLITZ ·{" "}
-            {duration === 300 ? "5 MIN" : `${duration}S`} ·{" "}
-            {mode.toUpperCase()}
-          </div>
-
+          <div className="mini">MICRO-BLITZ · {duration === 300 ? "5 MIN" : `${duration}S`} · {mode.toUpperCase()}</div>
           <h1>
             Type at the speed
             <br />
@@ -736,27 +551,11 @@ export default function App() {
         </div>
       </section>
 
-      <section
-        className={`controls ${
-          running ? "hidden-soft" : ""
-        }`}
-      >
+      <section className={`controls ${running ? "hidden-soft" : ""}`}>
         <div className="row">
           <div className="label">CONTENT</div>
-
-          {[
-            "words",
-            "bigrams",
-            "trigrams",
-            "code",
-            "business",
-            "quotes",
-          ].map((m) => (
-            <button
-              key={m}
-              onClick={() => reset(m, duration)}
-              className={mode === m ? "active" : ""}
-            >
+          {["words", "bigrams", "trigrams", "code", "business", "quotes"].map((m) => (
+            <button key={m} onClick={() => reset(m, duration)} className={mode === m ? "active" : ""}>
               {m === "words" && "T WORDS"}
               {m === "bigrams" && "# BIGRAMS"}
               {m === "trigrams" && "▦ TRIGRAMS"}
@@ -769,77 +568,35 @@ export default function App() {
 
         <div className="row">
           <div className="label">◷ TIME</div>
-
           {[15, 30, 60, 300].map((t) => (
-            <button
-              key={t}
-              onClick={() => reset(mode, t)}
-              className={duration === t ? "active" : ""}
-            >
+            <button key={t} onClick={() => reset(mode, t)} className={duration === t ? "active" : ""}>
               {t === 300 ? "5 min" : `${t}s`}
             </button>
           ))}
-
-          <button onClick={() => setSound((v) => !v)}>
-            {sound ? "SOUND ON" : "SOUND OFF"}
-          </button>
-
-          <button
-            onClick={() => {
-              prepareSounds();
-              playClick("correct", true);
-            }}
-          >
-            TEST SOUND
-          </button>
+          <button onClick={() => setSound((v) => !v)}>{sound ? "SOUND ON" : "SOUND OFF"}</button>
+          <button onClick={() => { unlockAudio(); playClick("correct", true); }}>TEST SOUND</button>
         </div>
       </section>
 
       {!finished && (
-        <section
-          className="typing-wrap"
-          onClick={focusTyping}
-        >
-          <div className="typing-text">
-            {renderTypingText()}
-          </div>
+        <section className="typing-wrap" onClick={focusTyping}>
+          <div className="typing-text">{renderTypingText()}</div>
         </section>
       )}
 
       {!finished && (
-        <button
-          className="restart"
-          onClick={() => reset()}
-        >
+        <button className="restart" onClick={() => reset()}>
           RESTART · <kbd>TAB</kbd>
         </button>
       )}
 
       {!running && !finished && (
         <section className="best-box">
-          <div className="box-title">
-            ♜ PERSONAL BESTS
-          </div>
-
+          <div className="box-title">♜ PERSONAL BESTS</div>
           <div className="best-grid">
-            <div>
-              <span>Best WPM</span>
-              <b>{best}</b>
-            </div>
-
-            <div>
-              <span>Mode</span>
-              <b>{mode}</b>
-            </div>
-
-            <div>
-              <span>Time</span>
-              <b>
-                {duration === 300
-                  ? "5 min"
-                  : `${duration}s`}
-              </b>
-            </div>
+            <div><span>Best WPM</span><b>{best}</b></div>
+            <div><span>Mode</span><b>{mode}</b></div>
+            <div><span>Time</span><b>{duration === 300 ? "5 min" : `${duration}s`}</b></div>
           </div>
         </section>
       )}
@@ -856,97 +613,40 @@ export default function App() {
         <section className="results">
           <div className="result-head">
             <div>
-              <div className="mini">
-                SESSION COMPLETE
-              </div>
-
+              <div className="mini">SESSION COMPLETE</div>
               <h2>{liveWpm} WPM</h2>
-
-              <p>
-                Accuracy {liveAcc}% · Score {score} · Best{" "}
-                {Math.max(best, liveWpm)} WPM
-              </p>
+              <p>Accuracy {liveAcc}% · Score {score} · Best {Math.max(best, liveWpm)} WPM</p>
             </div>
-
-            <button onClick={() => reset()}>
-              NEW BLITZ
-            </button>
+            <button onClick={() => reset()}>NEW BLITZ</button>
           </div>
 
           <div className="stats">
-            <div>
-              <span>WPM</span>
-              <b>{liveWpm}</b>
-            </div>
-
-            <div>
-              <span>Accuracy</span>
-              <b>{liveAcc}%</b>
-            </div>
-
-            <div>
-              <span>Max Streak</span>
-              <b>{maxStreak}</b>
-            </div>
-
-            <div>
-              <span>Score</span>
-              <b>{score}</b>
-            </div>
+            <div><span>WPM</span><b>{liveWpm}</b></div>
+            <div><span>Accuracy</span><b>{liveAcc}%</b></div>
+            <div><span>Max Streak</span><b>{maxStreak}</b></div>
+            <div><span>Score</span><b>{score}</b></div>
           </div>
 
           <div className="heatmap">
             <h3>Slowest Letter Chunks</h3>
-
-            {heatmap.length === 0 && (
-              <p>No heatmap data yet.</p>
-            )}
-
+            {heatmap.length === 0 && <p>No heatmap data yet.</p>}
             {heatmap.map((item) => (
-              <div
-                className="heat-row"
-                key={item.combo}
-              >
+              <div className="heat-row" key={item.combo}>
                 <b>{item.combo}</b>
-
-                <div>
-                  <span
-                    style={{
-                      width: `${Math.min(
-                        100,
-                        item.avgMs / 4
-                      )}%`,
-                    }}
-                  />
-                </div>
-
-                <small>
-                  {item.avgMs}ms · {item.errorRate}%
-                </small>
+                <div><span style={{ width: `${Math.min(100, item.avgMs / 4)}%` }} /></div>
+                <small>{item.avgMs}ms · {item.errorRate}%</small>
               </div>
             ))}
           </div>
 
           <div className="history">
             <h3>Recent Sessions</h3>
-
-            {history.length === 0 && (
-              <p>No history yet.</p>
-            )}
-
+            {history.length === 0 && <p>No history yet.</p>}
             {history.map((h, i) => (
-              <div
-                className="history-row"
-                key={i}
-              >
+              <div className="history-row" key={i}>
                 <span>{h.date}</span>
                 <b>{h.wpm} WPM</b>
-                <small>
-                  {h.acc}% · {h.mode} ·{" "}
-                  {h.duration === 300
-                    ? "5 min"
-                    : `${h.duration}s`}
-                </small>
+                <small>{h.acc}% · {h.mode} · {h.duration === 300 ? "5 min" : `${h.duration}s`}</small>
               </div>
             ))}
           </div>
@@ -954,90 +654,26 @@ export default function App() {
       )}
 
       <footer className="footer">
-        <nav
-          className="footer-links"
-          aria-label="Footer navigation"
-        >
-          <button
-            type="button"
-            className="footer-link"
-            onClick={() => setActivePage("contact")}
-          >
-            Contact
-          </button>
-
-          <button
-            type="button"
-            className="footer-link"
-            onClick={() => setActivePage("support")}
-          >
-            Support
-          </button>
-
-          <button
-            type="button"
-            className="footer-link"
-            onClick={() => setActivePage("terms")}
-          >
-            Terms
-          </button>
-
-          <button
-            type="button"
-            className="footer-link"
-            onClick={() => setActivePage("security")}
-          >
-            Security
-          </button>
-
-          <button
-            type="button"
-            className="footer-link"
-            onClick={() => setActivePage("privacy")}
-          >
-            Privacy
-          </button>
+        <nav className="footer-links" aria-label="Footer navigation">
+          <button type="button" className="footer-link" onClick={() => setActivePage("contact")}>Contact</button>
+          <button type="button" className="footer-link" onClick={() => setActivePage("support")}>Support</button>
+          <button type="button" className="footer-link" onClick={() => setActivePage("terms")}>Terms</button>
+          <button type="button" className="footer-link" onClick={() => setActivePage("security")}>Security</button>
+          <button type="button" className="footer-link" onClick={() => setActivePage("privacy")}>Privacy</button>
         </nav>
       </footer>
 
       {activePage && (
-        <section
-          className="legal-overlay"
-          onClick={() => setActivePage(null)}
-        >
-          <article
-            className="legal-page"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="legal-close"
-              onClick={() => setActivePage(null)}
-            >
-              ×
-            </button>
-
-            <h2>
-              {INFO_PAGES[activePage].title}
-            </h2>
-
-            {INFO_PAGES[activePage].sections.map(
-              (section, index) => (
-                <div
-                  className="legal-section"
-                  key={index}
-                >
-                  <h3>{section.heading}</h3>
-
-                  {section.text.map(
-                    (paragraph, pIndex) => (
-                      <p key={pIndex}>
-                        {paragraph}
-                      </p>
-                    )
-                  )}
-                </div>
-              )
-            )}
+        <section className="legal-overlay" onClick={() => setActivePage(null)}>
+          <article className="legal-page" onClick={(e) => e.stopPropagation()}>
+            <button className="legal-close" onClick={() => setActivePage(null)}>×</button>
+            <h2>{INFO_PAGES[activePage].title}</h2>
+            {INFO_PAGES[activePage].sections.map((section, index) => (
+              <div className="legal-section" key={index}>
+                <h3>{section.heading}</h3>
+                {section.text.map((paragraph, pIndex) => <p key={pIndex}>{paragraph}</p>)}
+              </div>
+            ))}
           </article>
         </section>
       )}
@@ -1080,22 +716,9 @@ body {
   min-height: 100vh;
   color: var(--white);
   background:
-    radial-gradient(
-      circle at 20% 20%,
-      rgba(0, 80, 248, 0.22),
-      transparent 34%
-    ),
-    radial-gradient(
-      circle at 80% 10%,
-      rgba(208, 241, 0, 0.12),
-      transparent 28%
-    ),
-    linear-gradient(
-      135deg,
-      var(--dark),
-      var(--dark-10) 55%,
-      var(--dark)
-    );
+    radial-gradient(circle at 20% 20%, rgba(0, 80, 248, 0.22), transparent 34%),
+    radial-gradient(circle at 80% 10%, rgba(208, 241, 0, 0.12), transparent 28%),
+    linear-gradient(135deg, var(--dark), var(--dark-10) 55%, var(--dark));
   font-family: "Helvetica Neue", Arial, sans-serif;
   outline: none;
   position: relative;
@@ -1124,22 +747,15 @@ body {
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(
-      rgba(255,255,255,0.035) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      rgba(255,255,255,0.035) 1px,
-      transparent 1px
-    );
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
   background-size: 64px 64px;
   opacity: 0.45;
 }
 
 .topbar {
   height: 86px;
-  border-bottom: 1px solid var(--border-white);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1244,6 +860,8 @@ kbd {
   margin: 18px 0 0;
   letter-spacing: -6px;
   font-weight: 950;
+  color: var(--white);
+  text-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
 }
 
 .hero h1 span {
@@ -1342,7 +960,7 @@ kbd {
   white-space: normal;
   overflow-wrap: normal;
   word-break: normal;
-  letter-spacing: 0;
+  letter-spacing: 0px;
   text-align: left;
   user-select: none;
   -webkit-user-select: none;
@@ -1355,9 +973,7 @@ kbd {
 
 .char {
   position: relative;
-  transition:
-    color 0.04s linear,
-    background 0.04s linear;
+  transition: color 0.04s linear, background 0.04s linear;
 }
 
 .char.muted {
@@ -1392,14 +1008,8 @@ kbd {
 }
 
 @keyframes caret {
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.3;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
 
 .restart {
@@ -1619,9 +1229,7 @@ kbd {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   text-decoration: none;
-  transition:
-    color 0.2s ease,
-    transform 0.2s ease;
+  transition: color 0.2s ease, transform 0.2s ease;
   background: transparent;
   border: none;
   cursor: pointer;
