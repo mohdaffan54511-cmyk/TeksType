@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-const logo = "/TeksType.png";
 const WORDS = {
   words: [
     "home", "now", "even", "used", "said", "government", "once", "any", "to", "and",
@@ -569,7 +568,7 @@ export default function App() {
 
       <header className="topbar">
         <div className="brand">
-          <img src={logo} alt="TypeTeks logo" className="logo-img" />
+          <img src="/TeksType.png" alt="TypeTeks logo" className="logo-img" />
           <div>
             <div className="brand-title">TypeTeks</div>
             <div className="brand-sub">Typing performance lab</div>
@@ -813,7 +812,7 @@ body {
   margin: 0;
   background: var(--lavender-50);
   color: var(--ink);
- font-family: "Roboto", Arial, sans-serif;
+  font-family: "Roboto", Arial, sans-serif;
   overflow-x: hidden;
 }
 
