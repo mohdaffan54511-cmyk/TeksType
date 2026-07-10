@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-const logo = "/TeksType.png";
+const logo = "/TypeTeks.png";
 const WORDS = {
   words: [
     "home", "now", "even", "used", "said", "government", "once", "any", "to", "and",
