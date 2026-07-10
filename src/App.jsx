@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import logo from "../TypeTeks.png";
+import logo from "../TeksType.png";
 import bgMusic from "../bg-music.mp3";
 
 const WORDS = {
