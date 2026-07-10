@@ -211,6 +211,8 @@ export default function App() {
 
   const [sound, setSound] = useState(true);
   const [musicOn, setMusicOn] = useState(false);
+const bgMusicRef = useRef(null);
+  const [musicOn, setMusicOn] = useState(false);
   const [noBackspace, setNoBackspace] = useState(false);
   const [activePage, setActivePage] = useState(null);
 
@@ -302,7 +304,21 @@ export default function App() {
       return nextHistory;
     });
   }, [correctChars, duration, liveAcc, mode, score]);
+const toggleMusic = useCallback(() => {
+  if (!bgMusicRef.current) {
+    bgMusicRef.current = new Audio(MUSIC_SRC);
+    bgMusicRef.current.loop = true;
+    bgMusicRef.current.volume = 0.18;
+  }
 
+  if (musicOn) {
+    bgMusicRef.current.pause();
+    setMusicOn(false);
+  } else {
+    bgMusicRef.current.play();
+    setMusicOn(true);
+  }
+}, [musicOn]);
   const reset = useCallback((nextMode = mode, nextDuration = duration) => {
     setMode(nextMode);
     setDuration(nextDuration);
@@ -526,7 +542,13 @@ export default function App() {
           <span><kbd>Esc</kbd> pause</span>
 
           <button className="settings-btn" onClick={() => setNoBackspace((v) => !v)}>
-            {noBackspace ? "NO BACKSPACE" : "STANDARD"}
+            {noBackspace ? "NO BACKSPACE" : "STANDARD"} <button
+  className="settings-btn music-btn"
+  type="button"
+  onClick={toggleMusic}
+>
+  {musicOn ? "MUSIC ON" : "MUSIC OFF"}
+</button>
           </button>
 
           <button className="settings-btn music-btn" onClick={toggleMusic}>
@@ -1486,5 +1508,13 @@ kbd {
   .typing-text {
     font-size: 28px !important;
   }
+}
+.music-btn {
+  border-color: rgba(208, 241, 0, 0.4);
+}
+
+.music-btn:hover {
+  color: var(--green);
+  background: rgba(208, 241, 0, 0.08);
 }
 `;
