@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-const MUSIC_SRC = "/bg-music.mp3";
+const MUSIC_SRC = new URL("../bg-music.mp3", import.meta.url).href;
 
 const WORDS = {
   words: [
@@ -211,8 +211,6 @@ export default function App() {
 
   const [sound, setSound] = useState(true);
   const [musicOn, setMusicOn] = useState(false);
-const bgMusicRef = useRef(null);
-  const [musicOn, setMusicOn] = useState(false);
   const [noBackspace, setNoBackspace] = useState(false);
   const [activePage, setActivePage] = useState(null);
 
@@ -304,21 +302,6 @@ const bgMusicRef = useRef(null);
       return nextHistory;
     });
   }, [correctChars, duration, liveAcc, mode, score]);
-const toggleMusic = useCallback(() => {
-  if (!bgMusicRef.current) {
-    bgMusicRef.current = new Audio(MUSIC_SRC);
-    bgMusicRef.current.loop = true;
-    bgMusicRef.current.volume = 0.18;
-  }
-
-  if (musicOn) {
-    bgMusicRef.current.pause();
-    setMusicOn(false);
-  } else {
-    bgMusicRef.current.play();
-    setMusicOn(true);
-  }
-}, [musicOn]);
   const reset = useCallback((nextMode = mode, nextDuration = duration) => {
     setMode(nextMode);
     setDuration(nextDuration);
@@ -541,17 +524,19 @@ const toggleMusic = useCallback(() => {
           <span>·</span>
           <span><kbd>Esc</kbd> pause</span>
 
-          <button className="settings-btn" onClick={() => setNoBackspace((v) => !v)}>
-            {noBackspace ? "NO BACKSPACE" : "STANDARD"} <button
-  className="settings-btn music-btn"
-  type="button"
-  onClick={toggleMusic}
->
-  {musicOn ? "MUSIC ON" : "MUSIC OFF"}
-</button>
+          <button
+            type="button"
+            className="settings-btn"
+            onClick={() => setNoBackspace((v) => !v)}
+          >
+            {noBackspace ? "NO BACKSPACE" : "STANDARD"}
           </button>
 
-          <button className="settings-btn music-btn" onClick={toggleMusic}>
+          <button
+            type="button"
+            className="settings-btn music-btn"
+            onClick={toggleMusic}
+          >
             {musicOn ? "MUSIC ON" : "MUSIC OFF"}
           </button>
         </div>
