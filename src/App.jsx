@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import logo from "../TeksType.png";
-const bgMusic = "/bg-music.mp3";
 
 const WORDS = {
   words: [
@@ -224,7 +223,6 @@ export default function App() {
   const [maxStreak, setMaxStreak] = useState(0);
 
   const [soundOn, setSoundOn] = useState(true);
-  const [musicOn, setMusicOn] = useState(false);
   const [noBackspace, setNoBackspace] = useState(false);
   const [activePage, setActivePage] = useState(null);
 
@@ -280,30 +278,6 @@ export default function App() {
       appRef.current?.focus();
     }
   }, []);
-
-  const toggleMusic = useCallback(async () => {
-    if (!musicRef.current) {
-      const audio = new Audio(bgMusic);
-      audio.loop = true;
-      audio.preload = "auto";
-      audio.volume = 0.16;
-      musicRef.current = audio;
-    }
-
-    if (musicOn) {
-      musicRef.current.pause();
-      setMusicOn(false);
-      return;
-    }
-
-    try {
-      await musicRef.current.play();
-      setMusicOn(true);
-    } catch (error) {
-      console.error("Music could not start:", error);
-      setMusicOn(false);
-    }
-  }, [musicOn]);
 
   const finishTest = useCallback(() => {
     if (finishedRef.current) return;
@@ -613,13 +587,6 @@ export default function App() {
             {noBackspace ? "NO BACKSPACE" : "STANDARD"}
           </button>
 
-          <button
-            className={`settings-btn music-btn ${musicOn ? "is-on" : ""}`}
-            type="button"
-            onClick={toggleMusic}
-          >
-            {musicOn ? "MUSIC ON" : "MUSIC OFF"}
-          </button>
         </div>
       </header>
 
@@ -986,11 +953,6 @@ kbd {
   border-color: var(--purple-500);
 }
 
-.music-btn.is-on {
-  color: var(--white);
-  background: linear-gradient(135deg, var(--purple-600), var(--purple-700));
-  border-color: transparent;
-}
 
 .hero {
   padding: 72px 0 34px;
