@@ -1713,20 +1713,7 @@ kbd {
     margin-bottom: 130px !important;
   }
 }
-.mobile-keyboard-input {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: transparent;
-  font-size: 16px;
-  z-index: -1;
-}
+
 
 @media (max-width: 900px) {
   .hero,
