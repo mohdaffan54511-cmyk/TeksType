@@ -840,34 +840,6 @@ const [activePage, setActivePage] = useState(null);
   </section>
 )}
 
-      <div className="mobile-type-dock">
-        <input
-          ref={mobileInputRef}
-          type="text"
-          inputMode="text"
-          autoCapitalize="off"
-          autoCorrect="off"
-          autoComplete="off"
-          spellCheck={false}
-          className="mobile-keyboard-input"
-          placeholder="Keep typing here..."
-          onBeforeInput={handleMobileBeforeInput}
-          onInput={handleMobileInput}
-          onKeyDown={handleMobileKeyDown}
-        />
-
-        <button
-          type="button"
-          className="mobile-focus-btn"
-          onClick={focusMobileInput}
-        >
-          TYPE
-        </button>
-      </div>
-    </main>
-  );
-}
-
 const css = `
 :root {
   --blue: rgb(0, 80, 248);
