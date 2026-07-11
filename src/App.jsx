@@ -72,6 +72,7 @@ const WORDS = {
     "Ek boy ko stage par speech deni thi. Haath kaanp rahe the, voice slow thi. Usne first line boli, phir second. Speech perfect nahi thi, lekin woh stage se stronger utara.",
     "Dost ne poocha, strong kaise bante hain? Maine kaha, jab life easy ho tab nahi. Jab problem ho, phir bhi sahi decision lo, tab strength build hoti hai."
   ],
+
   motivation: [
     "Aaj ka kaam chhota ho sakta hai, lekin progress chhoti nahi hoti. Roz ek step lo. Kabhi speed slow hogi, kabhi confidence low hoga. Lekin rukna mat. Discipline mood ka wait nahi karta. Jo aaj practice karta hai, wahi kal result dekhta hai.",
     "Dost bola, success kab milegi? Maine kaha, jab excuses kam aur action zyada hoga. Har din perfect nahi hota. Lekin har din useful ho sakta hai. Chhoti jeet ko ignore mat karo. Wahi milkar badi success banati hai.",
@@ -85,6 +86,7 @@ const WORDS = {
     "Teacher: Homework kahan hai? Student: Maam, dog ne nahi khaya. Teacher: Phir? Student: Wi-Fi gaya tha, isliye excuse download nahi ho paya."
   ],
 };
+
 const INFO_PAGES = {
   privacy: {
     title: "Privacy Policy",
@@ -535,19 +537,14 @@ export default function App() {
         for (const character of added) {
           processTypedKey(character);
         }
-      } else if (value.length < previousValue.length) {
-        if (noBackspace) {
-          event.currentTarget.value = previousValue;
-          return;
-        }
-
+      } else if (value.length < previousValue.length && !noBackspace) {
         const count = previousValue.length - value.length;
         for (let i = 0; i < count; i += 1) {
           removeLastChar();
         }
       }
 
-      mobileRawRef.current = event.currentTarget.value;
+      mobileRawRef.current = value;
     },
     [noBackspace, processTypedKey, removeLastChar]
   );
@@ -614,6 +611,7 @@ export default function App() {
       ref={appRef}
       tabIndex={0}
       className={`app ${running || input.length > 0 ? "typing-active" : ""}`}
+      onPointerDown={focusTyping}
     >
       <style>{css}</style>
 
@@ -626,7 +624,6 @@ export default function App() {
         autoCorrect="off"
         autoComplete="off"
         spellCheck={false}
-        enterKeyHint="done"
         onInput={handleMobileInput}
         onKeyDown={handleMobileKeyDown}
         aria-label="Mobile typing input"
@@ -918,19 +915,15 @@ button {
 
 .mobile-keyboard-input {
   position: fixed;
-  left: 0;
-  bottom: max(0px, env(safe-area-inset-bottom));
+  left: 50%;
+  bottom: 0;
   width: 1px;
   height: 1px;
-  opacity: 0.01;
+  opacity: 0.001;
   border: 0;
   padding: 0;
   font-size: 16px;
-  color: transparent;
-  background: transparent;
-  caret-color: transparent;
-  pointer-events: none;
-  z-index: 9999;
+  z-index: -1;
 }
 
 .topbar {
@@ -1574,7 +1567,7 @@ kbd {
 @media (max-width: 600px) {
   .app {
     min-height: 100dvh;
-    padding: 0 16px calc(78px + env(safe-area-inset-bottom));
+    padding: 0 16px 78px;
   }
 
   .topbar {
