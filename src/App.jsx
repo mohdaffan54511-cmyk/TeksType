@@ -72,7 +72,6 @@ const WORDS = {
     "Ek boy ko stage par speech deni thi. Haath kaanp rahe the, voice slow thi. Usne first line boli, phir second. Speech perfect nahi thi, lekin woh stage se stronger utara.",
     "Dost ne poocha, strong kaise bante hain? Maine kaha, jab life easy ho tab nahi. Jab problem ho, phir bhi sahi decision lo, tab strength build hoti hai."
   ],
-
   motivation: [
     "Aaj ka kaam chhota ho sakta hai, lekin progress chhoti nahi hoti. Roz ek step lo. Kabhi speed slow hogi, kabhi confidence low hoga. Lekin rukna mat. Discipline mood ka wait nahi karta. Jo aaj practice karta hai, wahi kal result dekhta hai.",
     "Dost bola, success kab milegi? Maine kaha, jab excuses kam aur action zyada hoga. Har din perfect nahi hota. Lekin har din useful ho sakta hai. Chhoti jeet ko ignore mat karo. Wahi milkar badi success banati hai.",
@@ -86,7 +85,6 @@ const WORDS = {
     "Teacher: Homework kahan hai? Student: Maam, dog ne nahi khaya. Teacher: Phir? Student: Wi-Fi gaya tha, isliye excuse download nahi ho paya."
   ],
 };
-
 const INFO_PAGES = {
   privacy: {
     title: "Privacy Policy",
