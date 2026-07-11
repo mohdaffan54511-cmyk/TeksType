@@ -30,6 +30,28 @@ const WORDS = {
     "focus", "speed", "practice", "improve", "discipline", "clarity", "energy",
     "mindset", "momentum", "progress", "mastery", "habit", "vision", "action"
   ],
+  hinglish: [
+    "Subah office jaate waqt meri bus miss ho gayi. Main auto me baitha, lekin driver bhaiya ko bhi wahi bus pakadni thi, isliye unhone auto ko race car bana diya.",
+    "Kal main chai lene gaya tha. Chai wale bhaiya ne poocha strong ya normal. Maine bola strong, kyunki meri neend aur problems dono normal se zyada thi.",
+    "Mummy ne kaha mehmaan aa rahe hain, room saaf karo. Maine sab samaan bed ke neeche daal diya. Mehmaan ke bachche ne wahi jagah hide and seek ke liye choose kar li.",
+    "Mera dost gym join karke pehle din hi protein shaker kharid laya. Exercise usne sirf itni ki bottle ko teen baar shake kiya.",
+    "Ek baar main interview ke liye jaldi nikla, lekin raste me shirt par chai gir gayi. Interviewer ne poocha pressure handle kar lete ho? Maine kaha, sir aaj practical test dekar aaya hoon.",
+    "Kal market me ek uncle bargaining kar rahe the. Dukandaar ne bola final price hai. Uncle bole, beta final to exam hota hai, price nahi.",
+    "Main online meeting me serious face bana kar baitha tha. Tabhi peeche se mummy boli, pehle aloo ka packet le aao. Sab log chup rahe, phir manager ne kaha, meeting ke baad le aana.",
+    "Mere dost ne kaha woh sirf ek samosa khayega. Do minute baad usne doosra samosa order karke bola, pehla to warm-up tha.",
+    "Kal bijli chali gayi to sab terrace par aa gaye. Paanch minute me poore mohalla ki meeting ho gayi, lekin kisi ko light kab aayegi ye nahi pata tha.",
+    "Main barber ko bola thoda sa short karna. Usne itna short kar diya ki ghar aakar phone ka face unlock bhi mujhe pehchanne se mana kar raha tha.",
+    "Ek din main jaldi uthkar walk par gaya. Do gali baad chai aur samose ki smell aayi. Walk khatam hui aur breakfast start ho gaya.",
+    "Mera chhota bhai homework kar raha tha. Maine poocha answer kaise mila? Bola, pehle Google se poocha, phir Google ne YouTube se poochne ko kaha.",
+    "Kal train me ek uncle ne poocha beta seat khaali hai? Maine haan kaha. Woh baith gaye aur phir mujhe apni poori family history suna di.",
+    "Maine fridge khola aur kuch interesting nahi mila. Do minute baad phir khola, jaise fridge ne interval me naya content upload kar diya ho.",
+    "Dost ne bola tension mat le, sab theek ho jayega. Maine poocha kaise? Bola, pata nahi, lekin dialogue motivational lagta hai.",
+    "Ek baar main restaurant me English bolne gaya. Waiter ne poocha spicy? Maine confidence me bola yes very much. Pehla bite khate hi meri aankhon ne Hindi me complain kar di.",
+    "Kal mera phone one percent par tha. Main charger dhoondh raha tha aur phone aise behave kar raha tha jaise uski last wish chal rahi ho.",
+    "Main padhne baitha hi tha ki room saaf karne ka motivation aa gaya. Room saaf hua, table set hui, chai bani, aur padhai kal ke liye shift ho gayi.",
+    "Auto driver ne bola meter se chalenge. Meter ne bhi shayad weekend mana rakha tha, kyunki woh start hi nahi hua.",
+    "Mummy ne poocha paise kahan kharch hue. Maine kaha chhote chhote expenses the. Bank statement ne meri taraf dekhkar hansna start kar diya."
+  ],
 };
 
 const INFO_PAGES = {
@@ -122,6 +144,11 @@ const INFO_PAGES = {
 function makeText(mode) {
   if (mode === "quotes") {
     return "The quick brown fox jumps over the lazy dog.";
+  }
+
+  if (mode === "hinglish") {
+    const stories = WORDS.hinglish;
+    return stories[Math.floor(Math.random() * stories.length)];
   }
 
   const pool = WORDS[mode] || WORDS.words;
@@ -472,19 +499,14 @@ export default function App() {
         for (const character of added) {
           processTypedKey(character);
         }
-      } else if (value.length < previousValue.length) {
-        if (noBackspace) {
-          event.currentTarget.value = previousValue;
-          return;
-        }
-
+      } else if (value.length < previousValue.length && !noBackspace) {
         const count = previousValue.length - value.length;
         for (let i = 0; i < count; i += 1) {
           removeLastChar();
         }
       }
 
-      mobileRawRef.current = event.currentTarget.value;
+      mobileRawRef.current = value;
     },
     [noBackspace, processTypedKey, removeLastChar]
   );
@@ -551,6 +573,7 @@ export default function App() {
       ref={appRef}
       tabIndex={0}
       className={`app ${running || input.length > 0 ? "typing-active" : ""}`}
+      onPointerDown={focusTyping}
     >
       <style>{css}</style>
 
@@ -563,7 +586,6 @@ export default function App() {
         autoCorrect="off"
         autoComplete="off"
         spellCheck={false}
-        enterKeyHint="done"
         onInput={handleMobileInput}
         onKeyDown={handleMobileKeyDown}
         aria-label="Mobile typing input"
@@ -619,7 +641,7 @@ export default function App() {
         <div className="control-group">
           <div className="label">CONTENT</div>
           <div className="control-buttons">
-            {["words", "bigrams", "trigrams", "code", "business", "quotes"].map((item) => (
+            {["words", "bigrams", "trigrams", "code", "business", "quotes", "hinglish"].map((item) => (
               <button
                 key={item}
                 type="button"
@@ -855,19 +877,15 @@ button {
 
 .mobile-keyboard-input {
   position: fixed;
-  left: 0;
-  bottom: max(0px, env(safe-area-inset-bottom));
+  left: 50%;
+  bottom: 0;
   width: 1px;
   height: 1px;
-  opacity: 0.01;
+  opacity: 0.001;
   border: 0;
   padding: 0;
   font-size: 16px;
-  color: transparent;
-  background: transparent;
-  caret-color: transparent;
-  pointer-events: none;
-  z-index: 9999;
+  z-index: -1;
 }
 
 .topbar {
@@ -1511,11 +1529,7 @@ kbd {
 @media (max-width: 600px) {
   .app {
     min-height: 100dvh;
-    padding: 0 16px calc(78px + env(safe-area-inset-bottom));
-  }
-
-  .typing-shell {
-    scroll-margin-top: 12px;
+    padding: 0 16px 78px;
   }
 
   .topbar {
