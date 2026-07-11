@@ -472,14 +472,19 @@ export default function App() {
         for (const character of added) {
           processTypedKey(character);
         }
-      } else if (value.length < previousValue.length && !noBackspace) {
+      } else if (value.length < previousValue.length) {
+        if (noBackspace) {
+          event.currentTarget.value = previousValue;
+          return;
+        }
+
         const count = previousValue.length - value.length;
         for (let i = 0; i < count; i += 1) {
           removeLastChar();
         }
       }
 
-      mobileRawRef.current = value;
+      mobileRawRef.current = event.currentTarget.value;
     },
     [noBackspace, processTypedKey, removeLastChar]
   );
@@ -546,7 +551,6 @@ export default function App() {
       ref={appRef}
       tabIndex={0}
       className={`app ${running || input.length > 0 ? "typing-active" : ""}`}
-      onPointerDown={focusTyping}
     >
       <style>{css}</style>
 
@@ -559,6 +563,7 @@ export default function App() {
         autoCorrect="off"
         autoComplete="off"
         spellCheck={false}
+        enterKeyHint="done"
         onInput={handleMobileInput}
         onKeyDown={handleMobileKeyDown}
         aria-label="Mobile typing input"
@@ -850,15 +855,19 @@ button {
 
 .mobile-keyboard-input {
   position: fixed;
-  left: 50%;
-  bottom: 0;
+  left: 0;
+  bottom: max(0px, env(safe-area-inset-bottom));
   width: 1px;
   height: 1px;
-  opacity: 0.001;
+  opacity: 0.01;
   border: 0;
   padding: 0;
   font-size: 16px;
-  z-index: -1;
+  color: transparent;
+  background: transparent;
+  caret-color: transparent;
+  pointer-events: none;
+  z-index: 9999;
 }
 
 .topbar {
@@ -1502,7 +1511,11 @@ kbd {
 @media (max-width: 600px) {
   .app {
     min-height: 100dvh;
-    padding: 0 16px 78px;
+    padding: 0 16px calc(78px + env(safe-area-inset-bottom));
+  }
+
+  .typing-shell {
+    scroll-margin-top: 12px;
   }
 
   .topbar {
