@@ -71,7 +71,7 @@ const WORDS = {
     "Ek baar rain me ek stranger ne apni umbrella share ki. Hum dono alag direction me ja rahe the, phir bhi woh thoda extra chala. Chhoti kindness ka distance chhota hota hai, impact bada.",
     "Ek boy ko stage par speech deni thi. Haath kaanp rahe the, voice slow thi. Usne first line boli, phir second. Speech perfect nahi thi, lekin woh stage se stronger utara.",
     "Dost ne poocha, strong kaise bante hain? Maine kaha, jab life easy ho tab nahi. Jab problem ho, phir bhi sahi decision lo, tab strength build hoti hai."
-  ],,
+  ],
 
   motivation: [
     "Aaj ka kaam chhota ho sakta hai, lekin progress chhoti nahi hoti. Roz ek step lo. Kabhi speed slow hogi, kabhi confidence low hoga. Lekin rukna mat. Discipline mood ka wait nahi karta. Jo aaj practice karta hai, wahi kal result dekhta hai.",
