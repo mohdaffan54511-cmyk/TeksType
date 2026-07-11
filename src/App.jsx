@@ -1750,4 +1750,4 @@ kbd {
     padding: 28px 20px;
     border-radius: 22px;
   }
-}
+`;
