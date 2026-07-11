@@ -668,11 +668,12 @@ export default function App() {
           </p>
         </div>
 
-        <div className="hero-card">
-          <span>LIVE GOAL</span>
-          <strong>Flow without friction.</strong>
-          <small>Tap the text and start typing.</small>
-        </div>
+     <div className="hero-image-card">
+  <img
+    src="/typing-hero.png"
+    alt="Purple 3D typing keyboard"
+  />
+</div>
       </section>
 
       <section className={`controls ${running ? "hidden-soft" : ""}`}>
@@ -1104,7 +1105,23 @@ kbd {
   margin: 14px 0 8px;
   font-size: 24px;
 }
+.hero-image-card {
+  width: 100%;
+  max-width: 460px;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
+.hero-image-card img {
+  width: 100%;
+  height: auto;
+  max-height: 360px;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 28px 40px rgba(91, 61, 240, 0.28));
+}
 .controls {
   position: relative;
   z-index: 2;
@@ -1570,6 +1587,24 @@ kbd {
 }
 
 @media (max-width: 600px) {
+  .hero-image-card {
+    max-width: 100%;
+    margin-top: 10px;
+  }
+
+  .hero-image-card img {
+    max-height: 240px;
+  }
+
+  .app {
+    min-height: 100dvh;
+    padding: 0 16px 78px;
+  }
+
+  .topbar {
+    min-height: auto;
+  }
+}
   .app {
     min-height: 100dvh;
     padding: 0 16px 78px;
