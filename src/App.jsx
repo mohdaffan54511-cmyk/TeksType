@@ -50,7 +50,40 @@ const WORDS = {
     "Kal mera phone one percent par tha. Main charger dhoondh raha tha aur phone aise behave kar raha tha jaise uski last wish chal rahi ho.",
     "Main padhne baitha hi tha ki room saaf karne ka motivation aa gaya. Room saaf hua, table set hui, chai bani, aur padhai kal ke liye shift ho gayi.",
     "Auto driver ne bola meter se chalenge. Meter ne bhi shayad weekend mana rakha tha, kyunki woh start hi nahi hua.",
-    "Mummy ne poocha paise kahan kharch hue. Maine kaha chhote chhote expenses the. Bank statement ne meri taraf dekhkar hansna start kar diya."
+    "Mummy ne poocha paise kahan kharch hue. Maine kaha chhote chhote expenses the. Bank statement ne meri taraf dekhkar hansna start kar diya.",
+    "Ek ladka school se ghar ja raha tha. Raste me usne ek chhote bacche ko girte dekha. Sab log dekhkar nikal gaye, lekin woh ruk gaya. Usne bacche ko uthaya, paani diya, aur ghar tak chhod kar aaya. Kabhi kabhi bravery ladne me nahi, ruk kar help karne me hoti hai.",
+    "Office me ek junior se report me galti ho gayi. Sab usko daant rahe the. Ek senior ne kaha, galti se pehle insaan ko samjho. Usne calmly explain kiya, aur agle week wahi junior best report lekar aaya. Kindness kabhi weak nahi hoti.",
+    "Mera dost exam me fail ho gaya. Do din tak usne phone band rakha. Phir bola, result ne mujhe rokne ki koshish ki, lekin main dobara start karunga. Usne chhote targets banaye, roz padha, aur next attempt clear kar diya.",
+    "Ek uncle roz subah park me slow walk karte the. Log unki speed par haste the. Teen mahine baad wahi uncle bina ruke poora round complete karne lage. Progress loud nahi hoti, lekin strong zaroor hoti hai.",
+    "Bus me ek old lady khadi thi. Ek young boy ne seat de di. Uske dost hansne lage. Boy bola, respect dikhane me embarrassment kaisi? Kabhi kabhi simple manners hi real confidence dikhate hain.",
+    "Ek shopkeeper ne galti se mujhe zyada paise wapas de diye. Main do kadam chala, phir laut gaya. Usne kaha, beta aaj paise se zyada bharosa wapas mila hai. Honesty ka reward hamesha cash me nahi milta.",
+    "Mera chhota bhai cycle se gir gaya. Pehle roya, phir cycle ko dekha aur bola, abhi seekhunga. Das minute baad phir chadha. Himmat ka matlab darr na hona nahi, darr ke baad bhi try karna hai.",
+    "Ek ladki class me answer jaanti thi, lekin bolne se darr rahi thi. Teacher ne kaha, galat answer bhi silence se better hota hai. Usne haath uthaya, answer sahi tha, aur us din uska confidence badh gaya.",
+    "Humare mohalla me ek uncle akela rehte the. Eid par ek family ne unhe dinner par bula liya. Uncle zyada nahi bole, bas muskuraate rahe. Kabhi kabhi kisi ko apna time dena sabse badi kindness hoti hai.",
+    "Mera friend roz English practice karta tha. Pehle words atakte the, log mazaak bhi banate the. Usne bola, aaj tum has lo, kal main confidently bolunga. Dheere dheere woh meetings me sabse clearly bolne laga.",
+    "Ek student ko maths mushkil lagti thi. Usne smart shortcut dhoondhne ke bajaye basics dobara padhe. Roz sirf twenty minutes practice ki. Ek month baad problem tough thi, lekin ab woh usse zyada strong tha.",
+    "Ek baar market me kisi ka wallet gir gaya. Ek delivery boy ne uthaya aur owner ko dhoondhkar wapas kiya. Owner ne reward dena chaha, boy bola, sir mujhe bas dua de dijiye. Character tab dikhta hai jab koi dekh nahi raha hota.",
+    "Mummy roz kehti thi, kaam chhota ho ya bada, achhe se karo. Main tab serious nahi leta tha. Ek din chhoti si mistake se poora project late ho gaya. Tab samjha, discipline boring lag sakta hai, lekin problems se bachata hai.",
+    "Ek girl interview me reject ho gayi. Ghar aakar usne apne answers likhe, mistakes note ki, aur practice start ki. Next interview me woh nervous thi, lekin prepared bhi thi. Strength ka matlab perfect hona nahi, prepared rehna hai.",
+    "Do dost trekking par gaye. Ek thak gaya aur bola, main nahi kar sakta. Doosre ne kaha, top tak nahi, bas agle stone tak chalo. Chhote steps lete lete dono top par pahunch gaye.",
+    "Ek teacher ne class me poocha, strongest kaun hai? Sabne bodybuilder ka naam liya. Teacher boli, jo gusse me bhi sahi baat choose kare, woh sabse strong hota hai.",
+    "Mera dost business start karke loss me chala gaya. Usne blame karne ke bajaye customers se feedback liya. Product improve kiya, cost control ki, aur dobara launch kiya. Failure ne usko weak nahi, wiser bana diya.",
+    "Ek baar rain me ek stranger ne apni umbrella share ki. Hum dono alag direction me ja rahe the, phir bhi woh thoda extra chala. Chhoti kindness ka distance chhota hota hai, impact bada.",
+    "Ek boy ko stage par speech deni thi. Haath kaanp rahe the, voice slow thi. Usne first line boli, phir second. Speech perfect nahi thi, lekin woh stage se stronger utara.",
+    "Dost ne poocha, strong kaise bante hain? Maine kaha, jab life easy ho tab nahi. Jab problem ho, phir bhi sahi decision lo, tab strength build hoti hai."
+  ],,
+
+  motivation: [
+    "Aaj ka kaam chhota ho sakta hai, lekin progress chhoti nahi hoti. Roz ek step lo. Kabhi speed slow hogi, kabhi confidence low hoga. Lekin rukna mat. Discipline mood ka wait nahi karta. Jo aaj practice karta hai, wahi kal result dekhta hai.",
+    "Dost bola, success kab milegi? Maine kaha, jab excuses kam aur action zyada hoga. Har din perfect nahi hota. Lekin har din useful ho sakta hai. Chhoti jeet ko ignore mat karo. Wahi milkar badi success banati hai.",
+    "Mujhe laga motivation aayegi, phir main start karunga. Baad me samjha, start karne se motivation aati hai. Pehla step mushkil hota hai. Doosra thoda easy. Teesre tak habit banne lagti hai. Bas shuru karo."
+  ],
+  conversation: [
+    "Aman: Bhai, aaj padhai ki? Ravi: Haan, kitab kholi thi. Aman: Phir? Ravi: Neend aa gayi. Aman: Goal ka kya hua? Ravi: Goal wahi hai, bas timing thodi late chal rahi hai.",
+    "Mummy: Market ja rahe ho? Main: Haan. Mummy: Dhaniya le aana. Main: Theek hai. Ek ghante baad, main chips aur cold drink le aaya. Mummy: Dhaniya? Main: Woh list me invisible tha kya?",
+    "Boss: Report complete hai? Employee: Almost. Boss: Almost ka matlab? Employee: File open hai, confidence high hai, aur data abhi loading me hai.",
+    "Dost: Gym kab se start karega? Main: Monday se. Dost: Kaunsa Monday? Main: Jo motivation ke baad aata hai.",
+    "Teacher: Homework kahan hai? Student: Maam, dog ne nahi khaya. Teacher: Phir? Student: Wi-Fi gaya tha, isliye excuse download nahi ho paya."
   ],
 };
 
@@ -149,6 +182,11 @@ function makeText(mode) {
   if (mode === "hinglish") {
     const stories = WORDS.hinglish;
     return stories[Math.floor(Math.random() * stories.length)];
+  }
+
+  if (mode === "motivation" || mode === "conversation") {
+    const items = WORDS[mode];
+    return items[Math.floor(Math.random() * items.length)];
   }
 
   const pool = WORDS[mode] || WORDS.words;
@@ -641,7 +679,7 @@ export default function App() {
         <div className="control-group">
           <div className="label">CONTENT</div>
           <div className="control-buttons">
-            {["words", "bigrams", "trigrams", "code", "business", "quotes", "hinglish"].map((item) => (
+            {["words", "bigrams", "trigrams", "code", "business", "quotes", "hinglish", "motivation", "conversation"].map((item) => (
               <button
                 key={item}
                 type="button"
