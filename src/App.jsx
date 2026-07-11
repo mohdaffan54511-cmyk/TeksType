@@ -728,7 +728,9 @@ export default function App() {
           <div className="typing-topline">
             <span>{modeLabel}</span>
             <span>{mode.toUpperCase()}</span>
-            <button type="button" onClick={focusTyping}>TAP TO TYPE</button>
+           <button type="button" onClick={focusTyping}>
+  TAP TO TYPE
+</button>
           </div>
           <div className="typing-text">{renderTypingText()}</div>
         </section>
@@ -915,15 +917,18 @@ button {
 
 .mobile-keyboard-input {
   position: fixed;
-  left: 50%;
-  bottom: 0;
-  width: 1px;
-  height: 1px;
-  opacity: 0.001;
+  left: 1px;
+  top: 1px;
+  width: 2px;
+  height: 2px;
+  opacity: 0.01;
   border: 0;
   padding: 0;
   font-size: 16px;
-  z-index: -1;
+  color: transparent;
+  background: transparent;
+  caret-color: transparent;
+  z-index: 9999;
 }
 
 .topbar {
@@ -1629,6 +1634,8 @@ kbd {
     margin-top: 22px;
     padding: 20px 18px 28px;
     border-radius: 22px;
+    min-height: 520px;
+    overflow: hidden;
   }
 
   .typing-topline {
@@ -1642,6 +1649,14 @@ kbd {
   .typing-text {
     font-size: clamp(25px, 8vw, 34px);
     line-height: 1.58;
+    text-align: left;
+    min-height: 320px;
+    overflow-wrap: normal;
+  }
+
+  .word {
+    display: inline;
+    white-space: normal;
   }
 
   .app.typing-active .hero,
@@ -1701,4 +1716,3 @@ kbd {
     border-radius: 22px;
   }
 }
-`;
