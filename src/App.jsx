@@ -15,7 +15,7 @@ const POOLS = {
     "Focus on progress, not on perfection.",
     "Discipline today creates freedom tomorrow."
   ],
- hinglish: [
+hinglish: [
   `Subah alarm baja, lekin maine snooze kar diya.
 Paanch minute baad alarm phir baja.
 Maine socha, thodi aur neend le leta hoon.
