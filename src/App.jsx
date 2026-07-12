@@ -76,224 +76,226 @@ Kindness aur bravery saath chal sakti hain.
 Strong wahi hai jo dusron ka respect karta hai.
 Achha character hamesha yaad rakha jaata hai.`
 ],
-  conversation: [  `Aman: Bhai, aaj padhai ki?
-Ravi: Haan, kitab kholi thi.
-Aman: Phir kya hua?
-Ravi: Neend aa gayi.
-Aman: Goal ka kya?
-Ravi: Goal wahi hai, bas meri timing thodi late chal rahi hai.`,
+  conversation: [
+  `Aman: Did you study today?
+Ravi: Yes, I opened the book.
+Aman: Then what happened?
+Ravi: I fell asleep.
+Aman: What about your goal?
+Ravi: The goal is still there. My timing is just a little late.`,
 
-  `Boss: Report complete hai?
-Employee: Almost sir.
-Boss: Almost ka matlab?
-Employee: File open hai, confidence high hai, aur data abhi loading me hai.
-Boss: Confidence se report complete nahi hoti.
-Employee: Samajh gaya sir, ab kaam complete karke hi message karunga.`,
+  `Boss: Is the report complete?
+Employee: Almost, sir.
+Boss: What does almost mean?
+Employee: The file is open, my confidence is high, and the data is still loading.
+Boss: Confidence does not complete a report.
+Employee: Understood, sir. I will message you only after finishing it.`,
 
-  `Dost: Gym kab se start karega?
-Main: Monday se.
-Dost: Kaunsa Monday?
-Main: Jo motivation ke baad aata hai.
-Dost: Motivation ka wait mat kar, aaj se ten minutes start kar.
-Main: Sahi keh raha hai, chhota start bhi start hota hai.`,
+  `Friend: When will you start going to the gym?
+Me: From Monday.
+Friend: Which Monday?
+Me: The one that comes after motivation.
+Friend: Do not wait for motivation. Start with ten minutes today.
+Me: You are right. A small start is still a start.`,
 
-  `Teacher: Tum exam me fail kyu hue?
-Student: Maine preparation late start ki.
-Teacher: Ab kya karoge?
-Student: Galti ko excuse nahi, lesson banaunga.
-Teacher: Yahi attitude tumhe aage le jayega.`,
+  `Teacher: Why did you fail the exam?
+Student: I started preparing too late.
+Teacher: What will you do now?
+Student: I will turn my mistake into a lesson, not an excuse.
+Teacher: That attitude will take you forward.`,
 
-  `Father: Paisa kamana zaroori hai, lekin paisa bachana bhi zaroori hai.
-Son: Kitna save karna chahiye?
-Father: Income ka chhota hissa regular save karo.
-Son: Chhoti saving se kya hoga?
-Father: Chhoti saving hi time ke saath badi security banti hai.`,
+  `Father: Earning money is important, but saving money is important too.
+Son: How much should I save?
+Father: Save a small part of your income regularly.
+Son: What difference will a small amount make?
+Father: Small savings become strong security over time.`,
 
-  `Mother: Phone thodi der side me rakh do.
-Son: Bas five minutes.
-Mother: Ye five minutes kabhi khatam kyu nahi hote?
-Son: Kyunki phone me time fast chalta hai.
-Mother: Aur real life me opportunities wait nahi karti.`,
+  `Mother: Put your phone aside for a while.
+Son: Just five minutes.
+Mother: Why do those five minutes never end?
+Son: Because time moves faster on the phone.
+Mother: And opportunities in real life do not wait.`,
 
-  `Friend: Tum itne quiet kyu rehte ho?
-Me: Mujhe lagta hai log meri English judge karenge.
-Friend: Galti karoge tabhi improve karoge.
-Me: Lekin embarrassment hoti hai.
-Friend: Temporary embarrassment, permanent confidence se better hai.`,
+  `Friend: Why are you always so quiet?
+Me: I feel people will judge my English.
+Friend: You will improve only by making mistakes.
+Me: But it feels embarrassing.
+Friend: Temporary embarrassment is better than permanent fear.`,
 
-  `Interviewer: Apne baare me batayein.
-Candidate: Main hardworking hoon.
-Interviewer: Koi example?
-Candidate: Maine ek difficult project ko daily small tasks me divide kiya aur deadline se pehle complete kiya.
-Interviewer: Good, example words se zyada powerful hota hai.`,
+  `Interviewer: Tell me about yourself.
+Candidate: I am hardworking.
+Interviewer: Can you give me an example?
+Candidate: I divided a difficult project into small daily tasks and completed it before the deadline.
+Interviewer: Good. Examples are more powerful than claims.`,
 
-  `Customer: Aapka price thoda high hai.
-Freelancer: Main samajh sakta hoon.
-Customer: Kya discount milega?
-Freelancer: Main price kam karne ke bajaye scope adjust kar sakta hoon.
-Customer: Ye professional answer hai.
-Freelancer: Clear value aur clear scope dono sides ko protect karte hain.`,
+  `Customer: Your price is a little high.
+Freelancer: I understand.
+Customer: Can you offer a discount?
+Freelancer: Instead of reducing the price, I can adjust the project scope.
+Customer: That is a professional answer.
+Freelancer: Clear value and clear scope protect both sides.`,
 
-  `Manager: Tum meeting me kuch bole kyu nahi?
-Employee: Mere paas idea tha, lekin confidence nahi tha.
-Manager: Perfect sentence ka wait mat karo.
-Employee: To kaise start karun?
-Manager: Bas bolo, I have one suggestion.`,
+  `Manager: Why did you not speak in the meeting?
+Employee: I had an idea, but I lacked confidence.
+Manager: Do not wait for the perfect sentence.
+Employee: How should I begin?
+Manager: Just say, I have one suggestion.`,
 
-  `Brother: Sab log mujhse aage nikal rahe hain.
-Sister: Tum unka result dekh rahe ho, struggle nahi.
-Brother: Phir mujhe kya karna chahiye?
-Sister: Apni speed par focus karo, direction sahi rakho.
-Brother: Comparison kam, consistency zyada.`,
+  `Brother: Everyone is moving ahead of me.
+Sister: You are seeing their results, not their struggles.
+Brother: Then what should I do?
+Sister: Focus on your own pace and keep your direction right.
+Brother: Less comparison, more consistency.`,
 
-  `Doctor: Aap exercise karte hain?
-Patient: Time nahi milta.
-Doctor: Phone kitna chalate hain?
-Patient: Lagbhag three hours.
-Doctor: Time missing nahi hai, priority missing hai.
-Patient: Aaj se thirty minutes walk start karunga.`,
+  `Doctor: Do you exercise?
+Patient: I do not have time.
+Doctor: How long do you use your phone?
+Patient: Around three hours.
+Doctor: Time is not missing. Priority is missing.
+Patient: I will start with a thirty-minute walk today.`,
 
-  `Friend: Tum har kaam perfect kyu karna chahte ho?
-Me: Mujhe failure pasand nahi.
-Friend: Perfection ke chakkar me tum start hi nahi karte.
-Me: To kya karun?
-Friend: First version imperfect banao, phir improve karo.`,
+  `Friend: Why do you want everything to be perfect?
+Me: I do not like failure.
+Friend: You do not even start because of perfection.
+Me: Then what should I do?
+Friend: Make the first version imperfect, then improve it.`,
 
-  `Teacher: Knowledge aur wisdom me kya difference hai?
-Student: Knowledge matlab information.
-Teacher: Aur wisdom?
-Student: Sahi information ko sahi waqt par use karna.
-Teacher: Excellent, sirf jaanna enough nahi, apply karna bhi zaroori hai.`,
+  `Teacher: What is the difference between knowledge and wisdom?
+Student: Knowledge means information.
+Teacher: And wisdom?
+Student: Using the right information at the right time.
+Teacher: Excellent. Knowing is not enough. Applying matters too.`,
 
-  `Father: Gussa aane par turant reply mat do.
-Son: Lekin saamne wala galat ho to?
-Father: Sahi hona aur sahi tareeke se bolna alag baat hai.
-Son: To pehle calm hona chahiye?
-Father: Haan, calm mind better decision leta hai.`,
+  `Father: Do not reply immediately when you are angry.
+Son: What if the other person is wrong?
+Father: Being right and speaking in the right way are different things.
+Son: So I should calm down first?
+Father: Yes. A calm mind makes better decisions.`,
 
-  `Client: Mujhe ye project urgent chahiye.
-Freelancer: Deadline kya hai?
-Client: Kal subah.
-Freelancer: Quality maintain karne ke liye mujhe exact files aur requirements abhi chahiye.
-Client: Theek hai.
-Freelancer: Urgency me bhi clarity zaroori hoti hai.`,
+  `Client: I need this project urgently.
+Freelancer: What is the deadline?
+Client: Tomorrow morning.
+Freelancer: To maintain quality, I need the exact files and requirements now.
+Client: Okay.
+Freelancer: Even urgent work needs clarity.`,
 
-  `Dost: Tumhara biggest goal kya hai?
-Main: Successful banna.
-Dost: Success ka matlab?
-Main: Financial freedom, family support, aur meaningful work.
-Dost: Jab definition clear hoti hai, direction bhi clear hoti hai.`,
+  `Friend: What is your biggest goal?
+Me: I want to become successful.
+Friend: What does success mean to you?
+Me: Financial freedom, supporting my family, and meaningful work.
+Friend: When the definition is clear, the direction becomes clear too.`,
 
-  `Mother: Tum pareshan lag rahe ho.
-Son: Kaam bahut hai.
-Mother: Sab ek saath karne ki koshish mat karo.
-Son: Phir kaise?
-Mother: Sabse important ek kaam choose karo aur wahi complete karo.`,
+  `Mother: You look worried.
+Son: I have too much work.
+Mother: Do not try to do everything at once.
+Son: Then what should I do?
+Mother: Choose the most important task and complete it first.`,
 
-  `Colleague: Tum feedback se upset ho?
-Employee: Thoda.
-Colleague: Feedback ko insult mat samjho.
-Employee: Lekin harsh tha.
-Colleague: Tone ignore karo, useful point pakdo.
-Employee: Ye difficult hai, lekin helpful bhi.`,
+  `Colleague: Are you upset because of the feedback?
+Employee: A little.
+Colleague: Do not treat feedback as an insult.
+Employee: But the tone was harsh.
+Colleague: Ignore the tone and take the useful point.
+Employee: That is difficult, but helpful.`,
 
-  `Friend: Kisi ne tumhari help nahi ki?
-Me: Nahi.
-Friend: Phir tum dusron ki help kyu karte ho?
-Me: Kyunki unka behavior mera character decide nahi karta.
-Friend: Ye real strength hai.`,
+  `Friend: Nobody helped you?
+Me: No.
+Friend: Then why do you help others?
+Me: Because their behavior does not decide my character.
+Friend: That is real strength.`,
 
-  `Student: Mujhe English samajh aati hai, bol nahi pata.
-Teacher: Roz kitni der bolte ho?
+  `Student: I understand English, but I cannot speak it.
+Teacher: How much do you speak every day?
 Student: Almost zero.
-Teacher: Speaking practice ke bina speaking improve nahi hoti.
-Student: Aaj se daily five minutes bolunga.`,
+Teacher: Speaking cannot improve without speaking practice.
+Student: I will speak for five minutes every day.`,
 
-  `Boss: Tum late kyu aaye?
-Employee: Traffic tha.
-Boss: Har din traffic hota hai.
-Employee: Sahi hai sir, mujhe earlier nikalna chahiye.
-Boss: Responsibility lena improvement ka first step hai.`,
+  `Boss: Why are you late?
+Employee: There was traffic.
+Boss: There is traffic every day.
+Employee: You are right, sir. I should leave earlier.
+Boss: Taking responsibility is the first step toward improvement.`,
 
-  `Friend: Tum negative logon se kaise deal karte ho?
-Me: Har baat ka answer nahi deta.
-Friend: Kyu?
-Me: Har argument jeetna zaroori nahi.
-Friend: Peace protect karna bhi intelligence hai.`,
+  `Friend: How do you deal with negative people?
+Me: I do not answer every comment.
+Friend: Why?
+Me: Winning every argument is not necessary.
+Friend: Protecting your peace is also intelligence.`,
 
-  `Father: Career choose karte waqt sirf salary mat dekho.
-Son: Aur kya dekhu?
-Father: Skill growth, demand, interest, aur future opportunities.
-Son: Matlab short-term income ke saath long-term growth bhi.
-Father: Bilkul.`,
+  `Father: Do not choose a career by looking only at salary.
+Son: What else should I consider?
+Father: Skill growth, demand, interest, and future opportunities.
+Son: So I should think about long-term growth too.
+Father: Exactly.`,
 
-  `Customer: Mujhe samajh nahi aa raha aap kya service dete hain.
-Freelancer: Main messy Excel data ko clean reports aur dashboards me convert karta hoon.
-Customer: Isse mujhe kya benefit?
-Freelancer: Aapka time bachega aur decisions fast honge.
-Customer: Ab value clear hai.`,
+  `Customer: I do not understand what service you provide.
+Freelancer: I convert messy Excel data into clean reports and dashboards.
+Customer: How will that help me?
+Freelancer: It will save your time and help you make faster decisions.
+Customer: Now the value is clear.`,
 
-  `Friend: Tum har din thoda kaam kaise kar lete ho?
-Me: Main mood ka wait nahi karta.
-Friend: Lekin boring nahi lagta?
-Me: Lagta hai, phir bhi routine follow karta hoon.
-Friend: Discipline ka matlab shayad yahi hai.`,
+  `Friend: How do you work a little every day?
+Me: I do not wait for the right mood.
+Friend: Does it not feel boring?
+Me: It does, but I still follow the routine.
+Friend: That is probably what discipline means.`,
 
-  `Teacher: Smart work better hai ya hard work?
+  `Teacher: Is smart work better or hard work?
 Student: Smart work.
-Teacher: Aur bina hard work ke smart work?
-Student: Shayad possible nahi.
-Teacher: Sahi, best result dono ke combination se aata hai.`,
+Teacher: Can smart work succeed without hard work?
+Student: Probably not.
+Teacher: Right. The best results come from both.`,
 
-  `Brother: Mere paas expensive course ke paise nahi hain.
-Sister: Free resources use karo.
-Brother: Kya free me proper learning ho sakti hai?
-Sister: Haan, lekin discipline khud lana padega.
-Brother: Resource se zyada consistency important hai.`,
+  `Brother: I cannot afford an expensive course.
+Sister: Use free resources.
+Brother: Can I learn properly for free?
+Sister: Yes, but you must bring your own discipline.
+Brother: So consistency matters more than the resource.`,
 
-  `Friend: Tum failure se darte ho?
-Me: Haan.
-Friend: Start na karne se bhi failure milta hai.
-Me: Kaise?
-Friend: Opportunity khatam ho jaati hai bina try kiye.
-Me: To calculated risk lena better hai.`,
+  `Friend: Are you afraid of failure?
+Me: Yes.
+Friend: Not starting also leads to failure.
+Me: How?
+Friend: The opportunity ends before you even try.
+Me: Then taking a calculated risk is better.`,
 
-  `Manager: Tumhari presentation simple hai.
-Employee: Kya ye problem hai?
-Manager: Nahi, simple presentation easily samajh aati hai.
-Employee: Maine unnecessary text remove kiya.
-Manager: Good communication ka matlab zyada bolna nahi, clear bolna hai.`,
+  `Manager: Your presentation is very simple.
+Employee: Is that a problem?
+Manager: No. A simple presentation is easier to understand.
+Employee: I removed unnecessary text.
+Manager: Good communication means being clear, not speaking more.`,
 
-  `Child: Good person kaise bante hain?
-Father: Sach bolo, respect do, aur galti maan lo.
-Child: Bas itna?
-Father: Ye simple lagta hai, lekin daily follow karna difficult hota hai.
-Child: Main aaj se practice karunga.`,
+  `Child: How can I become a good person?
+Father: Tell the truth, give respect, and admit your mistakes.
+Child: Is that all?
+Father: It sounds simple, but doing it every day is difficult.
+Child: I will start practicing today.`,
 
-  `Friend: Tumhara confidence kaise badha?
-Me: Maine difficult situations avoid karna band kiya.
-Friend: Dar khatam ho gaya?
-Me: Nahi, lekin dar ke bawajood action lena seekh gaya.
-Friend: Yahi real confidence hai.`,
+  `Friend: How did your confidence improve?
+Me: I stopped avoiding difficult situations.
+Friend: Did your fear disappear?
+Me: No, but I learned to act despite the fear.
+Friend: That is real confidence.`,
 
-  `Employee: Sir, mujhse mistake ho gayi.
-Boss: Tumne hide kyu nahi ki?
-Employee: Hide karta to problem aur badi ho sakti thi.
-Boss: Good. Mistake serious hai, lekin honesty valuable hai.
-Employee: Main fix plan bhi ready karke laya hoon.`,
+  `Employee: Sir, I made a mistake.
+Boss: Why did you not hide it?
+Employee: Hiding it could have made the problem worse.
+Boss: Good. The mistake is serious, but honesty matters.
+Employee: I have also prepared a plan to fix it.`,
 
-  `Dost: Life me sabse important skill kya hai?
-Main: Shayad communication.
-Dost: Kyu?
-Main: Knowledge tabhi useful hoti hai jab tum use clearly explain kar sako.
-Dost: Aur listening?
-Main: Woh communication ka aadha hissa hai.`,
+  `Friend: What is the most important life skill?
+Me: Probably communication.
+Friend: Why?
+Me: Knowledge becomes useful only when you can explain it clearly.
+Friend: What about listening?
+Me: Listening is half of communication.`,
 
-  `Mother: Tumhare paas kam resources hain, iska matlab ye nahi ki tum kam capable ho.
-Son: Lekin start difficult hai.
-Mother: Difficult start weak future decide nahi karta.
-Son: To bas available cheezon se shuru karun?
-Mother: Haan, start small but start today.`
+  `Mother: Having fewer resources does not mean you are less capable.
+Son: But starting is difficult.
+Mother: A difficult beginning does not decide your future.
+Son: Should I begin with whatever I have?
+Mother: Yes. Start small, but start today.`
+]
 ]
 };
 
