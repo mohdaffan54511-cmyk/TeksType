@@ -614,3 +614,38 @@ export default function App() {
     </main>
   );
 }
+.hero-picture {
+  width: 100%;
+  max-width: 520px;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-picture img {
+  width: 100%;
+  height: auto;
+  max-height: 390px;
+  object-fit: contain;
+  display: block;
+  border-radius: 36px;
+  filter: drop-shadow(0 25px 40px rgba(101, 56, 237, 0.22));
+}
+
+@media (max-width: 768px) {
+  .hero-picture {
+    max-width: 100%;
+    justify-self: center;
+  }
+
+  .hero-picture img {
+    max-height: 240px;
+    border-radius: 22px;
+  }
+}
+
+
+
+
+
