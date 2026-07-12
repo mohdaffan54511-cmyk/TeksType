@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
-const MODES = ["words", "bigrams", "trigrams", "code", "business", "quotes", "hinglish", "motivation", "conversation"];
+const MODES = ["words", "bigrams", "trigrams", "code", "business", "quotes", "hinglish", "conversation"];
 
 const POOLS = {
   words: "home now even used said government once any to and know world number another something until without when right less school both there almost people system place group around because through while every important possible between business support future strong learn focus better growth skill progress".split(" "),
@@ -76,11 +76,7 @@ Kindness aur bravery saath chal sakti hain.
 Strong wahi hai jo dusron ka respect karta hai.
 Achha character hamesha yaad rakha jaata hai.`
 ],
-  motivation: [
-    "Aaj ka kaam chhota ho sakta hai, lekin progress chhoti nahi hoti. Roz ek step lo.",
-    "Start karne se motivation aati hai. Bas pehla step lo aur daily improve karo.",
-    "Failure tumhari story ka end nahi hota. Woh next chapter ko better likhne ka feedback hota hai."
-  ],
+  
   conversation: [
     "Aman: Bhai, aaj padhai ki? Ravi: Haan, kitab kholi thi. Aman: Phir? Ravi: Neend aa gayi.",
     "Boss: Report complete hai? Employee: Almost. Boss: Almost ka matlab? Employee: File open hai aur confidence high hai.",
