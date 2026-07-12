@@ -575,7 +575,20 @@ const processCharacter = useCallback((character) => {
         <article className="insight-card"><div className="insight-title">Needs Practice</div>{weakKeys.length ? weakKeys.map(([key, count]) => <div className="weak-row" key={key}><strong>{key}</strong><div><span style={{ width: `${Math.min(100, count * 24)}%` }} /></div><small>{count}</small></div>) : <p>Type a session to discover weak keys.</p>}</article>
       </section>
 
-      <footer className="footer"><div>© 2026 TypeTeks. All rights reserved.</div><nav><a href="mailto:contact@typeteks.online">Contact</a><a href="#support">Support</a><a href="#privacy">Privacy</a></nav></footer>
+      <footer className="footer">
+  <div>© 2026 TypeTeks. All rights reserved.</div>
+
+  <nav>
+    <a href="/about.html">About</a>
+    <a href="/contact.html">Contact</a>
+    <a href="/privacy.html">Privacy</a>
+    <a href="/terms.html">Terms</a>
+    <a href="/disclaimer.html">Disclaimer</a>
+    <a href="mailto:contact@typeteks.online?subject=TypeTeks%20Feedback">
+      Feedback
+    </a>
+  </nav>
+</footer>
    <audio
   ref={musicRef}
   src="/background-music.mp3"
