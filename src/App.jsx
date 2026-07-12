@@ -76,12 +76,225 @@ Kindness aur bravery saath chal sakti hain.
 Strong wahi hai jo dusron ka respect karta hai.
 Achha character hamesha yaad rakha jaata hai.`
 ],
-  
-  conversation: [
-    "Aman: Bhai, aaj padhai ki? Ravi: Haan, kitab kholi thi. Aman: Phir? Ravi: Neend aa gayi.",
-    "Boss: Report complete hai? Employee: Almost. Boss: Almost ka matlab? Employee: File open hai aur confidence high hai.",
-    "Dost: Gym kab se start karega? Main: Monday se. Dost: Kaunsa Monday? Main: Jo motivation ke baad aata hai."
-  ]
+  conversation: [  `Aman: Bhai, aaj padhai ki?
+Ravi: Haan, kitab kholi thi.
+Aman: Phir kya hua?
+Ravi: Neend aa gayi.
+Aman: Goal ka kya?
+Ravi: Goal wahi hai, bas meri timing thodi late chal rahi hai.`,
+
+  `Boss: Report complete hai?
+Employee: Almost sir.
+Boss: Almost ka matlab?
+Employee: File open hai, confidence high hai, aur data abhi loading me hai.
+Boss: Confidence se report complete nahi hoti.
+Employee: Samajh gaya sir, ab kaam complete karke hi message karunga.`,
+
+  `Dost: Gym kab se start karega?
+Main: Monday se.
+Dost: Kaunsa Monday?
+Main: Jo motivation ke baad aata hai.
+Dost: Motivation ka wait mat kar, aaj se ten minutes start kar.
+Main: Sahi keh raha hai, chhota start bhi start hota hai.`,
+
+  `Teacher: Tum exam me fail kyu hue?
+Student: Maine preparation late start ki.
+Teacher: Ab kya karoge?
+Student: Galti ko excuse nahi, lesson banaunga.
+Teacher: Yahi attitude tumhe aage le jayega.`,
+
+  `Father: Paisa kamana zaroori hai, lekin paisa bachana bhi zaroori hai.
+Son: Kitna save karna chahiye?
+Father: Income ka chhota hissa regular save karo.
+Son: Chhoti saving se kya hoga?
+Father: Chhoti saving hi time ke saath badi security banti hai.`,
+
+  `Mother: Phone thodi der side me rakh do.
+Son: Bas five minutes.
+Mother: Ye five minutes kabhi khatam kyu nahi hote?
+Son: Kyunki phone me time fast chalta hai.
+Mother: Aur real life me opportunities wait nahi karti.`,
+
+  `Friend: Tum itne quiet kyu rehte ho?
+Me: Mujhe lagta hai log meri English judge karenge.
+Friend: Galti karoge tabhi improve karoge.
+Me: Lekin embarrassment hoti hai.
+Friend: Temporary embarrassment, permanent confidence se better hai.`,
+
+  `Interviewer: Apne baare me batayein.
+Candidate: Main hardworking hoon.
+Interviewer: Koi example?
+Candidate: Maine ek difficult project ko daily small tasks me divide kiya aur deadline se pehle complete kiya.
+Interviewer: Good, example words se zyada powerful hota hai.`,
+
+  `Customer: Aapka price thoda high hai.
+Freelancer: Main samajh sakta hoon.
+Customer: Kya discount milega?
+Freelancer: Main price kam karne ke bajaye scope adjust kar sakta hoon.
+Customer: Ye professional answer hai.
+Freelancer: Clear value aur clear scope dono sides ko protect karte hain.`,
+
+  `Manager: Tum meeting me kuch bole kyu nahi?
+Employee: Mere paas idea tha, lekin confidence nahi tha.
+Manager: Perfect sentence ka wait mat karo.
+Employee: To kaise start karun?
+Manager: Bas bolo, I have one suggestion.`,
+
+  `Brother: Sab log mujhse aage nikal rahe hain.
+Sister: Tum unka result dekh rahe ho, struggle nahi.
+Brother: Phir mujhe kya karna chahiye?
+Sister: Apni speed par focus karo, direction sahi rakho.
+Brother: Comparison kam, consistency zyada.`,
+
+  `Doctor: Aap exercise karte hain?
+Patient: Time nahi milta.
+Doctor: Phone kitna chalate hain?
+Patient: Lagbhag three hours.
+Doctor: Time missing nahi hai, priority missing hai.
+Patient: Aaj se thirty minutes walk start karunga.`,
+
+  `Friend: Tum har kaam perfect kyu karna chahte ho?
+Me: Mujhe failure pasand nahi.
+Friend: Perfection ke chakkar me tum start hi nahi karte.
+Me: To kya karun?
+Friend: First version imperfect banao, phir improve karo.`,
+
+  `Teacher: Knowledge aur wisdom me kya difference hai?
+Student: Knowledge matlab information.
+Teacher: Aur wisdom?
+Student: Sahi information ko sahi waqt par use karna.
+Teacher: Excellent, sirf jaanna enough nahi, apply karna bhi zaroori hai.`,
+
+  `Father: Gussa aane par turant reply mat do.
+Son: Lekin saamne wala galat ho to?
+Father: Sahi hona aur sahi tareeke se bolna alag baat hai.
+Son: To pehle calm hona chahiye?
+Father: Haan, calm mind better decision leta hai.`,
+
+  `Client: Mujhe ye project urgent chahiye.
+Freelancer: Deadline kya hai?
+Client: Kal subah.
+Freelancer: Quality maintain karne ke liye mujhe exact files aur requirements abhi chahiye.
+Client: Theek hai.
+Freelancer: Urgency me bhi clarity zaroori hoti hai.`,
+
+  `Dost: Tumhara biggest goal kya hai?
+Main: Successful banna.
+Dost: Success ka matlab?
+Main: Financial freedom, family support, aur meaningful work.
+Dost: Jab definition clear hoti hai, direction bhi clear hoti hai.`,
+
+  `Mother: Tum pareshan lag rahe ho.
+Son: Kaam bahut hai.
+Mother: Sab ek saath karne ki koshish mat karo.
+Son: Phir kaise?
+Mother: Sabse important ek kaam choose karo aur wahi complete karo.`,
+
+  `Colleague: Tum feedback se upset ho?
+Employee: Thoda.
+Colleague: Feedback ko insult mat samjho.
+Employee: Lekin harsh tha.
+Colleague: Tone ignore karo, useful point pakdo.
+Employee: Ye difficult hai, lekin helpful bhi.`,
+
+  `Friend: Kisi ne tumhari help nahi ki?
+Me: Nahi.
+Friend: Phir tum dusron ki help kyu karte ho?
+Me: Kyunki unka behavior mera character decide nahi karta.
+Friend: Ye real strength hai.`,
+
+  `Student: Mujhe English samajh aati hai, bol nahi pata.
+Teacher: Roz kitni der bolte ho?
+Student: Almost zero.
+Teacher: Speaking practice ke bina speaking improve nahi hoti.
+Student: Aaj se daily five minutes bolunga.`,
+
+  `Boss: Tum late kyu aaye?
+Employee: Traffic tha.
+Boss: Har din traffic hota hai.
+Employee: Sahi hai sir, mujhe earlier nikalna chahiye.
+Boss: Responsibility lena improvement ka first step hai.`,
+
+  `Friend: Tum negative logon se kaise deal karte ho?
+Me: Har baat ka answer nahi deta.
+Friend: Kyu?
+Me: Har argument jeetna zaroori nahi.
+Friend: Peace protect karna bhi intelligence hai.`,
+
+  `Father: Career choose karte waqt sirf salary mat dekho.
+Son: Aur kya dekhu?
+Father: Skill growth, demand, interest, aur future opportunities.
+Son: Matlab short-term income ke saath long-term growth bhi.
+Father: Bilkul.`,
+
+  `Customer: Mujhe samajh nahi aa raha aap kya service dete hain.
+Freelancer: Main messy Excel data ko clean reports aur dashboards me convert karta hoon.
+Customer: Isse mujhe kya benefit?
+Freelancer: Aapka time bachega aur decisions fast honge.
+Customer: Ab value clear hai.`,
+
+  `Friend: Tum har din thoda kaam kaise kar lete ho?
+Me: Main mood ka wait nahi karta.
+Friend: Lekin boring nahi lagta?
+Me: Lagta hai, phir bhi routine follow karta hoon.
+Friend: Discipline ka matlab shayad yahi hai.`,
+
+  `Teacher: Smart work better hai ya hard work?
+Student: Smart work.
+Teacher: Aur bina hard work ke smart work?
+Student: Shayad possible nahi.
+Teacher: Sahi, best result dono ke combination se aata hai.`,
+
+  `Brother: Mere paas expensive course ke paise nahi hain.
+Sister: Free resources use karo.
+Brother: Kya free me proper learning ho sakti hai?
+Sister: Haan, lekin discipline khud lana padega.
+Brother: Resource se zyada consistency important hai.`,
+
+  `Friend: Tum failure se darte ho?
+Me: Haan.
+Friend: Start na karne se bhi failure milta hai.
+Me: Kaise?
+Friend: Opportunity khatam ho jaati hai bina try kiye.
+Me: To calculated risk lena better hai.`,
+
+  `Manager: Tumhari presentation simple hai.
+Employee: Kya ye problem hai?
+Manager: Nahi, simple presentation easily samajh aati hai.
+Employee: Maine unnecessary text remove kiya.
+Manager: Good communication ka matlab zyada bolna nahi, clear bolna hai.`,
+
+  `Child: Good person kaise bante hain?
+Father: Sach bolo, respect do, aur galti maan lo.
+Child: Bas itna?
+Father: Ye simple lagta hai, lekin daily follow karna difficult hota hai.
+Child: Main aaj se practice karunga.`,
+
+  `Friend: Tumhara confidence kaise badha?
+Me: Maine difficult situations avoid karna band kiya.
+Friend: Dar khatam ho gaya?
+Me: Nahi, lekin dar ke bawajood action lena seekh gaya.
+Friend: Yahi real confidence hai.`,
+
+  `Employee: Sir, mujhse mistake ho gayi.
+Boss: Tumne hide kyu nahi ki?
+Employee: Hide karta to problem aur badi ho sakti thi.
+Boss: Good. Mistake serious hai, lekin honesty valuable hai.
+Employee: Main fix plan bhi ready karke laya hoon.`,
+
+  `Dost: Life me sabse important skill kya hai?
+Main: Shayad communication.
+Dost: Kyu?
+Main: Knowledge tabhi useful hoti hai jab tum use clearly explain kar sako.
+Dost: Aur listening?
+Main: Woh communication ka aadha hissa hai.`,
+
+  `Mother: Tumhare paas kam resources hain, iska matlab ye nahi ki tum kam capable ho.
+Son: Lekin start difficult hai.
+Mother: Difficult start weak future decide nahi karta.
+Son: To bas available cheezon se shuru karun?
+Mother: Haan, start small but start today.`
+]
 };
 
 const randomItem = (items) => items[Math.floor(Math.random() * items.length)];
