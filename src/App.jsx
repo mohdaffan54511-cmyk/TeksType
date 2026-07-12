@@ -454,7 +454,7 @@ const processCharacter = useCallback((character) => {
   if (!character || character.length !== 1 || finished) return;
 
   if (!running && musicRef.current) {
-    musicRef.current.volume = 0.50;
+    musicRef.current.volume = 0.70;
     musicRef.current.play().catch(() => {});
   }
 
