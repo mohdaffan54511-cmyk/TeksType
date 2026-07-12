@@ -412,12 +412,17 @@ export default function App() {
   );
 }, [duration, mode]);
 
-  const finishSession = useCallback(() => {
-    setRunning(false);
-    setFinished(true);
-    setMobileFocused(false);
-    mobileInputRef.current?.blur();
-  }, []);
+ const finishSession = useCallback(() => {
+  setRunning(false);
+  setFinished(true);
+  setMobileFocused(false);
+  mobileInputRef.current?.blur();
+
+  if (musicRef.current) {
+    musicRef.current.pause();
+    musicRef.current.currentTime = 0;
+  }
+}, []);
 
   useEffect(() => { appRef.current?.focus({ preventScroll: true }); }, []);
 
@@ -445,18 +450,31 @@ export default function App() {
     });
   }, [accuracy, bestWpm, duration, finished, mode, score, wpm]);
 
-  const processCharacter = useCallback((character) => { 
-    if (!character || character.length !== 1 || finished) return;
-    setInput((previous) => {
-      if (previous.length >= text.length) return previous;
-      if (!running) setRunning(true);
-      playTone(character === text[previous.length], soundOn);
-      const next = previous + character;
-      if (next.length >= text.length) window.setTimeout(finishSession, 0);
-      return next;
-    });
-  }, [finishSession, finished, running, soundOn, text]);
+const processCharacter = useCallback((character) => {
+  if (!character || character.length !== 1 || finished) return;
 
+  if (!running && musicRef.current) {
+    musicRef.current.volume = 0.18;
+    musicRef.current.play().catch(() => {});
+  }
+
+  setInput((previous) => {
+    if (previous.length >= text.length) return previous;
+
+    if (!running) setRunning(true);
+
+    playTone(character === text[previous.length], soundOn);
+
+    const next = previous + character;
+
+    if (next.length >= text.length) {
+      window.setTimeout(finishSession, 0);
+    }
+
+    return next;
+  });
+}, [finishSession, finished, running, soundOn, text]);
+  
   const removeCharacter = useCallback(() => {
     if (!finished && !noBackspace) setInput((previous) => previous.slice(0, -1));
   }, [finished, noBackspace]);
@@ -558,6 +576,12 @@ export default function App() {
       </section>
 
       <footer className="footer"><div>© 2026 TypeTeks. All rights reserved.</div><nav><a href="mailto:contact@typeteks.online">Contact</a><a href="#support">Support</a><a href="#privacy">Privacy</a></nav></footer>
+   <audio
+  ref={musicRef}
+  src="/background-music.mp3"
+  loop
+  preload="auto"
+/>
     </main>
   );
 }
