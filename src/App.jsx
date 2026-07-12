@@ -314,24 +314,29 @@ function mobileLike() {
   return window.matchMedia?.("(pointer: coarse)").matches || window.innerWidth <= 768;
 }
 
-let audioContext;
+let keySoundPool = [];
+let keySoundIndex = 0;
+
 function playTone(correct, enabled) {
   if (!enabled) return;
+
   try {
-    audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
-    if (audioContext.state === "suspended") audioContext.resume();
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    const now = audioContext.currentTime;
-    oscillator.frequency.value = correct ? 520 : 150;
-    gain.gain.setValueAtTime(correct ? 0.025 : 0.045, now);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
-    oscillator.connect(gain);
-    gain.connect(audioContext.destination);
-    oscillator.start(now);
-    oscillator.stop(now + 0.055);
+    if (keySoundPool.length === 0) {
+      keySoundPool = Array.from({ length: 6 }, () => {
+        const audio = new Audio("/public_sound.mp3");
+        audio.preload = "auto";
+        audio.volume = 0.35;
+        return audio;
+      });
+    }
+
+    const sound = keySoundPool[keySoundIndex];
+    keySoundIndex = (keySoundIndex + 1) % keySoundPool.length;
+
+    sound.currentTime = 0;
+    sound.play().catch(() => {});
   } catch {
-    // Typing continues even when audio is unavailable.
+    // Typing continues even if sound cannot play
   }
 }
 
