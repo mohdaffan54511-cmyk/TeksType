@@ -446,16 +446,12 @@ export default function App() {
           <p>Build rhythm, accuracy, and confidence with focused typing sessions.</p>
         </div>
 
-        <div className="keyboard-art" aria-hidden="true">
-          <div className="glow-ring" />
-          <div className="key key-main">T</div>
-          <div className="key-row">
-            <div className="key">A</div>
-            <div className="key">S</div>
-            <div className="key">D</div>
-          </div>
-          <div className="space-key" />
-        </div>
+        <div className="hero-picture">
+  <img
+    src="/typing-hero.png"
+    alt="Purple TypeTeks keyboard"
+  />
+</div>
       </section>
 
       <section className="controls" aria-label="Typing controls">
