@@ -361,7 +361,7 @@ export default function App() {
   const mobileInputRef = useRef(null);
   const mobileBufferRef = useRef("");
   const savedRef = useRef(false);
-
+  const musicRef = useRef(null);
   const correctChars = useMemo(() => {
     let correct = 0;
     for (let i = 0; i < input.length; i += 1) if (input[i] === text[i]) correct += 1;
@@ -385,23 +385,32 @@ export default function App() {
     return Object.entries(errors).sort((a, b) => b[1] - a[1]).slice(0, 5);
   }, [input, text]);
 
-  const resetSession = useCallback((nextMode = mode, nextDuration = duration) => {
-    setMode(nextMode);
-    setDuration(nextDuration);
-    setText(makeText(nextMode));
-    setInput("");
-    setRunning(false);
-    setFinished(false);
-    setTimeLeft(nextDuration);
-    setMobileFocused(false);
-    savedRef.current = false;
-    mobileBufferRef.current = "";
-    if (mobileInputRef.current) {
-      mobileInputRef.current.value = "";
-      mobileInputRef.current.blur();
-    }
-    requestAnimationFrame(() => appRef.current?.focus({ preventScroll: true }));
-  }, [duration, mode]);
+ const resetSession = useCallback((nextMode = mode, nextDuration = duration) => {
+  setMode(nextMode);
+  setDuration(nextDuration);
+  setText(makeText(nextMode));
+  setInput("");
+  setRunning(false);
+  setFinished(false);
+  setTimeLeft(nextDuration);
+  setMobileFocused(false);
+  savedRef.current = false;
+  mobileBufferRef.current = "";
+
+  if (mobileInputRef.current) {
+    mobileInputRef.current.value = "";
+    mobileInputRef.current.blur();
+  }
+
+  if (musicRef.current) {
+    musicRef.current.pause();
+    musicRef.current.currentTime = 0;
+  }
+
+  requestAnimationFrame(() =>
+    appRef.current?.focus({ preventScroll: true })
+  );
+}, [duration, mode]);
 
   const finishSession = useCallback(() => {
     setRunning(false);
@@ -436,7 +445,7 @@ export default function App() {
     });
   }, [accuracy, bestWpm, duration, finished, mode, score, wpm]);
 
-  const processCharacter = useCallback((character) => {
+  const processCharacter = useCallback((character) => { 
     if (!character || character.length !== 1 || finished) return;
     setInput((previous) => {
       if (previous.length >= text.length) return previous;
