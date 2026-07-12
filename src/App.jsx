@@ -616,32 +616,47 @@ export default function App() {
 }
 .hero-picture {
   width: 100%;
-  max-width: 520px;
+  max-width: 480px;
+  height: 330px;
+  min-width: 0;
   justify-self: end;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
+  border-radius: 38px;
+  background: #eee8ff;
+  box-shadow: 0 28px 60px rgba(101, 56, 237, 0.18);
 }
 
 .hero-picture img {
   width: 100%;
-  height: auto;
-  max-height: 390px;
-  object-fit: contain;
+  height: 100%;
   display: block;
-  border-radius: 36px;
-  filter: drop-shadow(0 25px 40px rgba(101, 56, 237, 0.22));
+  object-fit: cover;
+  object-position: center;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 980px) {
   .hero-picture {
-    max-width: 100%;
     justify-self: center;
+    max-width: 560px;
+    height: 320px;
+  }
+}
+
+@media (max-width: 700px) {
+  .hero {
+    padding: 24px 8px 18px;
+  }
+
+  .hero-picture {
+    width: 100%;
+    max-width: 100%;
+    height: 220px;
+    border-radius: 24px;
   }
 
   .hero-picture img {
-    max-height: 240px;
-    border-radius: 22px;
+    object-fit: cover;
+    object-position: center;
   }
 }
 
