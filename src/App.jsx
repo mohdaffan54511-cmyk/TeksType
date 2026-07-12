@@ -15,11 +15,67 @@ const POOLS = {
     "Focus on progress, not on perfection.",
     "Discipline today creates freedom tomorrow."
   ],
-  hinglish: [
-    "Subah office jaate waqt meri bus miss ho gayi. Main auto me baitha aur driver bhaiya ne auto ko race car bana diya.",
-    "Mummy ne kaha room saaf karo. Maine sab samaan bed ke neeche daal diya, phir mehmaan ke bachche ne wahi jagah dhoondh li.",
-    "Mera dost gym join karke protein shaker le aaya. Exercise usne sirf bottle ko teen baar shake karke ki."
-  ],
+ hinglish: [
+  `Subah alarm baja, lekin maine snooze kar diya.
+Paanch minute baad alarm phir baja.
+Maine socha, thodi aur neend le leta hoon.
+Aankh khuli to office ka time ho chuka tha.
+Us din meri speed typing me nahi, taiyaar hone me improve hui.`,
+
+  `Main chai peene dukaan par gaya.
+Chai wale bhaiya ne poocha, strong ya normal?
+Maine bola, strong bana do.
+Unhone poocha, kitni strong?
+Maine kaha, itni ki Monday bhi Sunday lagne lage.`,
+
+  `Kal main padhai karne baitha.
+Table saaf ki, notebook nikali, aur pen rakha.
+Phir maine phone sirf ek minute ke liye check kiya.
+Ek ghante baad bhi main reels dekh raha tha.
+Padhai ne mujhe dekha aur chup-chaap kal par chali gayi.`,
+
+  `Mummy ne bola, market se dhaniya le aana.
+Main chips, biscuit, aur cold drink le aaya.
+Mummy ne poocha, dhaniya kahan hai?
+Maine bag ko dobara check kiya.
+Dhaniya meri memory ki tarah missing tha.`,
+
+  `Mera dost gym join karke bahut excited tha.
+Usne shoes, bottle, aur protein shaker kharida.
+Pehle din usne sirf mirror selfie li.
+Doosre din body pain ka excuse bana diya.
+Teesre din bola, Monday se properly start karunga.`,
+
+  `Ek chhota step bhi progress hota hai.
+Har din perfect hona zaroori nahi hai.
+Bas rukna nahi chahiye.
+Galti se seekho aur dobara try karo.
+Daily practice tumhe kal se better banati hai.`,
+
+  `Main interview dene gaya tha.
+Interviewer ne poocha, pressure handle kar sakte ho?
+Maine confidence se kaha, bilkul.
+Tabhi mera phone loud ringtone ke saath baj gaya.
+Maine bola, sir practical test thoda jaldi start ho gaya.`,
+
+  `Kabhi kabhi motivation nahi aati.
+Iska matlab ye nahi ki kaam rok do.
+Pehle chhota sa action lo.
+Action se confidence banta hai.
+Aur confidence se bade goals complete hote hain.`,
+
+  `Main fridge khol kar kuch tasty dhoondh raha tha.
+Fridge me wahi purani cheezein thi.
+Do minute baad maine fridge phir khola.
+Jaise andar kisi ne naya food upload kar diya ho.
+Fridge bhi meri umeed dekh kar confuse ho gaya.`,
+
+  `Ek achha insaan banna bhi success hai.
+Kisi ki help karna weakness nahi hoti.
+Kindness aur bravery saath chal sakti hain.
+Strong wahi hai jo dusron ka respect karta hai.
+Achha character hamesha yaad rakha jaata hai.`
+],
   motivation: [
     "Aaj ka kaam chhota ho sakta hai, lekin progress chhoti nahi hoti. Roz ek step lo.",
     "Start karne se motivation aati hai. Bas pehla step lo aur daily improve karo.",
