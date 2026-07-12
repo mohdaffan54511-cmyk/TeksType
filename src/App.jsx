@@ -296,7 +296,6 @@ Mother: A difficult beginning does not decide your future.
 Son: Should I begin with whatever I have?
 Mother: Yes. Start small, but start today.`
 ]
-]
 };
 
 const randomItem = (items) => items[Math.floor(Math.random() * items.length)];
