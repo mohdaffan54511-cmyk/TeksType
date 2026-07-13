@@ -608,9 +608,13 @@ if (!running && soundOn && musicRef.current) {
     <a href="/privacy.html">Privacy</a>
     <a href="/terms.html">Terms</a>
     <a href="/disclaimer.html">Disclaimer</a>
-    <a href="mailto:contact@Type Perfectly.online?subject=Type Perfectly%20Feedback">
-      Feedback
-    </a>
+   <a
+  href="https://docs.google.com/forms/d/e/1FAIpQLScFhnHdXB3dWVWBhEPFfkQKQz3Xzs23UXhCYOqp7O0Q3mMXQg/viewform"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  Feedback
+</a>
   </nav>
 </footer>
    <audio
