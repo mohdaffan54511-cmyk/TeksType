@@ -423,7 +423,22 @@ export default function App() {
     musicRef.current.currentTime = 0;
   }
 }, []);
+const toggleSound = useCallback(() => {
+  setSoundOn((current) => {
+    const next = !current;
 
+    if (musicRef.current) {
+      if (!next) {
+        musicRef.current.pause();
+      } else if (running && !finished) {
+        musicRef.current.volume = 0.90;
+        musicRef.current.play().catch(() => {});
+      }
+    }
+
+    return next;
+  });
+}, [finished, running]);
   useEffect(() => { appRef.current?.focus({ preventScroll: true }); }, []);
 
   useEffect(() => {
@@ -453,7 +468,7 @@ export default function App() {
 const processCharacter = useCallback((character) => {
   if (!character || character.length !== 1 || finished) return;
 
-  if (!running && musicRef.current) {
+if (!running && soundOn && musicRef.current) {
     musicRef.current.volume = 0.90;
     musicRef.current.play().catch(() => {});
   }
@@ -529,7 +544,7 @@ const processCharacter = useCallback((character) => {
           <span className="key-hint"><kbd>Tab</kbd> Restart</span>
           <span className="key-hint"><kbd>Esc</kbd> Pause</span>
           <button type="button" className={`ghost-button ${noBackspace ? "active" : ""}`} onClick={() => setNoBackspace((value) => !value)}>{noBackspace ? "NO BACKSPACE" : "STANDARD"}</button>
-          <button type="button" className={`ghost-button ${soundOn ? "active" : ""}`} onClick={() => setSoundOn((value) => !value)}>{soundOn ? "SOUND ON" : "SOUND OFF"}</button>
+         <button type="button" className={`ghost-button ${soundOn ? "active" : ""}`} onClick={toggleSound}>{soundOn ? "SOUND ON" : "SOUND OFF"}</button>
         </div>
       </header>
 
