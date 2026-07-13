@@ -351,9 +351,9 @@ export default function App() {
   const [soundOn, setSoundOn] = useState(true);
   const [noBackspace, setNoBackspace] = useState(false);
   const [mobileFocused, setMobileFocused] = useState(false);
-  const [bestWpm, setBestWpm] = useState(() => Number(localStorage.getItem("Perfectly Type-best") || 0));
+  const [bestWpm, setBestWpm] = useState(() => Number(localStorage.getItem("Type Perfectly-best") || 0));
   const [history, setHistory] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("Perfectly Type-history") || "[]"); }
+    try { return JSON.parse(localStorage.getItem("Type Perfectly-history") || "[]"); }
     catch { return []; }
   });
 
@@ -456,11 +456,11 @@ const toggleSound = useCallback(() => {
     savedRef.current = true;
     const nextBest = Math.max(bestWpm, wpm);
     setBestWpm(nextBest);
-    localStorage.setItem("Perfectly Type-best", String(nextBest));
+    localStorage.setItem("Type Perfectly-best", String(nextBest));
     const entry = { mode, wpm, accuracy, duration, score, date: new Date().toLocaleString() };
     setHistory((previous) => {
       const next = [entry, ...previous].slice(0, 6);
-      localStorage.setItem("Perfectly Type-history", JSON.stringify(next));
+      localStorage.setItem("Type Perfectly-history", JSON.stringify(next));
       return next;
     });
   }, [accuracy, bestWpm, duration, finished, mode, score, wpm]);
@@ -554,7 +554,7 @@ if (!running && soundOn && musicRef.current) {
           <h1>Type at the speed<br />of <span>thought.</span></h1>
           <p>Build rhythm, accuracy, and confidence with focused typing sessions.</p>
         </div>
-        <div className="hero-picture"><img src="/typing-hero.png" alt="Purple Perfectly Type keyboard" /></div>
+        <div className="hero-picture"><img src="/typing-hero.png" alt="Purple Type Perfectly keyboard" /></div>
       </section>
 
       <section className="controls">
@@ -591,7 +591,7 @@ if (!running && soundOn && musicRef.current) {
       </section>
 
       <footer className="footer">
-  <div>© 2026 Perfectly Type. All rights reserved.</div>
+  <div>© 2026 Type Perfectly. All rights reserved.</div>
 
   <nav>
     <a href="/about.html">About</a>
@@ -599,7 +599,7 @@ if (!running && soundOn && musicRef.current) {
     <a href="/privacy.html">Privacy</a>
     <a href="/terms.html">Terms</a>
     <a href="/disclaimer.html">Disclaimer</a>
-    <a href="mailto:contact@Perfectly Type.online?subject=Perfectly Type%20Feedback">
+    <a href="mailto:contact@Type Perfectly.online?subject=Type Perfectly%20Feedback">
       Feedback
     </a>
   </nav>
