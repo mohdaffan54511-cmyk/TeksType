@@ -551,8 +551,17 @@ if (!running && soundOn && musicRef.current) {
       <section className="hero">
         <div className="hero-copy-wrap">
           <div className="eyebrow">MICRO-BLITZ · {durationLabel} · {mode.toUpperCase()}</div>
-          <h1>Type at the speed<br />of <span>thought.</span></h1>
-          <p>Build rhythm, accuracy, and confidence with focused typing sessions.</p>
+         <h1>Type at the speed<br />of <span>thought.</span></h1>
+
+<h2 className="hero-seo-title">
+  Free Online Typing Test and Typing Practice
+</h2>
+
+<p>
+  Test your typing speed, improve accuracy, and practice English,
+  Hinglish, code, business words, quotes, bigrams, and trigrams with
+  live WPM tracking.
+</p>
         </div>
         <div className="hero-picture"><img src="/typing-hero.png" alt="Purple Type Perfectly keyboard" /></div>
       </section>
@@ -612,4 +621,11 @@ if (!running && soundOn && musicRef.current) {
 />
     </main>
   );
+}
+.hero-seo-title {
+  margin: 14px 0 8px;
+  color: var(--purple-700);
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 800;
 }
