@@ -265,7 +265,9 @@ kbd { display: inline-flex; margin-right: 4px; padding: 5px 7px; border: 1px sol
     padding-bottom: 160px;
     scroll-padding-bottom: 160px;
   }
-  .hero-seo-title {
+}
+
+.hero-seo-title {
   margin: 14px 0 8px;
   color: var(--purple-700);
   font-size: 20px;
