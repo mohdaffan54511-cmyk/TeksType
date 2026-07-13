@@ -626,10 +626,3 @@ if (!running && soundOn && musicRef.current) {
     </main>
   );
 }
-.hero-seo-title {
-  margin: 14px 0 8px;
-  color: var(--purple-700);
-  font-size: 20px;
-  line-height: 1.3;
-  font-weight: 800;
-}
