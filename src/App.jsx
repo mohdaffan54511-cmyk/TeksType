@@ -351,9 +351,9 @@ export default function App() {
   const [soundOn, setSoundOn] = useState(true);
   const [noBackspace, setNoBackspace] = useState(false);
   const [mobileFocused, setMobileFocused] = useState(false);
-  const [bestWpm, setBestWpm] = useState(() => Number(localStorage.getItem("typeteks-best") || 0));
+  const [bestWpm, setBestWpm] = useState(() => Number(localStorage.getItem("Perfectly Type-best") || 0));
   const [history, setHistory] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("typeteks-history") || "[]"); }
+    try { return JSON.parse(localStorage.getItem("Perfectly Type-history") || "[]"); }
     catch { return []; }
   });
 
@@ -456,11 +456,11 @@ const toggleSound = useCallback(() => {
     savedRef.current = true;
     const nextBest = Math.max(bestWpm, wpm);
     setBestWpm(nextBest);
-    localStorage.setItem("typeteks-best", String(nextBest));
+    localStorage.setItem("Perfectly Type-best", String(nextBest));
     const entry = { mode, wpm, accuracy, duration, score, date: new Date().toLocaleString() };
     setHistory((previous) => {
       const next = [entry, ...previous].slice(0, 6);
-      localStorage.setItem("typeteks-history", JSON.stringify(next));
+      localStorage.setItem("Perfectly Type-history", JSON.stringify(next));
       return next;
     });
   }, [accuracy, bestWpm, duration, finished, mode, score, wpm]);
@@ -538,7 +538,7 @@ if (!running && soundOn && musicRef.current) {
       <header className="topbar">
         <div className="brand">
           <div className="logo-mark"><span>T</span><img src="/TeksType.png" alt="" onError={(event) => event.currentTarget.remove()} /></div>
-          <div><div className="brand-title">TypeTeks</div><div className="brand-subtitle">Typing Performance Lab</div></div>
+          <div><div className="brand-title">TypeTek</div><div className="brand-subtitle">Typing Performance Lab</div></div>
         </div>
         <div className="top-actions">
           <span className="key-hint"><kbd>Tab</kbd> Restart</span>
@@ -554,7 +554,7 @@ if (!running && soundOn && musicRef.current) {
           <h1>Type at the speed<br />of <span>thought.</span></h1>
           <p>Build rhythm, accuracy, and confidence with focused typing sessions.</p>
         </div>
-        <div className="hero-picture"><img src="/typing-hero.png" alt="Purple TypeTeks keyboard" /></div>
+        <div className="hero-picture"><img src="/typing-hero.png" alt="Purple Perfectly Type keyboard" /></div>
       </section>
 
       <section className="controls">
@@ -591,7 +591,7 @@ if (!running && soundOn && musicRef.current) {
       </section>
 
       <footer className="footer">
-  <div>© 2026 TypeTeks. All rights reserved.</div>
+  <div>© 2026 Perfectly Type. All rights reserved.</div>
 
   <nav>
     <a href="/about.html">About</a>
@@ -599,7 +599,7 @@ if (!running && soundOn && musicRef.current) {
     <a href="/privacy.html">Privacy</a>
     <a href="/terms.html">Terms</a>
     <a href="/disclaimer.html">Disclaimer</a>
-    <a href="mailto:contact@typeteks.online?subject=TypeTeks%20Feedback">
+    <a href="mailto:contact@Perfectly Type.online?subject=Perfectly Type%20Feedback">
       Feedback
     </a>
   </nav>
