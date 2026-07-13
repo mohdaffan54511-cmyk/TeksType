@@ -538,7 +538,7 @@ if (!running && soundOn && musicRef.current) {
       <header className="topbar">
         <div className="brand">
           <div className="logo-mark"><span>T</span><img src="/TeksType.png" alt="" onError={(event) => event.currentTarget.remove()} /></div>
-          <div><div className="brand-title">TypeTek</div><div className="brand-subtitle">Typing Performance Lab</div></div>
+          <div><div className="brand-title">Type Perfectly</div><div className="brand-subtitle">Typing Performance Lab</div></div>
         </div>
         <div className="top-actions">
           <span className="key-hint"><kbd>Tab</kbd> Restart</span>
