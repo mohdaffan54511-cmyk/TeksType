@@ -94,9 +94,14 @@ function Heatmap({ stats }) {
                 Math.max(0, ((item.totalLatency || 0) / attempts) - 140) / 7;
               const heat = clamp(score / maxHeat, 0, 1);
               const background =
-                heat === 0
-                  ? "rgba(255,255,255,.06)"
-                  : `rgba(255, ${Math.round(142 - heat * 92)}, 45, ${0.35 + heat * 0.58})`;
+  heat === 0
+    ? "#eef3fb"
+    : `rgba(
+        ${Math.round(219 - heat * 178)},
+        ${Math.round(232 - heat * 112)},
+        ${Math.round(255 - heat * 20)},
+        ${0.55 + heat * 0.4}
+      )`;
               return (
                 <div
                   key={key}
@@ -104,9 +109,10 @@ function Heatmap({ stats }) {
                   title={`${key.toUpperCase()} • ${Math.round(heat * 100)}% heat`}
                   style={{
                     background,
-                    boxShadow: heat > 0.28
-                      ? `0 0 ${10 + heat * 22}px rgba(255,68,35,${heat * 0.68})`
-                      : "none",
+                     boxShadow:
+  heat > 0.28
+    ? `0 0 ${8 + heat * 18}px rgba(47, 111, 235, ${heat * 0.45})`
+    : "none",
                   }}
                 >
                   {key.toUpperCase()}
