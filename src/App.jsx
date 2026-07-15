@@ -1,3 +1,4 @@
+import AdvancedTypingEnhancer from "./AdvancedTypingEnhancer";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
@@ -609,20 +610,24 @@ if (!running && soundOn && musicRef.current) {
     <a href="/terms.html">Terms</a>
     <a href="/disclaimer.html">Disclaimer</a>
    <a
-  href="https://docs.google.com/forms/d/e/1FAIpQLScFhnHdXB3dWVWBhEPFfkQKQz3Xzs23UXhCYOqp7O0Q3mMXQg/viewform"
-  target="_blank"
-  rel="noopener noreferrer"
+href="https://docs.google.com/forms/d/e/1FAIpQLScFhnHdXB3dWVWBhEPFfkQKQz3Xzs23UXhCYOqp7O0Q3mMXQg/viewform"
+target="_blank"
+rel="noopener noreferrer"
 >
   Feedback
 </a>
   </nav>
 </footer>
-   <audio
+
+<AdvancedTypingEnhancer />
+
+<audio
   ref={musicRef}
   src="/background-music.mp3"
   loop
   preload="auto"
 />
-    </main>
-  );
+
+</main>
+);
 }
