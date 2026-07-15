@@ -545,3 +545,49 @@
 .tp-heat-key[style*="255"] {
   color: #ffffff;
 }
+/* Improved keyboard heatmap */
+
+.tp-heat-key {
+  color: #24314d !important;
+  border: 1px solid #d3deef !important;
+  font-weight: 800;
+  background-clip: padding-box;
+}
+
+.tp-heat-key:hover {
+  color: #163d91 !important;
+  border-color: #2f6feb !important;
+  transform: translateY(-3px) scale(1.04);
+}
+
+.tp-keyboard {
+  padding: 12px;
+  border-radius: 16px;
+  background: #f7f9fd;
+  border: 1px solid #e2e8f3;
+}
+
+.tp-heat-legend div {
+  background: linear-gradient(
+    90deg,
+    #e7efff,
+    #9cbcff,
+    #2f6feb
+  ) !important;
+}
+
+.tp-glass-panel {
+  box-shadow:
+    0 10px 26px rgba(45, 67, 105, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.tp-main-stats article:hover,
+.tp-glass-panel:hover {
+  border-color: #c4d4ef;
+}
+
+.tp-close:hover {
+  color: #ffffff;
+  background: #2457d6;
+}
