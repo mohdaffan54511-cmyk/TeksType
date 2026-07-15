@@ -434,3 +434,114 @@
 .tp-retry:hover {
   background: #f7f3ff !important;
 }
+/* Clean blue SaaS dashboard theme */
+
+.tp-result-overlay {
+  background: rgba(35, 48, 76, 0.55);
+  backdrop-filter: blur(14px);
+}
+
+.tp-result-dashboard {
+  color: #172033;
+  border: 1px solid #dbe4f3;
+  background: #f4f7fb;
+  box-shadow: 0 24px 70px rgba(38, 57, 92, 0.28);
+}
+
+.tp-close {
+  color: #2457d6;
+  border: 1px solid #d5def0;
+  background: #ffffff;
+}
+
+.tp-result-header > span,
+.tp-panel-title span,
+.tp-main-stats article > span {
+  color: #2457d6;
+}
+
+.tp-result-header h2,
+.tp-panel-title h3,
+.tp-main-stats strong {
+  color: #172033;
+}
+
+.tp-result-header p,
+.tp-main-stats small,
+.tp-chart-axis,
+.tp-heat-legend {
+  color: #6f7b91;
+}
+
+.tp-main-stats article,
+.tp-glass-panel {
+  border: 1px solid #dce4f1;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(45, 67, 105, 0.07);
+}
+
+.tp-chart-wrap svg polyline {
+  stroke: #2f6feb !important;
+}
+
+.tp-chart-wrap svg polyline:first-of-type {
+  fill: rgba(47, 111, 235, 0.12) !important;
+}
+
+.tp-chart-wrap svg line {
+  stroke: rgba(47, 111, 235, 0.10) !important;
+}
+
+.tp-heat-key {
+  color: #24314d;
+  border: 1px solid #d9e1ef;
+  background: #eef3fb !important;
+  box-shadow: none !important;
+}
+
+.tp-heat-key:hover {
+  border-color: #2f6feb;
+  background: #e3ecff !important;
+}
+
+.tp-heat-legend div {
+  background: linear-gradient(
+    90deg,
+    #d8e5ff,
+    #6ea0ff,
+    #2f6feb
+  );
+}
+
+.tp-retry {
+  color: #ffffff !important;
+  border: 1px solid #2457d6 !important;
+  background: #2457d6 !important;
+  box-shadow: 0 8px 20px rgba(36, 87, 214, 0.24) !important;
+}
+
+.tp-retry kbd {
+  color: #2457d6 !important;
+  background: #ffffff !important;
+}
+
+.tp-share {
+  color: #2457d6 !important;
+  border: 1px solid #cdd9ef !important;
+  background: #ffffff !important;
+}
+
+.tp-retry:hover {
+  background: #1748bd !important;
+}
+
+.tp-share:hover {
+  background: #eef4ff !important;
+}
+
+.tp-actions button {
+  opacity: 1 !important;
+}
+.tp-heat-key[style*="255"] {
+  color: #ffffff;
+}
