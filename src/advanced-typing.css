@@ -395,3 +395,27 @@
 .tp-chart-wrap svg polyline:first-of-type {
   fill: rgba(203, 186, 234, 0.22);
 }
+.tp-retry {
+  color: #2d2440 !important;
+  background: #cbbaea;
+}
+
+.tp-retry kbd {
+  color: #4d376d !important;
+  background: #ffffff !important;
+}
+
+.tp-share {
+  color: #3a2d50 !important;
+  background: #ffffff !important;
+  border: 1px solid #c9b7e6 !important;
+}
+
+.tp-share:hover,
+.tp-retry:hover {
+  filter: brightness(0.97);
+}
+
+.tp-actions button {
+  opacity: 1 !important;
+}
