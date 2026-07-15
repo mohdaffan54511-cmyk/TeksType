@@ -591,3 +591,109 @@
   color: #ffffff;
   background: #2457d6;
 }
+/* Final mobile dashboard fix */
+@media (max-width: 780px) {
+  .tp-result-overlay {
+    padding: 6px !important;
+    align-items: flex-start;
+  }
+
+  .tp-result-dashboard {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 96vh !important;
+    padding: 20px 14px 18px !important;
+    border-radius: 18px !important;
+    overflow-x: hidden !important;
+  }
+
+  .tp-result-header h2 {
+    font-size: 34px !important;
+    line-height: 1.05;
+  }
+
+  .tp-main-stats {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .tp-dashboard-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .tp-glass-panel {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 18px 14px !important;
+    overflow: hidden !important;
+  }
+
+  .tp-panel-title h3 {
+    font-size: 21px !important;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  .tp-chart-wrap {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .tp-chart-wrap svg {
+    width: 100% !important;
+    height: 190px !important;
+  }
+
+  .tp-chart-axis {
+    gap: 8px;
+    font-size: 9px !important;
+  }
+
+  .tp-chart-axis span {
+    flex: 1;
+    text-align: center;
+  }
+
+  .tp-chart-axis span:first-child {
+    text-align: left;
+  }
+
+  .tp-chart-axis span:last-child {
+    text-align: right;
+  }
+
+  .tp-keyboard {
+    width: 100%;
+    padding: 10px 4px !important;
+    overflow: hidden;
+  }
+
+  .tp-key-row {
+    gap: 4px !important;
+    padding-inline: 0 !important;
+  }
+
+  .tp-heat-key {
+    width: clamp(25px, 8vw, 34px) !important;
+    min-width: 0 !important;
+    border-radius: 7px !important;
+    font-size: 11px !important;
+  }
+
+  .tp-heat-legend {
+    width: 100%;
+    gap: 6px !important;
+    font-size: 9px !important;
+  }
+
+  .tp-actions {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .tp-actions button {
+    width: 100% !important;
+    min-height: 50px !important;
+  }
+}
