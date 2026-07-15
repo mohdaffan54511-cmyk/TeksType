@@ -419,3 +419,18 @@
 .tp-actions button {
   opacity: 1 !important;
 }
+.tp-retry {
+  color: #4b20d0 !important;
+  background: #ffffff !important;
+  border: 1px solid #d8cbee !important;
+  box-shadow: none !important;
+}
+
+.tp-retry kbd {
+  color: #4b20d0 !important;
+  background: #f3edff !important;
+}
+
+.tp-retry:hover {
+  background: #f7f3ff !important;
+}
