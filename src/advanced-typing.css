@@ -691,7 +691,11 @@
     flex-direction: column !important;
     gap: 10px !important;
   }
-
+@media (max-width: 780px) {
+  .tp-dashboard-grid .tp-glass-panel:nth-child(2) {
+    display: none !important;
+  }
+}
   .tp-actions button {
     width: 100% !important;
     min-height: 50px !important;
