@@ -431,7 +431,7 @@ const toggleSound = useCallback(() => {
       if (!next) {
         musicRef.current.pause();
       } else if (running && !finished) {
-        musicRef.current.volume = 0.90;
+        musicRef.current.volume = 0.80;
         musicRef.current.play().catch(() => {});
       }
     }
