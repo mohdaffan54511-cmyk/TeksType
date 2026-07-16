@@ -363,6 +363,8 @@ export default function App() {
   const mobileBufferRef = useRef("");
   const savedRef = useRef(false);
   const musicRef = useRef(null);
+  const startedAtRef = useRef(0);
+  const [elapsedMs, setElapsedMs] = useState(0);
   const correctChars = useMemo(() => {
     let correct = 0;
     for (let i = 0; i < input.length; i += 1) if (input[i] === text[i]) correct += 1;
@@ -370,10 +372,13 @@ export default function App() {
   }, [input, text]);
 
   const accuracy = accuracyOf(correctChars, input.length);
-  const elapsed = Math.max(1, duration - timeLeft);
-  const wpm = input.length ? Math.round(correctChars / 5 / (elapsed / 60)) : 0;
+  const elapsedMinutes = Math.max(elapsedMs, 1) / 60000;
+  const wpm =
+    input.length && elapsedMs >= 250
+      ? Math.round((correctChars / 5) / elapsedMinutes)
+      : 0;
   const score = correctChars * 10 + wpm * 2;
- const sessionActive = mobileFocused || running;
+  const sessionActive = mobileFocused || running;
 
   const weakKeys = useMemo(() => {
     const errors = {};
@@ -386,7 +391,7 @@ export default function App() {
     return Object.entries(errors).sort((a, b) => b[1] - a[1]).slice(0, 5);
   }, [input, text]);
 
- const resetSession = useCallback((nextMode = mode, nextDuration = duration) => {
+  const resetSession = useCallback((nextMode = mode, nextDuration = duration) => {
   setMode(nextMode);
   setDuration(nextDuration);
   setText(makeText(nextMode));
@@ -394,6 +399,8 @@ export default function App() {
   setRunning(false);
   setFinished(false);
   setTimeLeft(nextDuration);
+  startedAtRef.current = 0;
+  setElapsedMs(0);
   setMobileFocused(false);
   savedRef.current = false;
   mobileBufferRef.current = "";
@@ -413,7 +420,13 @@ export default function App() {
   );
 }, [duration, mode]);
 
- const finishSession = useCallback(() => {
+  const finishSession = useCallback(() => {
+  const preciseElapsed = startedAtRef.current
+    ? Math.min(duration * 1000, performance.now() - startedAtRef.current)
+    : 0;
+
+  setElapsedMs(preciseElapsed);
+  setTimeLeft(0);
   setRunning(false);
   setFinished(true);
   setMobileFocused(false);
@@ -423,8 +436,8 @@ export default function App() {
     musicRef.current.pause();
     musicRef.current.currentTime = 0;
   }
-}, []);
-const toggleSound = useCallback(() => {
+}, [duration]);
+  const toggleSound = useCallback(() => {
   setSoundOn((current) => {
     const next = !current;
 
@@ -444,15 +457,39 @@ const toggleSound = useCallback(() => {
 
   useEffect(() => {
     if (!running || finished) return undefined;
-    const timer = window.setInterval(() => setTimeLeft((value) => Math.max(0, value - 1)), 1000);
-    return () => window.clearInterval(timer);
-  }, [finished, running]);
 
-  useEffect(() => {
-    if (running && timeLeft === 0) finishSession();
-  }, [finishSession, running, timeLeft]);
+    let frameId = 0;
+    let lastUpdate = 0;
 
-  useEffect(() => {
+    const updateTimer = (now) => {
+      const elapsed = now - startedAtRef.current;
+
+      if (now - lastUpdate >= 100) {
+        setElapsedMs(elapsed);
+
+        const remainingMs = Math.max(
+          0,
+          duration * 1000 - elapsed
+        );
+
+        setTimeLeft(Math.ceil(remainingMs / 1000));
+        lastUpdate = now;
+      }
+
+      if (elapsed >= duration * 1000) {
+        finishSession();
+        return;
+      }
+
+      frameId = requestAnimationFrame(updateTimer);
+    };
+
+    frameId = requestAnimationFrame(updateTimer);
+
+    return () => cancelAnimationFrame(frameId);
+  }, [duration, finishSession, finished, running]);
+
+useEffect(() => {
     if (!finished || savedRef.current) return;
     savedRef.current = true;
     const nextBest = Math.max(bestWpm, wpm);
@@ -466,18 +503,21 @@ const toggleSound = useCallback(() => {
     });
   }, [accuracy, bestWpm, duration, finished, mode, score, wpm]);
 
-const processCharacter = useCallback((character) => {
+  const processCharacter = useCallback((character) => {
   if (!character || character.length !== 1 || finished) return;
 
-if (!running && soundOn && musicRef.current) {
+  if (!running) {
+    startedAtRef.current = performance.now() - elapsedMs;
+    setRunning(true);
+  }
+
+  if (!running && soundOn && musicRef.current) {
     musicRef.current.volume = 0.90;
     musicRef.current.play().catch(() => {});
   }
 
   setInput((previous) => {
     if (previous.length >= text.length) return previous;
-
-    if (!running) setRunning(true);
 
     playTone(character === text[previous.length], soundOn);
 
@@ -489,7 +529,7 @@ if (!running && soundOn && musicRef.current) {
 
     return next;
   });
-}, [finishSession, finished, running, soundOn, text]);
+}, [elapsedMs, finishSession, finished, running, soundOn, text]);
   
   const removeCharacter = useCallback(() => {
     if (!finished && !noBackspace) setInput((previous) => previous.slice(0, -1));
