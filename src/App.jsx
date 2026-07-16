@@ -576,7 +576,23 @@ if (!running && soundOn && musicRef.current) {
       <section className="practice-layout">
         <article className="typing-card">
           <input ref={mobileInputRef} className="mobile-capture" type="text" inputMode="text" autoCapitalize="off" autoCorrect="off" autoComplete="off" spellCheck={false} onFocus={() => setMobileFocused(true)} onBlur={() => setMobileFocused(false)} onInput={handleMobileInput} onKeyDown={(event) => { event.stopPropagation(); if (event.key === "Backspace" && noBackspace) event.preventDefault(); }} />
-          <div className="typing-card-header"><div><span>{durationLabel}</span><span>{mode.toUpperCase()}</span></div><button type="button" className="primary-button" onClick={focusTyping}>TAP TO TYPE</button></div>
+
+          <div className="typing-card-header">
+  <div>
+    <span>{durationLabel}</span>
+    <span>{mode.toUpperCase()}</span>
+  </div>
+
+  {!finished && (
+    <button
+      type="button"
+      className="primary-button"
+      onClick={focusTyping}
+    >
+      TAP TO TYPE
+    </button>
+  )}
+</div>
           <div className="typing-text" role="textbox" onPointerDown={focusTyping}>{text.split("").map((character, index) => {
             let className = "char upcoming";
             if (index < input.length) className = input[index] === character ? "char correct" : "char wrong";
@@ -584,13 +600,49 @@ if (!running && soundOn && musicRef.current) {
             return <span key={`${index}-${character}`} className={className}>{character}</span>;
           })}</div>
           <div className="legend-row"><span><i className="dot correct-dot" />Correct</span><span><i className="dot wrong-dot" />Wrong</span><span><i className="dot upcoming-dot" />Upcoming</span></div>
-          <div className="typing-actions"><button type="button" className="restart-button" onClick={() => resetSession()}>RESTART SESSION</button></div>
+         {!finished && (
+  <div className="typing-actions">
+    <button
+      type="button"
+      className="restart-button"
+      onClick={() => resetSession()}
+    >
+      RESTART SESSION
+    </button>
+  </div>
+)}
         </article>
 
         <aside className="stats-card">
           <div className="stats-title">Live Stats</div>
-          <div className="stats-grid"><div><span>Time</span><strong>{timeLeft}s</strong></div><div><span>WPM</span><strong>{wpm}</strong></div><div><span>Accuracy</span><strong>{accuracy}%</strong></div></div>
-          {finished && <div className="finished-box"><strong>Session complete!</strong><span>Score: {score}</span><button type="button" onClick={() => resetSession()}>NEW SESSION</button></div>}
+         <div className="stats-grid">
+  <div>
+    <span>Time</span>
+    <strong>{finished ? durationLabel : `${timeLeft}s`}</strong>
+  </div>
+
+  <div>
+    <span>WPM</span>
+    <strong>{wpm}</strong>
+  </div>
+
+  <div>
+    <span>Accuracy</span>
+    <strong>{accuracy}%</strong>
+  </div>
+</div>
+
+{finished && (
+  <div className="finished-box">
+    <strong>Great job!</strong>
+    <span>{wpm} WPM · {accuracy}% Accuracy</span>
+    <span>Score: {score}</span>
+
+    <button type="button" onClick={() => resetSession()}>
+      TRY AGAIN
+    </button>
+  </div>
+)}
         </aside>
       </section>
 
