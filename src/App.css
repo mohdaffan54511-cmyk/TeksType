@@ -317,3 +317,38 @@ kbd { display: inline-flex; margin-right: 4px; padding: 5px 7px; border: 1px sol
     align-self: start;
   }
 }
+.hero-picture img {
+  animation: heroFloat 4s ease-in-out infinite;
+}
+
+@keyframes heroFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.primary-button,
+.restart-button,
+.finished-box button,
+.button-strip button,
+.ghost-button {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primary-button:hover,
+.restart-button:hover,
+.finished-box button:hover,
+.button-strip button:hover,
+.ghost-button:hover {
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-picture img {
+    animation: none;
+  }
+}
