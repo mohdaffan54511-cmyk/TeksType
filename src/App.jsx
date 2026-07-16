@@ -1,4 +1,6 @@
 import AdvancedTypingEnhancer from "./AdvancedTypingEnhancer";
+import AuthModal from "./AuthModal";
+import { supabase, supabaseConfigured } from "./lib/supabase";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
@@ -352,6 +354,9 @@ export default function App() {
   const [soundOn, setSoundOn] = useState(true);
   const [noBackspace, setNoBackspace] = useState(false);
   const [mobileFocused, setMobileFocused] = useState(false);
+  const [user, setUser] = useState(null);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [cloudSaveStatus, setCloudSaveStatus] = useState("idle");
   const [bestWpm, setBestWpm] = useState(() => Number(localStorage.getItem("Type Perfectly-best") || 0));
   const [history, setHistory] = useState(() => {
     try { return JSON.parse(localStorage.getItem("Type Perfectly-history") || "[]"); }
@@ -362,6 +367,7 @@ export default function App() {
   const mobileInputRef = useRef(null);
   const mobileBufferRef = useRef("");
   const savedRef = useRef(false);
+  const cloudSavedRef = useRef(false);
   const musicRef = useRef(null);
   const startedAtRef = useRef(0);
   const [elapsedMs, setElapsedMs] = useState(0);
@@ -403,6 +409,8 @@ export default function App() {
   setElapsedMs(0);
   setMobileFocused(false);
   savedRef.current = false;
+  cloudSavedRef.current = false;
+  setCloudSaveStatus("idle");
   mobileBufferRef.current = "";
 
   if (mobileInputRef.current) {
@@ -456,6 +464,32 @@ export default function App() {
   useEffect(() => { appRef.current?.focus({ preventScroll: true }); }, []);
 
   useEffect(() => {
+    if (!supabaseConfigured || !supabase) return undefined;
+
+    let active = true;
+
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (!active) return;
+      if (error) {
+        console.error("Could not read auth session:", error.message);
+        return;
+      }
+      setUser(data.session?.user || null);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (active) setUser(session?.user || null);
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
     if (!running || finished) return undefined;
 
     let frameId = 0;
@@ -502,6 +536,35 @@ useEffect(() => {
       return next;
     });
   }, [accuracy, bestWpm, duration, finished, mode, score, wpm]);
+
+  useEffect(() => {
+    if (!finished || !user || !supabase || cloudSavedRef.current) return;
+
+    cloudSavedRef.current = true;
+    setCloudSaveStatus("saving");
+
+    const saveSession = async () => {
+      const { error } = await supabase.from("typing_sessions").insert({
+        mode,
+        duration_seconds: duration,
+        wpm,
+        accuracy,
+        score,
+        characters: input.length,
+      });
+
+      if (error) {
+        console.error("Cloud session save failed:", error.message);
+        cloudSavedRef.current = false;
+        setCloudSaveStatus("error");
+        return;
+      }
+
+      setCloudSaveStatus("saved");
+    };
+
+    saveSession();
+  }, [accuracy, duration, finished, input.length, mode, score, user, wpm]);
 
   const processCharacter = useCallback((character) => {
   if (!character || character.length !== 1 || finished) return;
@@ -572,6 +635,13 @@ useEffect(() => {
     }
   }, [noBackspace, processCharacter, removeCharacter]);
 
+  const logout = useCallback(async () => {
+    if (!supabase) return;
+
+    const { error } = await supabase.auth.signOut();
+    if (error) console.error("Logout failed:", error.message);
+  }, []);
+
   const durationLabel = duration === 300 ? "5 MIN" : `${duration}S`;
 
   return (
@@ -586,6 +656,24 @@ useEffect(() => {
           <span className="key-hint"><kbd>Esc</kbd> Pause</span>
           <button type="button" className={`ghost-button ${noBackspace ? "active" : ""}`} onClick={() => setNoBackspace((value) => !value)}>{noBackspace ? "NO BACKSPACE" : "STANDARD"}</button>
          <button type="button" className={`ghost-button ${soundOn ? "active" : ""}`} onClick={toggleSound}>{soundOn ? "SOUND ON" : "SOUND OFF"}</button>
+          {user ? (
+            <button
+              type="button"
+              className="ghost-button auth-header-button active"
+              onClick={logout}
+              title={user.email || "Signed in"}
+            >
+              LOG OUT
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="ghost-button auth-header-button"
+              onClick={() => setAuthOpen(true)}
+            >
+              LOG IN
+            </button>
+          )}
         </div>
       </header>
 
@@ -680,6 +768,23 @@ useEffect(() => {
     <button type="button" onClick={() => resetSession()}>
       TRY AGAIN
     </button>
+
+    {!user ? (
+      <button
+        type="button"
+        className="save-progress-button"
+        onClick={() => setAuthOpen(true)}
+      >
+        SAVE PROGRESS
+      </button>
+    ) : (
+      <small className={`cloud-save-status ${cloudSaveStatus}`} role="status">
+        {cloudSaveStatus === "saving" && "Saving to your account..."}
+        {cloudSaveStatus === "saved" && "Saved to your account"}
+        {cloudSaveStatus === "error" && "Cloud save failed. Try again later."}
+        {cloudSaveStatus === "idle" && "Your result will be saved automatically."}
+      </small>
+    )}
   </div>
 )}
         </aside>
@@ -709,6 +814,8 @@ rel="noopener noreferrer"
 </a>
   </nav>
 </footer>
+
+{authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
 
 <AdvancedTypingEnhancer />
 
