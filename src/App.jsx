@@ -373,7 +373,7 @@ export default function App() {
   const elapsed = Math.max(1, duration - timeLeft);
   const wpm = input.length ? Math.round(correctChars / 5 / (elapsed / 60)) : 0;
   const score = correctChars * 10 + wpm * 2;
-  const sessionActive = mobileFocused || running || input.length > 0;
+ const sessionActive = mobileFocused || running;
 
   const weakKeys = useMemo(() => {
     const errors = {};
