@@ -9,9 +9,26 @@ const KEYBOARD_ROWS = [
 ];
 
 const CHUNK_WORDS = [
-  "the","and","that","with","from","this","have","your","about","would",
-  "there","their","which","focus","better","growth","future","through",
-  "progress","strong","learn","business","client","report","typing"
+  "the", "and", "that", "with", "from",
+  "this", "have", "your", "about", "would",
+  "there", "their", "which", "focus", "better",
+  "growth", "future", "through", "progress", "strong",
+  "learn", "business", "client", "report", "typing",
+  "because", "people", "system", "work", "time",
+  "skill", "speed", "practice", "improve", "accuracy",
+  "success", "project", "meeting", "support", "create",
+  "change", "important", "possible", "between", "without",
+  "another", "something", "every", "while", "world",
+  "number", "school", "group", "around", "place",
+  "right", "until", "government", "today", "tomorrow",
+  "discipline", "clarity", "energy", "mindset", "momentum",
+  "mastery", "habit", "vision", "action", "result",
+  "quality", "strategy", "analysis", "finance", "budget",
+  "invoice", "market", "sales", "target", "dashboard",
+  "planning", "team", "service", "value", "problem",
+  "solution", "communication", "confidence", "knowledge", "wisdom",
+  "respect", "kindness", "bravery", "freedom", "family",
+  "career", "health", "money", "saving", "learning"
 ];
 
 function clamp(value, min, max) {
@@ -131,7 +148,7 @@ function Heatmap({ stats }) {
 
 function Dashboard({ result, history, keyStats, onRetry, onClose }) {
   const share = () => {
-    const text = `I just unlocked a 50x flow state on Type Perfectly at ${result.wpm} WPM with ${result.accuracy}% accuracy! Can you beat me? https://typeperfectly.com`;
+    const text = `I just unlocked a 100x flow state on Type Perfectly at ${result.wpm} WPM with ${result.accuracy}% accuracy! Can you beat me? https://typeperfectly.com`;
     window.open(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`,
       "_blank",
@@ -358,14 +375,14 @@ export default function AdvancedTypingEnhancer() {
           className={chunking ? "selected tp-chunk-button" : "tp-chunk-button"}
           onClick={toggleChunking}
         >
-          50× CHUNKING
+          100× CHUNKING
         </button>,
         contentMount
       )}
 
       {typingMount && chunking && createPortal(
         <div className="tp-chunk-stage" onPointerDown={() => document.querySelector(".app")?.focus()}>
-          <div className="tp-chunk-label"><strong>50×</strong> MUSCLE-MEMORY CHUNKING</div>
+          <div className="tp-chunk-label"><strong>100×</strong> MUSCLE-MEMORY CHUNKING</div>
           <div key={blastId} className={`tp-chunk-word ${errorFlash ? "tp-chunk-error" : ""}`}>
             {chunkWord.split("").map((letter, index) => (
               <span
