@@ -610,14 +610,47 @@ useEffect(() => {
     }
   }, []);
 
-  const handleDesktopKeyDown = useCallback((event) => {
-    if (event.target instanceof HTMLButtonElement || event.target === mobileInputRef.current) return;
-    if (event.ctrlKey || event.altKey || event.metaKey) return;
-    if (event.key === "Tab") { event.preventDefault(); resetSession(); return; }
-    if (event.key === "Escape") { event.preventDefault(); setRunning(false); setMobileFocused(false); mobileInputRef.current?.blur(); return; }
-    if (event.key === "Backspace") { event.preventDefault(); removeCharacter(); return; }
-    if (event.key.length === 1) { event.preventDefault(); processCharacter(event.key); }
-  }, [processCharacter, removeCharacter, resetSession]);
+const handleDesktopKeyDown = useCallback((event) => {
+  const target = event.target;
+
+  if (
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLTextAreaElement ||
+    target instanceof HTMLSelectElement ||
+    target instanceof HTMLButtonElement ||
+    target?.isContentEditable ||
+    target === mobileInputRef.current
+  ) {
+    return;
+  }
+
+  if (event.ctrlKey || event.altKey || event.metaKey) return;
+
+  if (event.key === "Tab") {
+    event.preventDefault();
+    resetSession();
+    return;
+  }
+
+  if (event.key === "Escape") {
+    event.preventDefault();
+    setRunning(false);
+    setMobileFocused(false);
+    mobileInputRef.current?.blur();
+    return;
+  }
+
+  if (event.key === "Backspace") {
+    event.preventDefault();
+    removeCharacter();
+    return;
+  }
+
+  if (event.key.length === 1) {
+    event.preventDefault();
+    processCharacter(event.key);
+  }
+}, [processCharacter, removeCharacter, resetSession]);
 
   const handleMobileInput = useCallback((event) => {
     const value = event.currentTarget.value;
