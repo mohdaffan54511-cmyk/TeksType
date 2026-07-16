@@ -86,12 +86,9 @@ export default function AuthModal({ onClose }) {
         aria-describedby="auth-description"
       >
         <button type="button" className="auth-close" onClick={onClose} aria-label="Close login window">×</button>
-
-        <div className="auth-brand-mark" aria-hidden="true">
-          <img src="/TeksType.png" alt="" onError={(event) => event.currentTarget.remove()} />
-          <span>TP</span>
-        </div>
-
+<div className="auth-brand-mark" aria-hidden="true">
+  TP
+</div>
         <h2 id="auth-title">
           {isLogin ? "Continue to use Type Perfectly" : "Create your Type Perfectly account"}
         </h2>
