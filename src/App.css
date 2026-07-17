@@ -88,7 +88,11 @@ input:focus-visible {
 /* Uses the lightweight "T" fallback. Remove the <img> from App.jsx later
    to stop the large PNG from downloading completely. */
 .logo-mark img {
-  display: none;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  padding: 5px;
 }
 
 .brand-title {
