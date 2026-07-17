@@ -214,7 +214,7 @@ kbd {
   overflow: hidden;
   border: none;
   border-radius: 38px;
-  background: transparent;
+ background: url("/typing-hero.png") center / contain no-repeat;
   box-shadow: none;
 }
 
