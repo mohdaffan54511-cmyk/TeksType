@@ -681,7 +681,9 @@ const handleDesktopKeyDown = useCallback((event) => {
     <main ref={appRef} tabIndex={0} className={`app ${sessionActive ? "session-active" : ""}`} onKeyDown={handleDesktopKeyDown}>
       <header className="topbar">
         <div className="brand">
-          <div className="logo-mark"><span>T</span><img src="/TeksType.png" alt="" onError={(event) => event.currentTarget.remove()} /></div>
+          <div className="logo-mark" aria-label="Type Perfectly logo">
+  <span>T</span>
+</div>
           <div><div className="brand-title">Type Perfectly</div><div className="brand-subtitle">Typing Performance Lab</div></div>
         </div>
         <div className="top-actions">
@@ -725,7 +727,11 @@ const handleDesktopKeyDown = useCallback((event) => {
   live WPM tracking.
 </p>
         </div>
-        <div className="hero-picture"><img src="/typing-hero.png" alt="Purple Type Perfectly keyboard" /></div>
+        <div
+  className="hero-picture"
+  role="img"
+  aria-label="Purple Type Perfectly keyboard"
+/>
       </section>
 
       <section className="controls">
