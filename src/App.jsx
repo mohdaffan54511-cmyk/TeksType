@@ -741,7 +741,27 @@ const handleDesktopKeyDown = useCallback((event) => {
 
       <section className="practice-layout">
         <article className="typing-card">
-          <input ref={mobileInputRef} className="mobile-capture" type="text" inputMode="text" autoCapitalize="off" autoCorrect="off" autoComplete="off" spellCheck={false} onFocus={() => setMobileFocused(true)} onBlur={() => setMobileFocused(false)} onInput={handleMobileInput} onKeyDown={(event) => { event.stopPropagation(); if (event.key === "Backspace" && noBackspace) event.preventDefault(); }} />
+        <input
+  ref={mobileInputRef}
+  className="mobile-capture"
+  type="text"
+  aria-label="Typing input"
+  inputMode="text"
+  autoCapitalize="off"
+  autoCorrect="off"
+  autoComplete="off"
+  spellCheck={false}
+  onFocus={() => setMobileFocused(true)}
+  onBlur={() => setMobileFocused(false)}
+  onInput={handleMobileInput}
+  onKeyDown={(event) => {
+    event.stopPropagation();
+
+    if (event.key === "Backspace" && noBackspace) {
+      event.preventDefault();
+    }
+  }}
+/>
 
           <div className="typing-card-header">
   <div>
@@ -759,7 +779,15 @@ const handleDesktopKeyDown = useCallback((event) => {
     </button>
   )}
 </div>
-          <div className="typing-text" role="textbox" onPointerDown={focusTyping}>{text.split("").map((character, index) => {
+      <div
+  className="typing-text"
+  role="textbox"
+  aria-label="Typing practice text. Type the highlighted character."
+  aria-multiline="true"
+  tabIndex={0}
+  onPointerDown={focusTyping}
+>   
+          {text.split("").map((character, index) => {
             let className = "char upcoming";
             if (index < input.length) className = input[index] === character ? "char correct" : "char wrong";
             if (index === input.length && !finished) className = "char current";
