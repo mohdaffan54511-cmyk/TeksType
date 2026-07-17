@@ -681,8 +681,11 @@ const handleDesktopKeyDown = useCallback((event) => {
     <main ref={appRef} tabIndex={0} className={`app ${sessionActive ? "session-active" : ""}`} onKeyDown={handleDesktopKeyDown}>
       <header className="topbar">
         <div className="brand">
-          <div className="logo-mark" aria-label="Type Perfectly logo">
-  <span>T</span>
+ <div className="logo-mark">
+  <img
+    src="/TeksType.jpeg"
+    alt="Type Perfectly logo"
+  />
 </div>
           <div><div className="brand-title">Type Perfectly</div><div className="brand-subtitle">Typing Performance Lab</div></div>
         </div>
