@@ -70,26 +70,25 @@ input:focus-visible {
 }
 
 .logo-mark {
-  width: 54px;
-  height: 54px;
-  flex: 0 0 54px;
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
   position: relative;
   display: grid;
   place-items: center;
   overflow: hidden;
-  border-radius: 17px;
-  color: white;
-  font-size: 27px;
-  font-weight: 900;
-  background: linear-gradient(145deg, var(--purple-300), var(--purple-700));
+  border-radius: 18px;
+  background: #ffffff;
   box-shadow: var(--shadow);
 }
 
-/* Uses the lightweight "T" fallback. Remove the <img> from App.jsx later
-   to stop the large PNG from downloading completely. */
-width: 64px;
-height: 64px;
-flex: 0 0 64px;
+.logo-mark img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  padding: 0;
+}
 
 .brand-title {
   font-size: 24px;
@@ -719,13 +718,12 @@ kbd {
     order: 5;
   }
 
-.logo-mark img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  padding: 0;
-}
+  .logo-mark {
+    width: 52px;
+    height: 52px;
+    flex: 0 0 52px;
+    border-radius: 15px;
+  }
 
   .brand-title {
     font-size: 21px;
