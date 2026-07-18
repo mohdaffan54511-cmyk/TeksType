@@ -2,8 +2,11 @@ import { useEffect, useState } from "react";
 import { supabase, supabaseConfigured } from "./lib/supabase";
 import "./auth.css";
 
-export default function AuthModal({ onClose }) {
-  const [mode, setMode] = useState("login");
+export default function AuthModal({
+  onClose,
+  initialMode = "login",
+}) {
+ const [mode, setMode] = useState(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
