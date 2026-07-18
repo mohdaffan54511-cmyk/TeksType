@@ -714,28 +714,43 @@ const handleDesktopKeyDown = useCallback((event) => {
           )}
         </div>
       </header>
+    <section className="hero">
+  <div className="hero-copy-wrap">
+    <div className="eyebrow">
+      FREE TYPING SPEED TEST
+    </div>
 
-      <section className="hero">
-        <div className="hero-copy-wrap">
-          <div className="eyebrow">MICRO-BLITZ · {durationLabel} · {mode.toUpperCase()}</div>
-         <h1>Type at the speed<br />of <span>thought.</span></h1>
+    <h1>
+      How fast can you type?
+      <br />
+      <span>Find out in 15 seconds.</span>
+    </h1>
 
-<h2 className="hero-seo-title">
-  Free Online Typing Test and Typing Practice
-</h2>
+    <p className="hero-description">
+      Get instant WPM, accuracy and weak-key feedback with English,
+      Hinglish, code and business typing practice.
+    </p>
 
-<p>
-  Test your typing speed, improve accuracy, and practice English,
-  Hinglish, code, business words, quotes, bigrams, and trigrams with
-  live WPM tracking.
-</p>
-        </div>
-        <div
-  className="hero-picture"
-  role="img"
-  aria-label="Purple Type Perfectly keyboard"
-/>
-      </section>
+    <button
+      type="button"
+      className="hero-cta"
+      onClick={focusTyping}
+    >
+      START FREE TYPING TEST
+    </button>
+
+    <div className="hero-trust">
+      Free to use · No account required · Instant results
+    </div>
+  </div>
+
+  <div
+    className="hero-picture"
+    role="img"
+    aria-label="Purple Type Perfectly keyboard"
+  />
+</section>
+   
 
       <section className="controls">
         <div className="control-section content-control"><div className="control-label">Content</div><div className="button-strip">{MODES.map((item) => <button key={item} type="button" className={mode === item ? "selected" : ""} onClick={() => resetSession(item, duration)}>{item.toUpperCase()}</button>)}</div></div>
