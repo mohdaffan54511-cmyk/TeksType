@@ -202,45 +202,17 @@ kbd {
 }
 
 .hero-picture {
-  width: min(100%, 580px);
-  height: 390px;
+  width: min(100%, 520px);
+  height: 330px;
   min-width: 0;
   justify-self: end;
-  position: relative;
   overflow: hidden;
-  border: 1px solid rgba(124, 77, 255, 0.12);
-  border-radius: 32px;
-  background: rgba(255, 255, 255, 0.38);
-  box-shadow: 0 24px 60px rgba(91, 56, 255, 0.12);
+  border: none;
+  border-radius: 38px;
+ background: url("/typing-hero.png") center / contain no-repeat;
+  box-shadow: none;
 }
 
-.hero-picture::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: url("/typing-hero.png") center / 95% no-repeat;
-  animation: keyboardFloat 4s ease-in-out infinite;
-  z-index: 2;
-}
-
-.hero-picture::after {
-  content: "";
-  position: absolute;
-  width: 280px;
-  height: 280px;
-  left: 50%;
-  top: 50%;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(124, 77, 255, 0.35),
-    rgba(124, 77, 255, 0)
-  );
- filter: blur(20px);
-transform: translate(-50%, -50%);
-animation: keyboardGlow 4s ease-in-out infinite;
-z-index: 1;
-}
 .hero-picture img {
   width: 100%;
   height: 100%;
@@ -1053,81 +1025,5 @@ input {
     min-height: 38px;
     padding: 0 11px;
     font-size: 10px;
-  }
-}
-.hero-description {
-  max-width: 610px;
-  margin: 18px 0 24px;
-  color: var(--muted);
-  font-size: 18px;
-  line-height: 1.6;
-}
-
-.hero-cta {
-  min-height: 58px;
-  padding: 0 25px;
-  border: 0;
-  border-radius: 17px;
-  color: white;
-  background: linear-gradient(
-    135deg,
-    var(--purple-500),
-    var(--purple-700)
-  );
-  box-shadow: 0 16px 30px rgba(74, 36, 199, 0.28);
-  font-size: 15px;
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.hero-cta:hover {
-  transform: translateY(-2px);
-}
-
-.hero-trust {
-  margin-top: 14px;
-  color: #655b7d;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-@media (max-width: 700px) {
-  .hero .hero-description {
-    display: block;
-    margin: 14px 0 19px;
-    font-size: 15px;
-  }
-
-  .hero-cta {
-    width: 100%;
-    min-height: 54px;
-    padding: 0 14px;
-    font-size: 14px;
-  }
-
-  .hero-trust {
-    font-size: 11px;
-    line-height: 1.5;
-  }
-}
-@keyframes keyboardFloat {
-  0%,
-  100% {
-    transform: translateY(0) scale(1);
-  }
-
-  50% {
-    transform: translateY(-10px) scale(1.03);
-  }
-}
-
-@keyframes keyboardGlow {
-  0%,
-  100% {
-    opacity: 0.55;
-  }
-
-  50% {
-    opacity: 0.9;
   }
 }
