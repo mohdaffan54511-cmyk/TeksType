@@ -692,7 +692,7 @@ const handleDesktopKeyDown = useCallback((event) => {
         <div className="top-actions">
           <span className="key-hint"><kbd>Tab</kbd> Restart</span>
           <span className="key-hint"><kbd>Esc</kbd> Pause</span>
-          <button type="button" className={`ghost-button ${noBackspace ? "active" : ""}`} onClick={() => setNoBackspace((value) => !value)}>{noBackspace ? "NO BACKSPACE" : "STANDARD"}</button>
+          <button type="button" className={`ghost-button ${noBackspace ? "active" : ""}`} onClick={() => setNoBackspace((value) => !value)}>{noBackspace ? "BACKSPACE OFF" : "BACKSPACE ON"}</button>
          <button type="button" className={`ghost-button ${soundOn ? "active" : ""}`} onClick={toggleSound}>{soundOn ? "SOUND ON" : "SOUND OFF"}</button>
           {user ? (
             <button
@@ -793,7 +793,7 @@ const handleDesktopKeyDown = useCallback((event) => {
       className="primary-button"
       onClick={focusTyping}
     >
-      TAP TO TYPE
+      START TYPING
     </button>
   )}
 </div>
