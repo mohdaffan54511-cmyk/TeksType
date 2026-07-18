@@ -356,6 +356,7 @@ export default function App() {
   const [mobileFocused, setMobileFocused] = useState(false);
   const [user, setUser] = useState(null);
   const [authOpen, setAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState("login");
   const [cloudSaveStatus, setCloudSaveStatus] = useState("idle");
   const [bestWpm, setBestWpm] = useState(() => Number(localStorage.getItem("Type Perfectly-best") || 0));
   const [history, setHistory] = useState(() => {
@@ -704,13 +705,16 @@ const handleDesktopKeyDown = useCallback((event) => {
               LOG OUT
             </button>
           ) : (
-            <button
-              type="button"
-              className="ghost-button auth-header-button"
-              onClick={() => setAuthOpen(true)}
-            >
-              LOG IN
-            </button>
+           <button
+  type="button"
+  className="ghost-button auth-header-button"
+  onClick={() => {
+    setAuthMode("login");
+    setAuthOpen(true);
+  }}
+>
+  LOG IN
+</button>
           )}
         </div>
       </header>
@@ -855,13 +859,16 @@ const handleDesktopKeyDown = useCallback((event) => {
     </button>
 
     {!user ? (
-      <button
-        type="button"
-        className="save-progress-button"
-        onClick={() => setAuthOpen(true)}
-      >
-        SAVE PROGRESS
-      </button>
+     <button
+  type="button"
+  className="save-progress-button"
+  onClick={() => {
+    setAuthMode("signup");
+    setAuthOpen(true);
+  }}
+>
+  CREATE FREE ACCOUNT TO SAVE THIS SCORE
+</button>
     ) : (
       <small className={`cloud-save-status ${cloudSaveStatus}`} role="status">
         {cloudSaveStatus === "saving" && "Saving to your account..."}
@@ -900,7 +907,12 @@ rel="noopener noreferrer"
   </nav>
 </footer>
 
-{authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
+{authOpen && (
+  <AuthModal
+    initialMode={authMode}
+    onClose={() => setAuthOpen(false)}
+  />
+)}
 
 <AdvancedTypingEnhancer />
 
