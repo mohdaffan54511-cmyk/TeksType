@@ -719,12 +719,13 @@ kbd {
     order: 5;
   }
 
-  .logo-mark {
-    width: 46px;
-    height: 46px;
-    flex-basis: 46px;
-    border-radius: 14px;
-  }
+.logo-mark img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  padding: 0;
+}
 
   .brand-title {
     font-size: 21px;
