@@ -583,7 +583,10 @@ useEffect(() => {
   setInput((previous) => {
     if (previous.length >= text.length) return previous;
 
-    playTone(character === text[previous.length], soundOn);
+  playTone(
+  character === text[previous.length],
+  soundOn && !mobileLike()
+);
 
     const next = previous + character;
 
