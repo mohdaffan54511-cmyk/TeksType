@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <url>
     <loc>https://www.typeperfectly.com/</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -16,19 +17,31 @@
 
   <url>
     <loc>https://www.typeperfectly.com/contact.html</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <priority>0.5</priority>
   </url>
 
   <url>
     <loc>https://www.typeperfectly.com/privacy.html</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-22</lastmod>
     <priority>0.3</priority>
   </url>
 
   <url>
     <loc>https://www.typeperfectly.com/terms.html</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-22</lastmod>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://www.typeperfectly.com/disclaimer.html</loc>
+    <lastmod>2026-07-12</lastmod>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://www.typeperfectly.com/cookies.html</loc>
+    <lastmod>2026-07-25</lastmod>
     <priority>0.3</priority>
   </url>
 
