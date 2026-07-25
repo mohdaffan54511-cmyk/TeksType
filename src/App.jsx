@@ -4,7 +4,16 @@ import { supabase, supabaseConfigured } from "./lib/supabase";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
-const MODES = ["words", "bigrams", "trigrams", "code", "business", "quotes", "hinglish", "conversation"];
+const MODES = [
+  "words",
+  "hinglish",
+  "business",
+  "conversation",
+  "quotes",
+  "code",
+  "bigrams",
+  "trigrams",
+];
 
 const POOLS = {
   words: "home now even used said government once any to and know world number another something until without when right less school both there almost people system place group around because through while every important possible between business support future strong learn focus better growth skill progress".split(" "),
