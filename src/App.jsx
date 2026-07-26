@@ -608,103 +608,130 @@ useEffect(() => {
   });
 }, [elapsedMs, finishSession, finished, running, soundOn, text]);
   
-  const removeCharacter = useCallback(() => {
-    if (!finished && !noBackspace) setInput((previous) => previous.slice(0, -1));
-  }, [finished, noBackspace]);
+const removeCharacter = useCallback(() => {
+  if (!finished && !noBackspace) {
+    setInput((previous) => previous.slice(0, -1));
+  }
+}, [finished, noBackspace]);
 
-  const focusTyping = useCallback(() => {
-  typingCardRef.current?.scrollIntoView({
-  behavior: "smooth",
-  block: "start",
-});
-    if (mobileLike()) {
-      setMobileFocused(true);
-      const target = mobileInputRef.current;
-      if (!target) return;
-      try { target.focus({ preventScroll: true }); }
-      catch { target.focus(); }
-    } else {
-      appRef.current?.focus({ preventScroll: true });
+const focusTyping = useCallback(() => {
+  if (mobileLike()) {
+    setMobileFocused(true);
+
+    const target = mobileInputRef.current;
+    if (!target) return;
+
+    try {
+      target.focus({ preventScroll: true });
+    } catch {
+      target.focus();
     }
-  }, []);
-
-const handleDesktopKeyDown = useCallback((event) => {
-  const target = event.target;
-
-  if (
-    target instanceof HTMLInputElement ||
-    target instanceof HTMLTextAreaElement ||
-    target instanceof HTMLSelectElement ||
-    target instanceof HTMLButtonElement ||
-    target?.isContentEditable ||
-    target === mobileInputRef.current
-  ) {
-    return;
+  } else {
+    appRef.current?.focus({ preventScroll: true });
   }
+}, []);
 
-  if (event.ctrlKey || event.altKey || event.metaKey) return;
+const handleDesktopKeyDown = useCallback(
+  (event) => {
+    const target = event.target;
 
-  if (event.key === "Tab") {
-    event.preventDefault();
-    resetSession();
-    return;
-  }
+    if (
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLTextAreaElement ||
+      target instanceof HTMLSelectElement ||
+      target instanceof HTMLButtonElement ||
+      target?.isContentEditable ||
+      target === mobileInputRef.current
+    ) {
+      return;
+    }
 
-  if (event.key === "Escape") {
-    event.preventDefault();
-    setRunning(false);
-    setMobileFocused(false);
-    mobileInputRef.current?.blur();
-    return;
-  }
+    if (event.ctrlKey || event.altKey || event.metaKey) return;
 
-  if (event.key === "Backspace") {
-    event.preventDefault();
-    removeCharacter();
-    return;
-  }
+    if (event.key === "Tab") {
+      event.preventDefault();
+      resetSession();
+      return;
+    }
 
-  if (event.key.length === 1) {
-    event.preventDefault();
-    processCharacter(event.key);
-  }
-}, [processCharacter, removeCharacter, resetSession]);
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setRunning(false);
+      setMobileFocused(false);
+      mobileInputRef.current?.blur();
+      return;
+    }
 
-  const handleMobileInput = useCallback((event) => {
+    if (event.key === "Backspace") {
+      event.preventDefault();
+      removeCharacter();
+      return;
+    }
+
+    if (event.key.length === 1) {
+      event.preventDefault();
+      processCharacter(event.key);
+    }
+  },
+  [processCharacter, removeCharacter, resetSession]
+);
+
+const handleMobileInput = useCallback(
+  (event) => {
     const value = event.currentTarget.value;
     const previous = mobileBufferRef.current;
+
     if (value.length > previous.length) {
-      for (const character of value.slice(previous.length)) processCharacter(character);
+      for (const character of value.slice(previous.length)) {
+        processCharacter(character);
+      }
     } else if (value.length < previous.length) {
-      if (noBackspace) event.currentTarget.value = previous;
-      else for (let i = 0; i < previous.length - value.length; i += 1) removeCharacter();
+      if (noBackspace) {
+        event.currentTarget.value = previous;
+      } else {
+        for (let i = 0; i < previous.length - value.length; i += 1) {
+          removeCharacter();
+        }
+      }
     }
+
     mobileBufferRef.current = event.currentTarget.value;
+
     if (mobileBufferRef.current.length > 40) {
       event.currentTarget.value = "";
       mobileBufferRef.current = "";
     }
-  }, [noBackspace, processCharacter, removeCharacter]);
+  },
+  [noBackspace, processCharacter, removeCharacter]
+);
 
-  const logout = useCallback(async () => {
-    if (!supabase) return;
+const logout = useCallback(async () => {
+  if (!supabase) return;
 
-    const { error } = await supabase.auth.signOut();
-    if (error) console.error("Logout failed:", error.message);
-  }, []);
+  const { error } = await supabase.auth.signOut();
 
-  const durationLabel = duration === 300 ? "5 MIN" : `${duration}S`;
+  if (error) {
+    console.error("Logout failed:", error.message);
+  }
+}, []);
 
-  return (
-    <main ref={appRef} tabIndex={0} className={`app ${sessionActive ? "session-active" : ""}`} onKeyDown={handleDesktopKeyDown}>
-      <header className="topbar">
-        <div className="brand">
- <div className="logo-mark">
-  <img
-    src="/TeksType.jpeg"
-    alt="Type Perfectly logo"
-  />
-</div>
+const durationLabel = duration === 300 ? "5 MIN" : `${duration}S`;
+
+return (
+  <main
+    ref={appRef}
+    tabIndex={0}
+    className={`app ${sessionActive ? "session-active" : ""}`}
+    onKeyDown={handleDesktopKeyDown}
+  >
+    <header className="topbar">
+      <div className="brand">
+        <div className="logo-mark">
+          <img
+            src="/TeksType.jpeg"
+            alt="Type Perfectly logo"
+          />
+        </div>
           <div><div className="brand-title">Type Perfectly</div><div className="brand-subtitle">Typing Performance Lab</div></div>
         </div>
         <div className="top-actions">
