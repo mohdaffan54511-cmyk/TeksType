@@ -1186,3 +1186,38 @@ input {
 .char {
   transition: none;
 }
+@media (max-width: 700px) {
+  .seo-content {
+    order: 5;
+    margin: 18px 0 0;
+    gap: 14px;
+  }
+
+  .seo-content article {
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .seo-content h2,
+  .faq-section h2 {
+    font-size: 20px;
+    line-height: 1.25;
+  }
+
+  .seo-content p,
+  .faq-section p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .faq-section {
+    order: 6;
+    margin: 18px 0 0;
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .footer {
+    order: 7;
+  }
+}
