@@ -509,7 +509,7 @@ export default function App() {
     const updateTimer = (now) => {
       const elapsed = now - startedAtRef.current;
 
-      if (now - lastUpdate >= 100) {
+      if (now - lastUpdate >= 250) {
         setElapsedMs(elapsed);
 
         const remainingMs = Math.max(
