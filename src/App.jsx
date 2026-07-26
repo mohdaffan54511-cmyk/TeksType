@@ -1,4 +1,4 @@
-import AdvancedTypingEnhancer from "./AdvancedTypingEnhancer";
+
 import AuthModal from "./AuthModal";
 import { supabase, supabaseConfigured } from "./lib/supabase";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -1038,3 +1038,4 @@ rel="noopener noreferrer"
 </main>
 );
 }
+<AdvancedTypingEnhancer />
