@@ -1173,3 +1173,16 @@ input {
   }
 }
 
+.app:focus-within .typing-card,
+.app:focus-within .stats-card {
+  backdrop-filter: none;
+}
+
+.typing-text {
+  will-change: contents;
+  contain: layout paint;
+}
+
+.char {
+  transition: none;
+}
