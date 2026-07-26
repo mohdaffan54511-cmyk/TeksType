@@ -977,14 +977,25 @@ return (
     
 <details open>
 
-</details>
+<section className="faq-section">
+  <h2>Frequently Asked Questions</h2>
+
+  <details open>
+    <summary>Is the typing test free?</summary>
+    <p>
+      Yes. You can take typing tests and practice for free without creating
+      an account.
+    </p>
+  </details>
+
+  <details>
     <summary>Do I need an account?</summary>
     <p>
       No. An account is optional and can be used to save your progress.
     </p>
   </details>
 
-</details>
+  <details>
     <summary>How is WPM calculated?</summary>
     <p>
       Correctly typed characters are divided by five and then divided by the
@@ -992,7 +1003,7 @@ return (
     </p>
   </details>
 
- 
+  <details>
     <summary>Can I practice Hinglish and code typing?</summary>
     <p>
       Yes. Type Perfectly includes Hinglish, code, business, quotes, words,
@@ -1010,12 +1021,13 @@ return (
     <a href="/privacy.html">Privacy</a>
     <a href="/terms.html">Terms</a>
     <a href="/disclaimer.html">Disclaimer</a>
-   <a
-href="https://docs.google.com/forms/d/e/1FAIpQLScFhnHdXB3dWVWBhEPFfkQKQz3Xzs23UXhCYOqp7O0Q3mMXQg/viewform"
-target="_blank"
-rel="noopener noreferrer"
->
-  Feedback
+
+    <a
+      href="https://docs.google.com/forms/d/e/1FAIpQLScFhnHdXB3dWVWBhEPFfkQKQz3Xzs23UXhCYOqp7O0Q3mMXQg/viewform"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Feedback
 </a>
   </nav>
 </footer>
