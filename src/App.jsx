@@ -974,7 +974,7 @@ return (
       Yes. You can take typing tests and practice for free without creating
       an account.
     </p>
-  </details>
+<details open>
 
   <details>
     <summary>Do I need an account?</summary>
