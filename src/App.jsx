@@ -360,7 +360,7 @@ export default function App() {
   const [running, setRunning] = useState(false);
   const [finished, setFinished] = useState(false);
   const [timeLeft, setTimeLeft] = useState(15);
-  const [soundOn, setSoundOn] = useState(true);
+ const [soundOn, setSoundOn] = useState(false);
   const [noBackspace, setNoBackspace] = useState(false);
   const [mobileFocused, setMobileFocused] = useState(false);
   const [user, setUser] = useState(null);
@@ -374,6 +374,7 @@ export default function App() {
   });
 
   const appRef = useRef(null);
+  const typingCardRef = useRef(null);
   const mobileInputRef = useRef(null);
   const mobileBufferRef = useRef("");
   const savedRef = useRef(false);
@@ -612,6 +613,10 @@ useEffect(() => {
   }, [finished, noBackspace]);
 
   const focusTyping = useCallback(() => {
+    typingCardRef.current?.scrollIntoView({
+  behavior: "smooth",
+  block: "center",
+});
     if (mobileLike()) {
       setMobileFocused(true);
       const target = mobileInputRef.current;
@@ -774,7 +779,7 @@ const handleDesktopKeyDown = useCallback((event) => {
       </section>
 
       <section className="practice-layout">
-        <article className="typing-card">
+       <article ref={typingCardRef} className="typing-card">
         <input
   ref={mobileInputRef}
   className="mobile-capture"
@@ -932,7 +937,7 @@ rel="noopener noreferrer"
   ref={musicRef}
   src="/background-music.mp3"
   loop
-  preload="auto"
+  preload="none"
 />
 
 </main>
