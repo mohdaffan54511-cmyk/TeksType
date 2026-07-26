@@ -1025,6 +1025,15 @@ rel="noopener noreferrer"
     onClose={() => setAuthOpen(false)}
   />
 )}
+<audio
+  ref={musicRef}
+  src="/background-music.mp3"
+  loop
+  preload="none"
+/>
 
+</main>
+);
+}
 
 
