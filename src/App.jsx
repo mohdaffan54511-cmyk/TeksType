@@ -613,9 +613,9 @@ useEffect(() => {
   }, [finished, noBackspace]);
 
   const focusTyping = useCallback(() => {
-    typingCardRef.current?.scrollIntoView({
+  typingCardRef.current?.scrollIntoView({
   behavior: "smooth",
-  block: "center",
+  block: "start",
 });
     if (mobileLike()) {
       setMobileFocused(true);
