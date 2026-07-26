@@ -968,18 +968,6 @@ return (
 <section className="faq-section">
   <h2>Frequently Asked Questions</h2>
 
-<details open>
-    <summary>Is the typing test free?</summary>
-    <p>
-      Yes. You can take typing tests and practice for free without creating
-      an account.
-    </p>
-    
-<details open>
-
-<section className="faq-section">
-  <h2>Frequently Asked Questions</h2>
-
   <details open>
     <summary>Is the typing test free?</summary>
     <p>
@@ -1011,7 +999,6 @@ return (
     </p>
   </details>
 </section>
-
 <footer className="footer">
   <div>© 2026 Type Perfectly. All rights reserved.</div>
 
