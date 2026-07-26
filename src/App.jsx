@@ -1026,16 +1026,5 @@ rel="noopener noreferrer"
   />
 )}
 
-<AdvancedTypingEnhancer />
 
-<audio
-  ref={musicRef}
-  src="/background-music.mp3"
-  loop
-  preload="none"
-/>
 
-</main>
-);
-}
-<AdvancedTypingEnhancer />
