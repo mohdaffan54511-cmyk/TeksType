@@ -721,7 +721,9 @@ return (
   <main
     ref={appRef}
     tabIndex={0}
-  className={`app ${sessionActive ? "session-active" : ""}`}
+  className={`app ${sessionActive ? "session-active" : ""} ${
+  finished ? "result-active" : ""
+}`}
     onKeyDown={handleDesktopKeyDown}
   >
     <header className="topbar">
