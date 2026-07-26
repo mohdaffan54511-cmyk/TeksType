@@ -928,6 +928,65 @@ return (
         </aside>
       </section>
 
+    {finished && (
+  <section
+    className="result-dashboard"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="result-dashboard-title"
+  >
+    <div className="result-dashboard-card">
+      <p className="result-dashboard-label">TEST COMPLETE</p>
+
+      <h2 id="result-dashboard-title">
+        Your Typing Result
+      </h2>
+
+      <p className="result-dashboard-subtitle">
+        {mode.toUpperCase()} · {durationLabel}
+      </p>
+
+      <div className="result-dashboard-stats">
+        <div>
+          <span>WPM</span>
+          <strong>{wpm}</strong>
+        </div>
+
+        <div>
+          <span>Accuracy</span>
+          <strong>{accuracy}%</strong>
+        </div>
+
+        <div>
+          <span>Score</span>
+          <strong>{score}</strong>
+        </div>
+      </div>
+
+      <div className="result-dashboard-actions">
+        <button
+          type="button"
+          onClick={() => resetSession()}
+        >
+          TRY AGAIN
+        </button>
+
+        {!user && (
+          <button
+            type="button"
+            className="result-save-button"
+            onClick={() => {
+              setAuthMode("signup");
+              setAuthOpen(true);
+            }}
+          >
+            CREATE FREE ACCOUNT
+          </button>
+        )}
+      </div>
+    </div>
+  </section>
+)}
       <section className="insights-grid">
         <article className="insight-card"><div className="insight-title">Personal Best</div><div className="big-number">{bestWpm}</div><span>Best WPM</span></article>
         <article className="insight-card history-card"><div className="insight-title">Recent Sessions</div>{history.length ? history.map((item, index) => <div className="history-row" key={`${item.date}-${index}`}><span>{item.mode}</span><strong>{item.wpm} WPM</strong><span>{item.accuracy}%</span></div>) : <p>No completed sessions yet.</p>}</article>
