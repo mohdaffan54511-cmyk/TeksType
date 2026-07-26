@@ -736,11 +736,11 @@ const handleDesktopKeyDown = useCallback((event) => {
       FREE TYPING SPEED TEST
     </div>
 
-    <h1>
-      How fast can you type?
-      <br />
-      <span>Find out in 15 seconds.</span>
-    </h1>
+  <h1>
+  Free Typing Test Online
+  <br />
+  <span>Check Your WPM in 15 Seconds</span>
+</h1>
 
     <p className="hero-description">
       Get instant WPM, accuracy and weak-key feedback with English,
