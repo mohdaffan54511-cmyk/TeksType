@@ -974,16 +974,17 @@ return (
       Yes. You can take typing tests and practice for free without creating
       an account.
     </p>
+    
 <details open>
 
-  <details>
+</details>
     <summary>Do I need an account?</summary>
     <p>
       No. An account is optional and can be used to save your progress.
     </p>
   </details>
 
-  <details>
+</details>
     <summary>How is WPM calculated?</summary>
     <p>
       Correctly typed characters are divided by five and then divided by the
