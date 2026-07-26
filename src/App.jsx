@@ -968,7 +968,7 @@ return (
 <section className="faq-section">
   <h2>Frequently Asked Questions</h2>
 
-  <details>
+<details open>
     <summary>Is the typing test free?</summary>
     <p>
       Yes. You can take typing tests and practice for free without creating
@@ -992,7 +992,7 @@ return (
     </p>
   </details>
 
-  <details>
+ 
     <summary>Can I practice Hinglish and code typing?</summary>
     <p>
       Yes. Type Perfectly includes Hinglish, code, business, quotes, words,
