@@ -904,8 +904,76 @@ const handleDesktopKeyDown = useCallback((event) => {
         <article className="insight-card history-card"><div className="insight-title">Recent Sessions</div>{history.length ? history.map((item, index) => <div className="history-row" key={`${item.date}-${index}`}><span>{item.mode}</span><strong>{item.wpm} WPM</strong><span>{item.accuracy}%</span></div>) : <p>No completed sessions yet.</p>}</article>
         <article className="insight-card"><div className="insight-title">Needs Practice</div>{weakKeys.length ? weakKeys.map(([key, count]) => <div className="weak-row" key={key}><strong>{key}</strong><div><span style={{ width: `${Math.min(100, count * 24)}%` }} /></div><small>{count}</small></div>) : <p>Type a session to discover weak keys.</p>}</article>
       </section>
+<section className="seo-content">
+  <article>
+    <h2>How Our Free Typing Test Works</h2>
+    <p>
+      Choose a test duration, start typing, and get your WPM and accuracy
+      result instantly. No signup is required.
+    </p>
+  </article>
 
-      <footer className="footer">
+  <article>
+    <h2>How WPM Is Calculated</h2>
+    <p>
+      WPM is calculated using correctly typed characters, divided by five,
+      and then divided by the time used.
+    </p>
+  </article>
+
+  <article>
+    <h2>Improve Your Typing Accuracy</h2>
+    <p>
+      Focus on correct keystrokes first. Use the weak-key report to find
+      letters that need more practice.
+    </p>
+  </article>
+
+  <article>
+    <h2>Practice for Different Goals</h2>
+    <p>
+      Practice English words, Hinglish, code, business vocabulary, quotes,
+      and useful conversations.
+    </p>
+  </article>
+</section>
+
+<section className="faq-section">
+  <h2>Frequently Asked Questions</h2>
+
+  <details>
+    <summary>Is the typing test free?</summary>
+    <p>
+      Yes. You can take typing tests and practice for free without creating
+      an account.
+    </p>
+  </details>
+
+  <details>
+    <summary>Do I need an account?</summary>
+    <p>
+      No. An account is optional and can be used to save your progress.
+    </p>
+  </details>
+
+  <details>
+    <summary>How is WPM calculated?</summary>
+    <p>
+      Correctly typed characters are divided by five and then divided by the
+      number of minutes used.
+    </p>
+  </details>
+
+  <details>
+    <summary>Can I practice Hinglish and code typing?</summary>
+    <p>
+      Yes. Type Perfectly includes Hinglish, code, business, quotes, words,
+      bigrams and trigrams.
+    </p>
+  </details>
+</section>
+
+<footer className="footer">
   <div>© 2026 Type Perfectly. All rights reserved.</div>
 
   <nav>
