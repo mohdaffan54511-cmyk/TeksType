@@ -721,7 +721,7 @@ return (
   <main
     ref={appRef}
     tabIndex={0}
-   className={`app ${mobileLike() && sessionActive ? "session-active" : ""}`}
+  className={`app ${sessionActive ? "session-active" : ""}`}
     onKeyDown={handleDesktopKeyDown}
   >
     <header className="topbar">
