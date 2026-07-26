@@ -1280,3 +1280,131 @@ input {
     display: none;
   }
 }
+/* Full-screen result dashboard */
+.result-dashboard {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  overflow-y: auto;
+  background: rgba(31, 18, 78, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.result-dashboard-card {
+  width: min(680px, 100%);
+  padding: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 30px;
+  text-align: center;
+  background: linear-gradient(145deg, #ffffff, #f2ecff);
+  box-shadow: 0 30px 80px rgba(20, 10, 65, 0.4);
+}
+
+.result-dashboard-label {
+  margin: 0 0 10px;
+  color: var(--purple-600);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+}
+
+.result-dashboard-card h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(34px, 6vw, 56px);
+  line-height: 1;
+}
+
+.result-dashboard-subtitle {
+  margin: 14px 0 26px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.result-dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.result-dashboard-stats > div {
+  padding: 22px 12px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: white;
+}
+
+.result-dashboard-stats span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.result-dashboard-stats strong {
+  display: block;
+  margin-top: 7px;
+  color: var(--purple-700);
+  font-size: 40px;
+  line-height: 1;
+}
+
+.result-dashboard-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.result-dashboard-actions button {
+  min-height: 54px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 15px;
+  color: white;
+  background: linear-gradient(
+    135deg,
+    var(--purple-500),
+    var(--purple-700)
+  );
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.result-dashboard-actions .result-save-button {
+  color: var(--purple-700);
+  border: 1px solid var(--line);
+  background: white;
+}
+
+@media (max-width: 600px) {
+  .result-dashboard {
+    padding: 12px;
+  }
+
+  .result-dashboard-card {
+    padding: 28px 18px;
+    border-radius: 24px;
+  }
+
+  .result-dashboard-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .result-dashboard-stats > div {
+    padding: 16px;
+  }
+
+  .result-dashboard-stats strong {
+    font-size: 34px;
+  }
+
+  .result-dashboard-actions {
+    grid-template-columns: 1fr;
+  }
+}
