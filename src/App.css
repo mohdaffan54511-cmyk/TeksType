@@ -1106,3 +1106,69 @@ input {
     line-height: 1.5;
   }
 }
+.seo-content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin: 28px 8px 0;
+}
+
+.seo-content article {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.seo-content h2,
+.faq-section h2 {
+  margin: 0 0 12px;
+  color: var(--purple-700);
+  font-size: 22px;
+}
+
+.seo-content p,
+.faq-section p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.faq-section {
+  margin: 28px 8px 0;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.faq-section details {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.faq-section details:last-child {
+  border-bottom: 0;
+}
+
+.faq-section summary {
+  cursor: pointer;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.faq-section details p {
+  margin-top: 10px;
+}
+
+@media (max-width: 700px) {
+  .seo-content {
+    grid-template-columns: 1fr;
+  }
+
+  .seo-content article,
+  .faq-section {
+    padding: 20px;
+  }
+}
