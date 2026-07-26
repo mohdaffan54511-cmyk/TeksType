@@ -1251,3 +1251,32 @@ input {
 .char.current::before {
   animation: caret-blink 0.9s ease-in-out infinite;
 }
+/* Clean typing screen while test is running */
+.app.session-active .seo-content,
+.app.session-active .faq-section {
+  display: none;
+}
+
+@media (min-width: 701px) {
+  .app.session-active .practice-layout {
+    min-height: 0;
+    align-items: start;
+  }
+
+  .app.session-active .typing-card {
+    min-height: 520px;
+  }
+
+  .app.session-active .typing-text {
+    flex: none;
+    min-height: 320px;
+    max-height: 420px;
+  }
+}
+
+@media (max-width: 700px) {
+  .app.session-active .seo-content,
+  .app.session-active .faq-section {
+    display: none;
+  }
+}
