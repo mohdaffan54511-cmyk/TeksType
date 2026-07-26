@@ -1221,3 +1221,33 @@ input {
     order: 7;
   }
 }
+/* Smooth and clean typing feedback */
+.typing-text {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.char {
+  transition:
+    color 70ms ease-out,
+    background-color 70ms ease-out,
+    text-shadow 90ms ease-out;
+}
+
+.char.correct {
+  color: var(--ink);
+}
+
+.char.wrong {
+  color: var(--wrong);
+  background-color: rgba(217, 45, 87, 0.1);
+}
+
+.char.current {
+  color: var(--purple-600);
+  text-shadow: 0 0 10px rgba(124, 77, 255, 0.22);
+}
+
+.char.current::before {
+  animation: caret-blink 0.9s ease-in-out infinite;
+}
