@@ -1408,3 +1408,121 @@ input {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================================
+   FINAL PERFORMANCE + SMOOTH CARET UPDATE
+   Keep this block at the very bottom of App.css.
+   ========================================================= */
+
+/* The custom caret is positioned relative to this container. */
+.typing-text {
+  position: relative;
+  contain: layout paint;
+  will-change: auto;
+}
+
+/* Avoid repaint-heavy transitions on every typed character. */
+.char {
+  transition: none;
+}
+
+/* Disable the previous pseudo-element caret. */
+.char.current::before {
+  display: none !important;
+}
+
+/* GPU-friendly custom caret used by the updated App.jsx. */
+.smooth-caret {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 1.3em;
+  border-radius: 999px;
+  background: var(--purple-500);
+  box-shadow: 0 0 10px rgba(124, 77, 255, 0.28);
+  pointer-events: none;
+  z-index: 5;
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition: transform 70ms ease-out;
+  will-change: transform;
+}
+
+/* Hide the caret after the test ends. */
+.app.result-active .smooth-caret {
+  opacity: 0;
+}
+
+/* Render lower-page content only when it approaches the viewport. */
+.seo-content,
+.faq-section,
+.footer,
+.insights-grid {
+  content-visibility: auto;
+  contain-intrinsic-size: 400px;
+}
+
+/* Remove expensive effects while a typing session is active. */
+.app.session-active .typing-card,
+.app.session-active .stats-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Keep the typing screen distraction-free while running. */
+.app.session-active .hero,
+.app.session-active .controls,
+.app.session-active .insights-grid,
+.app.session-active .seo-content,
+.app.session-active .faq-section,
+.app.session-active .footer {
+  display: none !important;
+}
+
+@media (max-width: 700px) {
+  /* Heavy blur and continuous hero animation can lag on low-end phones. */
+  .controls,
+  .typing-card,
+  .stats-card,
+  .insight-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .hero-picture {
+    animation: none !important;
+  }
+
+  /* Remove the old 160px empty space below the typing text. */
+  .app.session-active .typing-text {
+    flex: 1;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding-bottom: 24px !important;
+    scroll-padding-bottom: 24px !important;
+    overflow-y: auto;
+  }
+
+  .app.session-active .practice-layout {
+    width: 100%;
+    min-height: calc(100dvh - 82px);
+    margin-top: 8px !important;
+  }
+
+  .app.session-active .typing-card {
+    min-height: calc(100dvh - 94px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .smooth-caret {
+    transition-duration: 50ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smooth-caret {
+    transition: none !important;
+  }
+}
