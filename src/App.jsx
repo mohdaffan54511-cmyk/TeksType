@@ -1,7 +1,15 @@
 
 import AuthModal from "./AuthModal";
 import { supabase, supabaseConfigured } from "./lib/supabase";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import "./App.css";
 
 const MODES = [
