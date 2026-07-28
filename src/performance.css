@@ -1,0 +1,44 @@
+@media (max-width: 700px) {
+  .controls,
+  .typing-card,
+  .stats-card,
+  .insight-card {
+    backdrop-filter: none !important;
+  }
+
+  .hero-picture {
+    animation: none !important;
+  }
+
+  .app.session-active .hero,
+  .app.session-active .controls,
+  .app.session-active .insights-grid,
+  .app.session-active .seo-content,
+  .app.session-active .faq-section,
+  .app.session-active .footer {
+    display: none !important;
+  }
+
+  .app.session-active .typing-text {
+    min-height: 0 !important;
+    max-height: none !important;
+    padding-bottom: 24px !important;
+    scroll-padding-bottom: 24px !important;
+  }
+
+  .app.session-active .typing-card {
+    min-height: calc(100dvh - 90px);
+  }
+}
+
+.char {
+  transition: none !important;
+}
+
+.seo-content,
+.faq-section,
+.footer,
+.insights-grid {
+  content-visibility: auto;
+  contain-intrinsic-size: 400px;
+}
