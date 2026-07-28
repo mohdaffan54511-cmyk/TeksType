@@ -1089,10 +1089,12 @@ return (
 </footer>
 
 {authOpen && (
-  <AuthModal
-    initialMode={authMode}
-    onClose={() => setAuthOpen(false)}
-  />
+  <Suspense fallback={null}>
+    <AuthModal
+      initialMode={authMode}
+      onClose={() => setAuthOpen(false)}
+    />
+  </Suspense>
 )}
 <audio
   ref={musicRef}
