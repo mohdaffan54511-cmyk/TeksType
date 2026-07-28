@@ -1,5 +1,3 @@
-
-import AuthModal from "./AuthModal";
 import { supabase, supabaseConfigured } from "./lib/supabase";
 import {
   lazy,
@@ -11,6 +9,8 @@ import {
   useState,
 } from "react";
 import "./App.css";
+
+const AuthModal = lazy(() => import("./AuthModal"));
 
 const MODES = [
   "words",
@@ -381,15 +381,18 @@ export default function App() {
     catch { return []; }
   });
 
-  const appRef = useRef(null);
-  const typingCardRef = useRef(null);
-  const mobileInputRef = useRef(null);
-  const mobileBufferRef = useRef("");
-  const savedRef = useRef(false);
-  const cloudSavedRef = useRef(false);
-  const musicRef = useRef(null);
-  const startedAtRef = useRef(0);
-  const [elapsedMs, setElapsedMs] = useState(0);
+const appRef = useRef(null);
+const typingCardRef = useRef(null);
+const mobileInputRef = useRef(null);
+const wordsContainerRef = useRef(null);
+const currentCharRef = useRef(null);
+const caretRef = useRef(null);
+const mobileBufferRef = useRef("");
+const savedRef = useRef(false);
+const cloudSavedRef = useRef(false);
+const musicRef = useRef(null);
+const startedAtRef = useRef(0);
+const [elapsedMs, setElapsedMs] = useState(0);
   const correctChars = useMemo(() => {
     let correct = 0;
     for (let i = 0; i < input.length; i += 1) if (input[i] === text[i]) correct += 1;
@@ -713,6 +716,38 @@ const handleMobileInput = useCallback(
   [noBackspace, processCharacter, removeCharacter]
 );
 
+useEffect(() => {
+  const caret = caretRef.current;
+  const currentLetter = currentCharRef.current;
+  const container = wordsContainerRef.current;
+
+  if (!caret || !currentLetter || !container || finished) return undefined;
+
+  const updateCaretPosition = () => {
+    const letterRect = currentLetter.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+
+    const x =
+      letterRect.left -
+      containerRect.left +
+      container.scrollLeft;
+
+    const y =
+      letterRect.top -
+      containerRect.top +
+      container.scrollTop;
+
+    caret.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+  };
+
+  updateCaretPosition();
+  window.addEventListener("resize", updateCaretPosition);
+
+  return () => {
+    window.removeEventListener("resize", updateCaretPosition);
+  };
+}, [finished, input.length, text]);
+
 const logout = useCallback(async () => {
   if (!supabase) return;
 
@@ -856,19 +891,47 @@ return (
   )}
 </div>
       <div
+  ref={wordsContainerRef}
   className="typing-text"
   role="textbox"
   aria-label="Typing practice text. Type the highlighted character."
   aria-multiline="true"
   tabIndex={0}
   onPointerDown={focusTyping}
->   
+>
           {text.split("").map((character, index) => {
             let className = "char upcoming";
-            if (index < input.length) className = input[index] === character ? "char correct" : "char wrong";
-            if (index === input.length && !finished) className = "char current";
-            return <span key={`${index}-${character}`} className={className}>{character}</span>;
-          })}</div>
+
+            if (index < input.length) {
+              className =
+                input[index] === character
+                  ? "char correct"
+                  : "char wrong";
+            }
+
+            if (index === input.length && !finished) {
+              className = "char current";
+            }
+
+            return (
+              <span
+                key={`${index}-${character}`}
+                ref={index === input.length ? currentCharRef : null}
+                className={className}
+              >
+                {character}
+              </span>
+            );
+          })}
+
+          {!finished && (
+            <span
+              ref={caretRef}
+              className="smooth-caret"
+              aria-hidden="true"
+            />
+          )}
+        </div>
           <div className="legend-row"><span><i className="dot correct-dot" />Correct</span><span><i className="dot wrong-dot" />Wrong</span><span><i className="dot upcoming-dot" />Upcoming</span></div>
          {!finished && (
   <div className="typing-actions">
@@ -1106,5 +1169,4 @@ return (
 </main>
 );
 }
-
 
