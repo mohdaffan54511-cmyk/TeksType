@@ -140,6 +140,7 @@ export default function App() {
   const appRef = useRef(null);
   const mobileInputRef = useRef(null);
   const mobileBufferRef = useRef("");
+  const lastMobileLineRef = useRef(-1);
   const savedRef = useRef(false);
   const cloudSavedRef = useRef(false);
   const startedAtRef = useRef(0);
@@ -484,7 +485,37 @@ export default function App() {
       mobileBufferRef.current = "";
     }
   }, [noBackspace, processCharacter, removeCharacter]);
+ useEffect(() => {
+  if (!mobileLike()) return undefined;
 
+  const frame = requestAnimationFrame(() => {
+    const typingBox = document.querySelector(".typing-text");
+    const currentCharacter = typingBox?.querySelector(".char.current");
+
+    if (!typingBox) return;
+
+    if (input.length === 0) {
+      lastMobileLineRef.current = -1;
+      typingBox.scrollTop = 0;
+      return;
+    }
+
+    if (!currentCharacter) return;
+
+    const currentLine = currentCharacter.offsetTop;
+
+    if (currentLine === lastMobileLineRef.current) return;
+
+    lastMobileLineRef.current = currentLine;
+
+    typingBox.scrollTo({
+      top: Math.max(0, currentLine - typingBox.clientHeight * 0.32),
+      behavior: "smooth",
+    });
+  });
+
+  return () => cancelAnimationFrame(frame);
+}, [input.length]);
   const logout = useCallback(async () => {
     if (!supabase) return;
     const { error } = await supabase.auth.signOut();
