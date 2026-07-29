@@ -347,10 +347,18 @@ kbd {
   font-weight: 700;
   text-align: left;
   white-space: pre-wrap;
-  overflow-wrap: break-word;
+overflow-wrap: normal;
+word-break: normal;
   cursor: text;
 }
+.word-group {
+  display: inline-block;
+  white-space: nowrap;
+}
 
+.space-group {
+  white-space: pre-wrap;
+}
 .char {
   transition: color 0.05s linear, background 0.05s linear;
 }
