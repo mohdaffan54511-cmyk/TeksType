@@ -1667,7 +1667,7 @@ input {
   position: absolute;
   left: 0;
   top: 0;
-  width: 2px;
+  width: 3px;
   border-radius: 999px;
   background: var(--purple-500);
   box-shadow: 0 0 8px rgba(124, 77, 255, 0.3);
