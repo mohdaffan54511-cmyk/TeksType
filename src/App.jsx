@@ -640,45 +640,54 @@ export default function App() {
             tabIndex={0}
             onPointerDown={focusTyping}
           >
-           {Array.from(text.matchAll(/\S+|\s+/g)).map((match) => {
-  const chunk = match[0];
-  const startIndex = match.index ?? 0;
-  const isWhitespace = /^\s+$/.test(chunk);
+            {Array.from(text.matchAll(/\S+|\s+/g)).map((match) => {
+              const chunk = match[0];
+              const wordStartIndex = match.index ?? 0;
+              const isWhitespace = /^\s+$/.test(chunk);
 
-  return (
-    <span
-      key={`${startIndex}-${chunk}`}
-      className={isWhitespace ? "space-group" : "word-group"}
-    >
-      {chunk.split("").map((character, offset) => {
-        const index = startIndex + offset;
-        let className = "char upcoming";
+              const characters = typeof Intl !== "undefined" && Intl.Segmenter
+                ? Array.from(new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(chunk), (s) => s.segment)
+                : Array.from(chunk);
 
-        if (index < input.length) {
-          className =
-            input[index] === character
-              ? "char correct"
-              : "char wrong";
-        } else if (index === input.length && !finished) {
-          className = "char current";
-        }
+              let currentOffset = 0;
 
-        return (
-          <span key={index} className={className}>
-            {character}
+              return (
+                <span
+                  key={`${wordStartIndex}-${chunk}`}
+                  className={isWhitespace ? "space-group" : "word-group"}
+                >
+                  {characters.map((character) => {
+                    const index = wordStartIndex + currentOffset;
+                    const charLength = character.length;
+                    currentOffset += charLength;
 
-            {index === input.length && !finished && (
-              <span
-                className="smooth-caret"
-                aria-hidden="true"
-              />
-            )}
-          </span>
-        );
-      })}
-    </span>
-  );
-})}
+                    let className = "char upcoming";
+
+                    if (index < input.length) {
+                      className =
+                        input.slice(index, index + charLength) === character
+                          ? "char correct"
+                          : "char wrong";
+                    } else if (index <= input.length && input.length < index + charLength && !finished) {
+                      className = "char current";
+                    }
+
+                    return (
+                      <span key={index} className={className}>
+                        {character}
+
+                        {index === input.length && !finished && (
+                          <span
+                            className="smooth-caret"
+                            aria-hidden="true"
+                          />
+                        )}
+                      </span>
+                    );
+                  })}
+                </span>
+              );
+            })}
           </div>
 
           <div className="legend-row">
@@ -768,25 +777,27 @@ export default function App() {
           </div>
         </section>
       )}
-   <footer className="footer">
-  <div>© 2026 Type Perfectly. All rights reserved.</div>
 
-  <nav aria-label="Legal and information links">
-    <a href="/about.html">About</a>
-    <a href="/contact.html">Contact</a>
-    <a href="/privacy.html">Privacy</a>
-    <a href="/terms.html">Terms</a>
-    <a href="/disclaimer.html">Disclaimer</a>
+      <footer className="footer">
+        <div>© 2026 Type Perfectly. All rights reserved.</div>
 
-    <a
-      href="https://docs.google.com/forms/d/e/1FAIpQLScFhnHdXB3dWVWBhEPFfkQKQz3Xzs23UXhCYOqp7O0Q3mMXQg/viewform"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Feedback
-    </a>
-  </nav>
-</footer>
+        <nav aria-label="Legal and information links">
+          <a href="/about.html">About</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/privacy.html">Privacy</a>
+          <a href="/terms.html">Terms</a>
+          <a href="/disclaimer.html">Disclaimer</a>
+
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLScFhnHdXB3dWVWBhEPFfkQKQz3Xzs23UXhCYOqp7O0Q3mMXQg/viewform"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Feedback
+          </a>
+        </nav>
+      </footer>
+
       {authOpen && (
         <Suspense fallback={null}>
           <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} initialMode={authMode} />
