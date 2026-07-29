@@ -1,36 +1,38 @@
-@import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
 
 /* =========================================================
-   1. ROOT VARIABLES & GLOBAL RESET
+   1. GLOBAL VARIABLES & RESET
    ========================================================= */
 :root {
-  --page-bg: #f6f1ff;
-  --surface: rgba(255, 255, 255, 0.94);
+  --page-bg: #f5f0ff;
+  --surface: rgba(255, 255, 255, 0.95);
   --surface-solid: #ffffff;
-  --ink: #17112c;
-  --muted: #625a78;
+  --ink: #18122c;
+  --muted: #625b78;
+  --purple-100: #eee8ff;
   --purple-300: #b796ff;
   --purple-500: #7c4dff;
   --purple-600: #6538ed;
   --purple-700: #4a24c7;
   --purple-900: #241056;
-  --line: rgba(101, 56, 237, 0.14);
-  --shadow: 0 18px 45px rgba(71, 42, 151, 0.12);
-  --shadow-strong: 0 28px 70px rgba(71, 42, 151, 0.18);
+  --line: rgba(101, 56, 237, 0.12);
+  --shadow: 0 16px 40px rgba(71, 42, 151, 0.08);
   --wrong: #d92d57;
+  --wrong-bg: rgba(217, 45, 87, 0.12);
 }
 
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
-  padding: 0;
   background-color: var(--page-bg);
   color: var(--ink);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
 button, input, select {
@@ -40,88 +42,76 @@ button, input, select {
 button {
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-}
-
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: 3px solid rgba(124, 77, 255, 0.36);
-  outline-offset: 3px;
+  transition: all 0.2s ease;
 }
 
 /* =========================================================
-   2. APP CONTAINER & TOPBAR
+   2. MAIN CONTAINER & NAVIGATION TOPBAR
    ========================================================= */
 .app {
-  width: min(1240px, calc(100% - 24px));
-  min-height: calc(100dvh - 24px);
+  width: min(1200px, calc(100% - 24px));
+  min-height: calc(100vh - 24px);
   margin: 12px auto;
-  padding: 0 16px 18px;
+  padding: 0 20px 20px;
   color: var(--ink);
-  border: 1px solid rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 28px;
-  background:
-    radial-gradient(circle at 12% 5%, rgba(183, 150, 255, 0.3), transparent 30%),
-    radial-gradient(circle at 90% 10%, rgba(124, 77, 255, 0.2), transparent 28%),
-    rgba(255, 255, 255, 0.38);
-  box-shadow: 0 20px 70px rgba(66, 38, 136, 0.09);
-  outline: none;
-  overflow: visible !important;
+  background: 
+    radial-gradient(circle at 10% 5%, rgba(183, 150, 255, 0.25), transparent 30%),
+    radial-gradient(circle at 90% 10%, rgba(124, 77, 255, 0.18), transparent 28%),
+    rgba(255, 255, 255, 0.45);
+  box-shadow: 0 20px 60px rgba(66, 38, 136, 0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .topbar {
-  min-height: 74px;
+  min-height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 12px 0;
+  gap: 16px;
+  padding: 14px 0;
   border-bottom: 1px solid var(--line);
-  flex-wrap: wrap;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-width: 0;
+  gap: 12px;
 }
 
 .logo-mark {
   width: 48px;
   height: 48px;
-  flex: 0 0 48px;
-  position: relative;
+  flex-shrink: 0;
+  border-radius: 14px;
+  background: white;
   display: grid;
   place-items: center;
+  box-shadow: 0 6px 16px rgba(87, 54, 190, 0.15);
   overflow: hidden;
-  border-radius: 14px;
-  background: #ffffff;
-  box-shadow: 0 8px 18px rgba(87, 54, 190, 0.15);
 }
 
 .logo-mark img {
   width: 100%;
   height: 100%;
-  display: block;
   object-fit: cover;
 }
 
 .brand-title {
-  font-size: 20px;
-  line-height: 1.1;
+  font-size: 22px;
+  line-height: 1;
   font-weight: 800;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.02em;
 }
 
 .brand-subtitle {
   margin-top: 4px;
-  color: #655b7d;
+  color: var(--muted);
   font-size: 9px;
-  line-height: 1;
-  font-weight: 750;
+  font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -129,134 +119,59 @@ select:focus-visible {
 .top-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
   gap: 8px;
-}
-
-.key-hint {
-  color: var(--muted);
-  font-size: 12px;
-}
-
-kbd {
-  display: inline-flex;
-  margin-right: 4px;
-  padding: 4px 6px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  color: var(--purple-700);
-  background: white;
-  font-size: 11px;
-}
-
-/* =========================================================
-   3. BUTTONS & DROPDOWN STYLING
-   ========================================================= */
-.ghost-button,
-.button-strip button {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  color: var(--purple-900);
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 4px 12px rgba(74, 36, 199, 0.06);
+  flex-wrap: wrap;
 }
 
 .ghost-button {
   min-height: 38px;
   padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--purple-900);
+  background: rgba(255, 255, 255, 0.85);
   font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.01em;
+  font-weight: 700;
   white-space: nowrap;
 }
 
-.ghost-button.active,
-.button-strip button.selected {
+.ghost-button.active {
   color: white;
   border-color: transparent;
   background: linear-gradient(135deg, var(--purple-500), var(--purple-700));
-}
-
-.select-wrapper {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-  max-width: 160px;
-}
-
-.lang-select {
-  width: 100%;
-  appearance: none;
-  -webkit-appearance: none;
-  background-color: #ffffff;
-  color: #1f1444;
-  border: 1.5px solid #e5deef;
-  border-radius: 12px;
-  padding: 8px 30px 8px 12px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  outline: none;
-  box-shadow: 0 2px 8px rgba(99, 56, 246, 0.05);
-  transition: all 0.2s ease;
-}
-
-.lang-select:hover,
-.lang-select:focus {
-  border-color: #6338f6;
-  box-shadow: 0 4px 12px rgba(99, 56, 246, 0.15);
-}
-
-.select-wrapper::after {
-  content: "▾";
-  position: absolute;
-  right: 12px;
-  top: 48%;
-  transform: translateY(-50%);
-  color: #6338f6;
-  pointer-events: none;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.lang-select option {
-  background-color: #ffffff;
-  color: #1f1444;
-  font-weight: 600;
+  box-shadow: 0 6px 16px rgba(124, 77, 255, 0.25);
 }
 
 /* =========================================================
-   4. HERO SECTION
+   3. HERO BANNER
    ========================================================= */
 .hero {
-  min-height: 320px;
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+  grid-template-columns: 1fr 420px;
   align-items: center;
   gap: 24px;
-  padding: 24px;
+  padding: 20px 10px;
 }
 
 .eyebrow {
-  display: inline-flex;
+  display: inline-block;
   padding: 6px 12px;
-  border: 1px solid rgba(101, 56, 237, 0.28);
+  border: 1px solid rgba(101, 56, 237, 0.2);
   border-radius: 999px;
   color: var(--purple-700);
-  background: rgba(255, 255, 255, 0.66);
+  background: rgba(255, 255, 255, 0.7);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.08em;
+  margin-bottom: 12px;
 }
 
 .hero h1 {
-  max-width: 760px;
-  margin: 14px 0 10px;
-  font-size: clamp(36px, 5vw, 72px);
-  line-height: 0.98;
+  font-size: clamp(38px, 4.5vw, 64px);
+  line-height: 1;
   letter-spacing: -0.04em;
   font-weight: 900;
+  margin-bottom: 12px;
 }
 
 .hero h1 span {
@@ -264,99 +179,141 @@ kbd {
 }
 
 .hero-description {
-  max-width: 610px;
-  margin: 14px 0 20px;
   color: var(--muted);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.5;
+  margin-bottom: 20px;
+  max-width: 540px;
 }
 
 .hero-cta {
-  min-height: 50px;
-  padding: 0 22px;
+  height: 48px;
+  padding: 0 24px;
   border: 0;
   border-radius: 14px;
   color: white;
   background: linear-gradient(135deg, var(--purple-500), var(--purple-700));
-  box-shadow: 0 12px 24px rgba(74, 36, 199, 0.24);
+  font-weight: 800;
   font-size: 14px;
-  font-weight: 900;
+  box-shadow: 0 10px 24px rgba(74, 36, 199, 0.22);
 }
 
 .hero-picture {
-  width: min(100%, 500px);
-  height: 300px;
-  justify-self: end;
-  border-radius: 24px;
+  width: 100%;
+  height: 260px;
+  border-radius: 20px;
   background: url("/typing-hero.png") center / contain no-repeat;
 }
 
 /* =========================================================
-   5. CONTROLS & PRACTICE AREA
+   4. CONTROL BAR (LANGUAGE, CONTENT, TIME)
    ========================================================= */
 .controls {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
   padding: 16px;
-  margin: 0 0 16px;
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 20px;
   background: var(--surface);
   box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.controls-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .control-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .control-label {
-  margin-bottom: 2px;
   color: var(--purple-700);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.1em;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+  min-width: 140px;
+}
+
+.lang-select {
+  width: 100%;
+  appearance: none;
+  background: #ffffff;
+  color: var(--ink);
+  border: 1.5px solid #e2d9f3;
+  border-radius: 12px;
+  padding: 8px 30px 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+}
+
+.select-wrapper::after {
+  content: "▾";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--purple-600);
+  pointer-events: none;
 }
 
 .button-strip {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .button-strip button {
-  min-height: 38px;
-  padding: 8px 12px;
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--purple-900);
+  background: rgba(255, 255, 255, 0.9);
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
 }
 
+.button-strip button.selected {
+  color: white;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--purple-500), var(--purple-700));
+}
+
+/* =========================================================
+   5. PRACTICE AREA & TYPING BOX
+   ========================================================= */
 .practice-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 240px;
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr) 230px;
   gap: 16px;
-  margin-bottom: 16px;
-}
-
-.typing-card,
-.stats-card,
-.insight-card {
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  background: var(--surface);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
+  align-items: start;
 }
 
 .typing-card {
   position: relative;
-  padding: 18px;
-  border-radius: 20px;
-  overflow: hidden;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 300px;
 }
 
 .typing-card-header {
@@ -364,49 +321,41 @@ kbd {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
 }
 
-.primary-button,
-.restart-button {
+.primary-button, .restart-button {
   border: 0;
   border-radius: 12px;
   color: white;
   background: linear-gradient(135deg, var(--purple-500), var(--purple-700));
   font-weight: 800;
-  box-shadow: 0 8px 20px rgba(74, 36, 199, 0.2);
+  padding: 8px 16px;
+  font-size: 12px;
 }
 
-.primary-button { padding: 9px 14px; font-size: 12px; }
-.restart-button { padding: 10px 18px; font-size: 12px; }
-
-/* =========================================================
-   6. TYPING TEXT & CARET (WORD WRAP FIX)
-   ========================================================= */
+/* MonkeyType Typography & Smooth Caret */
 .typing-text {
   font-family: 'Lexend Deca', 'Noto Sans Devanagari', -apple-system, sans-serif !important;
-  min-height: 200px;
-  max-height: 320px;
-  padding: 6px 2px;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
-  color: rgba(23, 17, 44, 0.38);
-  font-size: clamp(20px, 4vw, 28px);
-  line-height: 1.6;
-  letter-spacing: 0;
+  font-size: clamp(22px, 3.2vw, 30px);
+  line-height: 1.65;
   font-weight: 500;
-  white-space: normal; /* Fixed word splitting issue */
-  word-break: keep-all; /* Prevents words breaking mid-way */
+  color: rgba(24, 18, 44, 0.32);
+  min-height: 180px;
+  max-height: 320px;
+  overflow-y: auto;
+  white-space: normal;
+  word-break: keep-all;
   overflow-wrap: break-word;
-  position: relative;
 }
 
-/* Individual character span */
 .char {
   position: relative;
-  display: inline; /* Fixed block breaking issue */
+  display: inline;
   white-space: pre;
-  transition: color 70ms ease-out, background-color 70ms ease-out;
+  transition: color 60ms ease;
 }
 
 .char.correct {
@@ -415,7 +364,7 @@ kbd {
 
 .char.wrong {
   color: var(--wrong);
-  background-color: rgba(217, 45, 87, 0.12);
+  background-color: var(--wrong-bg);
   border-radius: 3px;
 }
 
@@ -427,15 +376,14 @@ kbd {
 .smooth-caret {
   position: absolute;
   left: -1px;
-  top: 10%;
+  top: 8%;
   width: 2.5px;
-  height: 80%;
+  height: 84%;
   background-color: var(--purple-600);
   border-radius: 2px;
-  box-shadow: 0 0 8px rgba(124, 77, 255, 0.5);
+  box-shadow: 0 0 8px rgba(124, 77, 255, 0.6);
   animation: caretBlink 1s infinite;
   pointer-events: none;
-  z-index: 10;
 }
 
 @keyframes caretBlink {
@@ -443,44 +391,63 @@ kbd {
   50% { opacity: 0; }
 }
 
-/* Typing Legend Alignment Fix */
 .typing-legend {
   display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
-  font-size: 12px;
+  align-items: center;
+  gap: 14px;
+  font-size: 11px;
+  font-weight: 700;
   color: var(--muted);
-  font-weight: 600;
 }
 
+.typing-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.typing-legend .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot.correct-dot { background: var(--purple-600); }
+.dot.wrong-dot { background: var(--wrong); }
+.dot.upcoming-dot { background: rgba(24, 18, 44, 0.3); }
+
 /* =========================================================
-   7. STATS & DASHBOARD
+   6. LIVE STATS SIDEBAR
    ========================================================= */
 .stats-card {
   padding: 18px;
-  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
-.stats-title,
-.insight-title {
+.stats-title {
   margin-bottom: 12px;
   color: var(--purple-700);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .stats-grid {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 }
 
 .stats-grid > div {
-  padding: 12px;
+  padding: 12px 14px;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .stats-grid span {
@@ -493,108 +460,153 @@ kbd {
 
 .stats-grid strong {
   display: block;
-  margin-top: 4px;
+  margin-top: 2px;
   color: var(--purple-700);
-  font-size: 22px;
+  font-size: 24px;
+  font-weight: 800;
 }
 
-/* SEO Content & Footer Always Displayed */
+/* =========================================================
+   7. LOWER DASHBOARD & FOOTER
+   ========================================================= */
 .insights-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 220px 1fr 240px;
   gap: 16px;
-  margin-top: 16px;
 }
 
 .seo-content {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
-  margin-top: 20px;
 }
 
-.seo-content article, 
-.faq-section {
+.seo-content article, .faq-section {
   padding: 20px;
   border: 1px solid var(--line);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.78);
-  margin-top: 16px;
+  background: rgba(255, 255, 255, 0.75);
 }
 
 .footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  margin: 20px 0 10px;
+  gap: 12px;
   padding: 16px 20px;
   border-radius: 18px;
   color: white;
   background: linear-gradient(135deg, var(--purple-600), var(--purple-900));
   font-size: 12px;
   font-weight: 600;
+  margin-top: 10px;
 }
 
-.footer a { 
-  color: white; 
-  text-decoration: none; 
+.footer nav {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
 }
 
-.footer a:hover { 
-  text-decoration: underline; 
+.footer a {
+  color: white;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
 }
 
 /* =========================================================
-   8. MOBILE RESPONSIVE FIXES (DESIGNS OVERLAP RESOLVED)
+   8. ACTIVE TYPING MODE (FULL OPEN BOX FIX)
    ========================================================= */
+/* When session starts, expand box and hide distractions */
+.app.session-active .hero,
+.app.session-active .controls,
+.app.session-active .insights-grid,
+.app.session-active .seo-content,
+.app.session-active .faq-section,
+.app.session-active .footer {
+  display: none !important;
+}
+
+.app.session-active {
+  min-height: calc(100vh - 24px);
+  justify-content: center;
+}
+
+.app.session-active .practice-layout {
+  grid-template-columns: minmax(0, 1fr) 260px;
+  width: 100%;
+}
+
+.app.session-active .typing-card {
+  min-height: 420px;
+  justify-content: space-between;
+}
+
+.app.session-active .typing-text {
+  max-height: 320px;
+  font-size: clamp(26px, 3.8vw, 36px);
+}
+
+/* =========================================================
+   9. RESPONSIVE DESIGN (MOBILE / TABLET)
+   ========================================================= */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+  .hero-picture {
+    display: none;
+  }
+  .insights-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 768px) {
   .app {
     width: 100%;
     margin: 0;
     border: 0;
     border-radius: 0;
-    padding: 0 12px 12px;
+    padding: 0 12px 16px;
   }
 
   .topbar {
     padding: 10px 0;
-    gap: 8px;
-  }
-
-  .brand-title {
-    font-size: 18px;
   }
 
   .brand-subtitle, 
-  .key-hint { 
-    display: none; 
+  .key-hint {
+    display: none;
   }
 
-  .ghost-button {
-    min-height: 34px;
-    padding: 0 10px;
-    font-size: 10px;
-  }
-
-  .hero { 
-    display: none; 
+  .hero {
+    display: none;
   }
 
   .controls {
-    padding: 14px;
-    border-radius: 16px;
+    padding: 12px;
+  }
+
+  .controls-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
   }
 
   .select-wrapper {
-    max-width: 100%;
+    min-width: 100%;
   }
 
-  .practice-layout, 
-  .insights-grid, 
+  .practice-layout {
+    grid-template-columns: 1fr;
+  }
+
   .seo-content {
     grid-template-columns: 1fr;
-    gap: 12px;
   }
 
   .footer {
@@ -603,10 +615,11 @@ kbd {
     gap: 10px;
   }
 
-  .footer nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
+  .app.session-active .practice-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .app.session-active .typing-card {
+    min-height: 320px;
   }
 }
