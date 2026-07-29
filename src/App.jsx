@@ -12,6 +12,27 @@ import "./App.css";
 
 const AuthModal = lazy(() => import("./AuthModal"));
 
+const LANGUAGES = [
+  { id: "english", name: "English" },
+  { id: "english_1k", name: "English 1k" },
+  { id: "english_commonly_misspelled", name: "Misspelled Words" },
+  { id: "spanish", name: "Spanish" },
+  { id: "spanish_1k", name: "Spanish 1k" },
+  { id: "arabic", name: "Arabic" },
+  { id: "french", name: "French" },
+  { id: "french_1k", name: "French 1k" },
+  { id: "german", name: "German" },
+  { id: "german_1k", name: "German 1k" },
+  { id: "russian", name: "Russian" },
+  { id: "russian_1k", name: "Russian 1k" },
+  { id: "portuguese", name: "Portuguese" },
+  { id: "portuguese_1k", name: "Portuguese 1k" },
+  { id: "bangla", name: "Bangla" },
+  { id: "code_python", name: "Python Code" },
+  { id: "code_python_1k", name: "Python 1k" },
+  { id: "code_javascript", name: "JavaScript Code" },
+];
+
 const MODES = [
   "words",
   "hinglish",
@@ -35,295 +56,298 @@ const POOLS = {
     "Focus on progress, not on perfection.",
     "Discipline today creates freedom tomorrow."
   ],
-hinglish: [
-  `Subah alarm baja, lekin maine snooze kar diya.
+  hinglish: [
+    `Subah alarm baja, lekin maine snooze kar diya.
 Paanch minute baad alarm phir baja.
 Maine socha, thodi aur neend le leta hoon.
 Aankh khuli to office ka time ho chuka tha.
 Us din meri speed typing me nahi, taiyaar hone me improve hui.`,
 
-  `Main chai peene dukaan par gaya.
+    `Main chai peene dukaan par gaya.
 Chai wale bhaiya ne poocha, strong ya normal?
 Maine bola, strong bana do.
 Unhone poocha, kitni strong?
 Maine kaha, itni ki Monday bhi Sunday lagne lage.`,
 
-  `Kal main padhai karne baitha.
+    `Kal main padhai karne baitha.
 Table saaf ki, notebook nikali, aur pen rakha.
 Phir maine phone sirf ek minute ke liye check kiya.
 Ek ghante baad bhi main reels dekh raha tha.
 Padhai ne mujhe dekha aur chup-chaap kal par chali gayi.`,
 
-  `Mummy ne bola, market se dhaniya le aana.
+    `Mummy ne bola, market se dhaniya le aana.
 Main chips, biscuit, aur cold drink le aaya.
 Mummy ne poocha, dhaniya kahan hai?
 Maine bag ko dobara check kiya.
 Dhaniya meri memory ki tarah missing tha.`,
 
-  `Mera dost gym join karke bahut excited tha.
+    `Mera dost gym join karke bahut excited tha.
 Usne shoes, bottle, aur protein shaker kharida.
 Pehle din usne sirf mirror selfie li.
 Doosre din body pain ka excuse bana diya.
 Teesre din bola, Monday se properly start karunga.`,
 
-  `Ek chhota step bhi progress hota hai.
+    `Ek chhota step bhi progress hota hai.
 Har din perfect hona zaroori nahi hai.
 Bas rukna nahi chahiye.
 Galti se seekho aur dobara try karo.
 Daily practice tumhe kal se better banati hai.`,
 
-  `Main interview dene gaya tha.
+    `Main interview dene gaya tha.
 Interviewer ne poocha, pressure handle kar sakte ho?
 Maine confidence se kaha, bilkul.
 Tabhi mera phone loud ringtone ke saath baj gaya.
 Maine bola, sir practical test thoda jaldi start ho gaya.`,
 
-  `Kabhi kabhi motivation nahi aati.
+    `Kabhi kabhi motivation nahi aati.
 Iska matlab ye nahi ki kaam rok do.
 Pehle chhota sa action lo.
 Action se confidence banta hai.
 Aur confidence se bade goals complete hote hain.`,
 
-  `Main fridge khol kar kuch tasty dhoondh raha tha.
+    `Main fridge khol kar kuch tasty dhoondh raha tha.
 Fridge me wahi purani cheezein thi.
 Do minute baad maine fridge phir khola.
 Jaise andar kisi ne naya food upload kar diya ho.
 Fridge bhi meri umeed dekh kar confuse ho gaya.`,
 
-  `Ek achha insaan banna bhi success hai.
+    `Ek achha insaan banna bhi success hai.
 Kisi ki help karna weakness nahi hoti.
 Kindness aur bravery saath chal sakti hain.
 Strong wahi hai jo dusron ka respect karta hai.
 Achha character hamesha yaad rakha jaata hai.`
-],
+  ],
   conversation: [
-  `Aman: Did you study today?
+    `Aman: Did you study today?
 Ravi: Yes, I opened the book.
 Aman: Then what happened?
 Ravi: I fell asleep.
 Aman: What about your goal?
 Ravi: The goal is still there. My timing is just a little late.`,
 
-  `Boss: Is the report complete?
+    `Boss: Is the report complete?
 Employee: Almost, sir.
 Boss: What does almost mean?
 Employee: The file is open, my confidence is high, and the data is still loading.
 Boss: Confidence does not complete a report.
 Employee: Understood, sir. I will message you only after finishing it.`,
 
-  `Friend: When will you start going to the gym?
+    `Friend: When will you start going to the gym?
 Me: From Monday.
 Friend: Which Monday?
 Me: The one that comes after motivation.
 Friend: Do not wait for motivation. Start with ten minutes today.
 Me: You are right. A small start is still a start.`,
 
-  `Teacher: Why did you fail the exam?
+    `Teacher: Why did you fail the exam?
 Student: I started preparing too late.
 Teacher: What will you do now?
 Student: I will turn my mistake into a lesson, not an excuse.
 Teacher: That attitude will take you forward.`,
 
-  `Father: Earning money is important, but saving money is important too.
+    `Father: Earning money is important, but saving money is important too.
 Son: How much should I save?
 Father: Save a small part of your income regularly.
 Son: What difference will a small amount make?
 Father: Small savings become strong security over time.`,
 
-  `Mother: Put your phone aside for a while.
+    `Mother: Put your phone aside for a while.
 Son: Just five minutes.
 Mother: Why do those five minutes never end?
 Son: Because time moves faster on the phone.
 Mother: And opportunities in real life do not wait.`,
 
-  `Friend: Why are you always so quiet?
+    `Friend: Why are you always so quiet?
 Me: I feel people will judge my English.
 Friend: You will improve only by making mistakes.
 Me: But it feels embarrassing.
 Friend: Temporary embarrassment is better than permanent fear.`,
 
-  `Interviewer: Tell me about yourself.
+    `Interviewer: Tell me about yourself.
 Candidate: I am hardworking.
 Interviewer: Can you give me an example?
 Candidate: I divided a difficult project into small daily tasks and completed it before the deadline.
 Interviewer: Good. Examples are more powerful than claims.`,
 
-  `Customer: Your price is a little high.
+    `Customer: Your price is a little high.
 Freelancer: I understand.
 Customer: Can you offer a discount?
 Freelancer: Instead of reducing the price, I can adjust the project scope.
 Customer: That is a professional answer.
 Freelancer: Clear value and clear scope protect both sides.`,
 
-  `Manager: Why did you not speak in the meeting?
+    `Manager: Why did you not speak in the meeting?
 Employee: I had an idea, but I lacked confidence.
 Manager: Do not wait for the perfect sentence.
 Employee: How should I begin?
 Manager: Just say, I have one suggestion.`,
 
-  `Brother: Everyone is moving ahead of me.
+    `Brother: Everyone is moving ahead of me.
 Sister: You are seeing their results, not their struggles.
 Brother: Then what should I do?
 Sister: Focus on your own pace and keep your direction right.
 Brother: Less comparison, more consistency.`,
 
-  `Doctor: Do you exercise?
+    `Doctor: Do you exercise?
 Patient: I do not have time.
 Doctor: How long do you use your phone?
 Patient: Around three hours.
 Doctor: Time is not missing. Priority is missing.
 Patient: I will start with a thirty-minute walk today.`,
 
-  `Friend: Why do you want everything to be perfect?
+    `Friend: Why do you want everything to be perfect?
 Me: I do not like failure.
 Friend: You do not even start because of perfection.
 Me: Then what should I do?
 Friend: Make the first version imperfect, then improve it.`,
 
-  `Teacher: What is the difference between knowledge and wisdom?
+    `Teacher: What is the difference between knowledge and wisdom?
 Student: Knowledge means information.
 Teacher: And wisdom?
 Student: Using the right information at the right time.
 Teacher: Excellent. Knowing is not enough. Applying matters too.`,
 
-  `Father: Do not reply immediately when you are angry.
+    `Father: Do not reply immediately when you are angry.
 Son: What if the other person is wrong?
 Father: Being right and speaking in the right way are different things.
 Son: So I should calm down first?
 Father: Yes. A calm mind makes better decisions.`,
 
-  `Client: I need this project urgently.
+    `Client: I need this project urgently.
 Freelancer: What is the deadline?
 Client: Tomorrow morning.
 Freelancer: To maintain quality, I need the exact files and requirements now.
 Client: Okay.
 Freelancer: Even urgent work needs clarity.`,
 
-  `Friend: What is your biggest goal?
+    `Friend: What is your biggest goal?
 Me: I want to become successful.
 Friend: What does success mean to you?
 Me: Financial freedom, supporting my family, and meaningful work.
 Friend: When the definition is clear, the direction becomes clear too.`,
 
-  `Mother: You look worried.
+    `Mother: You look worried.
 Son: I have too much work.
 Mother: Do not try to do everything at once.
 Son: Then what should I do?
 Mother: Choose the most important task and complete it first.`,
 
-  `Colleague: Are you upset because of the feedback?
+    `Colleague: Are you upset because of the feedback?
 Employee: A little.
 Colleague: Do not treat feedback as an insult.
 Employee: But the tone was harsh.
 Colleague: Ignore the tone and take the useful point.
 Employee: That is difficult, but helpful.`,
 
-  `Friend: Nobody helped you?
+    `Friend: Nobody helped you?
 Me: No.
 Friend: Then why do you help others?
 Me: Because their behavior does not decide my character.
 Friend: That is real strength.`,
 
-  `Student: I understand English, but I cannot speak it.
+    `Student: I understand English, but I cannot speak it.
 Teacher: How much do you speak every day?
 Student: Almost zero.
 Teacher: Speaking cannot improve without speaking practice.
 Student: I will speak for five minutes every day.`,
 
-  `Boss: Why are you late?
+    `Boss: Why are you late?
 Employee: There was traffic.
 Boss: There is traffic every day.
 Employee: You are right, sir. I should leave earlier.
 Boss: Taking responsibility is the first step toward improvement.`,
 
-  `Friend: How do you deal with negative people?
+    `Friend: How do you deal with negative people?
 Me: I do not answer every comment.
 Friend: Why?
 Me: Winning every argument is not necessary.
 Friend: Protecting your peace is also intelligence.`,
 
-  `Father: Do not choose a career by looking only at salary.
+    `Father: Do not choose a career by looking only at salary.
 Son: What else should I consider?
 Father: Skill growth, demand, interest, and future opportunities.
 Son: So I should think about long-term growth too.
 Father: Exactly.`,
 
-  `Customer: I do not understand what service you provide.
+    `Customer: I do not understand what service you provide.
 Freelancer: I convert messy Excel data into clean reports and dashboards.
 Customer: How will that help me?
 Freelancer: It will save your time and help you make faster decisions.
 Customer: Now the value is clear.`,
 
-  `Friend: How do you work a little every day?
+    `Friend: How do you work a little every day?
 Me: I do not wait for the right mood.
 Friend: Does it not feel boring?
 Me: It does, but I still follow the routine.
 Friend: That is probably what discipline means.`,
 
-  `Teacher: Is smart work better or hard work?
+    `Teacher: Is smart work better or hard work?
 Student: Smart work.
 Teacher: Can smart work succeed without hard work?
 Student: Probably not.
 Teacher: Right. The best results come from both.`,
 
-  `Brother: I cannot afford an expensive course.
+    `Brother: I cannot afford an expensive course.
 Sister: Use free resources.
 Brother: Can I learn properly for free?
 Sister: Yes, but you must bring your own discipline.
 Brother: So consistency matters more than the resource.`,
 
-  `Friend: Are you afraid of failure?
+    `Friend: Are you afraid of failure?
 Me: Yes.
 Friend: Not starting also leads to failure.
 Me: How?
 Friend: The opportunity ends before you even try.
 Me: Then taking a calculated risk is better.`,
 
-  `Manager: Your presentation is very simple.
+    `Manager: Your presentation is very simple.
 Employee: Is that a problem?
 Manager: No. A simple presentation is easier to understand.
 Employee: I removed unnecessary text.
 Manager: Good communication means being clear, not speaking more.`,
 
-  `Child: How can I become a good person?
+    `Child: How can I become a good person?
 Father: Tell the truth, give respect, and admit your mistakes.
 Child: Is that all?
 Father: It sounds simple, but doing it every day is difficult.
 Child: I will start practicing today.`,
 
-  `Friend: How did your confidence improve?
+    `Friend: How did your confidence improve?
 Me: I stopped avoiding difficult situations.
 Friend: Did your fear disappear?
 Me: No, but I learned to act despite the fear.
 Friend: That is real confidence.`,
 
-  `Employee: Sir, I made a mistake.
+    `Employee: Sir, I made a mistake.
 Boss: Why did you not hide it?
 Employee: Hiding it could have made the problem worse.
 Boss: Good. The mistake is serious, but honesty matters.
 Employee: I have also prepared a plan to fix it.`,
 
-  `Friend: What is the most important life skill?
+    `Friend: What is the most important life skill?
 Me: Probably communication.
 Friend: Why?
 Me: Knowledge becomes useful only when you can explain it clearly.
 Friend: What about listening?
 Me: Listening is half of communication.`,
 
-  `Mother: Having fewer resources does not mean you are less capable.
+    `Mother: Having fewer resources does not mean you are less capable.
 Son: But starting is difficult.
 Mother: A difficult beginning does not decide your future.
 Son: Should I begin with whatever I have?
 Mother: Yes. Start small, but start today.`
-]
+  ]
 };
 
 const randomItem = (items) => items[Math.floor(Math.random() * items.length)];
 
-function makeText(mode) {
-  if (["quotes", "hinglish", "motivation", "conversation"].includes(mode)) return randomItem(POOLS[mode]);
+function makeText(mode, customWords = null) {
+  if (["quotes", "hinglish", "motivation", "conversation"].includes(mode)) {
+    return randomItem(POOLS[mode] || POOLS.quotes);
+  }
   const count = mode === "bigrams" ? 50 : mode === "trigrams" ? 42 : 36;
-  return Array.from({ length: count }, () => randomItem(POOLS[mode] || POOLS.words)).join(" ");
+  const sourcePool = customWords && customWords.length > 0 ? customWords : (POOLS[mode] || POOLS.words);
+  return Array.from({ length: count }, () => randomItem(sourcePool)).join(" ");
 }
 
 function accuracyOf(correct, total) {
@@ -361,6 +385,8 @@ function playTone(correct, enabled) {
 }
 
 export default function App() {
+  const [selectedLang, setSelectedLang] = useState("english");
+  const [langWords, setLangWords] = useState(null);
   const [mode, setMode] = useState("words");
   const [duration, setDuration] = useState(15);
   const [text, setText] = useState(() => makeText("words"));
@@ -368,7 +394,7 @@ export default function App() {
   const [running, setRunning] = useState(false);
   const [finished, setFinished] = useState(false);
   const [timeLeft, setTimeLeft] = useState(15);
- const [soundOn, setSoundOn] = useState(false);
+  const [soundOn, setSoundOn] = useState(false);
   const [noBackspace, setNoBackspace] = useState(false);
   const [mobileFocused, setMobileFocused] = useState(false);
   const [user, setUser] = useState(null);
@@ -381,18 +407,44 @@ export default function App() {
     catch { return []; }
   });
 
-const appRef = useRef(null);
-const typingCardRef = useRef(null);
-const mobileInputRef = useRef(null);
-const wordsContainerRef = useRef(null);
-const currentCharRef = useRef(null);
-const caretRef = useRef(null);
-const mobileBufferRef = useRef("");
-const savedRef = useRef(false);
-const cloudSavedRef = useRef(false);
-const musicRef = useRef(null);
-const startedAtRef = useRef(0);
-const [elapsedMs, setElapsedMs] = useState(0);
+  const appRef = useRef(null);
+  const typingCardRef = useRef(null);
+  const mobileInputRef = useRef(null);
+  const wordsContainerRef = useRef(null);
+  const currentCharRef = useRef(null);
+  const caretRef = useRef(null);
+  const mobileBufferRef = useRef("");
+  const savedRef = useRef(false);
+  const cloudSavedRef = useRef(false);
+  const musicRef = useRef(null);
+  const startedAtRef = useRef(0);
+  const [elapsedMs, setElapsedMs] = useState(0);
+
+  // JSON Language Fetch Logic
+  useEffect(() => {
+    if (selectedLang === "english") {
+      setLangWords(null);
+      return;
+    }
+
+    let active = true;
+    fetch(`/languages/${selectedLang}.json`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data && Array.isArray(data.words)) {
+          setLangWords(data.words);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load language JSON:", err);
+        if (active) setLangWords(null);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [selectedLang]);
+
   const correctChars = useMemo(() => {
     let correct = 0;
     for (let i = 0; i < input.length; i += 1) if (input[i] === text[i]) correct += 1;
@@ -419,70 +471,90 @@ const [elapsedMs, setElapsedMs] = useState(0);
     return Object.entries(errors).sort((a, b) => b[1] - a[1]).slice(0, 5);
   }, [input, text]);
 
-  const resetSession = useCallback((nextMode = mode, nextDuration = duration) => {
-  setMode(nextMode);
-  setDuration(nextDuration);
-  setText(makeText(nextMode));
-  setInput("");
-  setRunning(false);
-  setFinished(false);
-  setTimeLeft(nextDuration);
-  startedAtRef.current = 0;
-  setElapsedMs(0);
-  setMobileFocused(false);
-  savedRef.current = false;
-  cloudSavedRef.current = false;
-  setCloudSaveStatus("idle");
-  mobileBufferRef.current = "";
+  const resetSession = useCallback((nextMode = mode, nextDuration = duration, nextWords = langWords) => {
+    setMode(nextMode);
+    setDuration(nextDuration);
+    setText(makeText(nextMode, nextWords));
+    setInput("");
+    setRunning(false);
+    setFinished(false);
+    setTimeLeft(nextDuration);
+    startedAtRef.current = 0;
+    setElapsedMs(0);
+    setMobileFocused(false);
+    savedRef.current = false;
+    cloudSavedRef.current = false;
+    setCloudSaveStatus("idle");
+    mobileBufferRef.current = "";
 
-  if (mobileInputRef.current) {
-    mobileInputRef.current.value = "";
-    mobileInputRef.current.blur();
-  }
-
-  if (musicRef.current) {
-    musicRef.current.pause();
-    musicRef.current.currentTime = 0;
-  }
-
-  requestAnimationFrame(() =>
-    appRef.current?.focus({ preventScroll: true })
-  );
-}, [duration, mode]);
-
-  const finishSession = useCallback(() => {
-  const preciseElapsed = startedAtRef.current
-    ? Math.min(duration * 1000, performance.now() - startedAtRef.current)
-    : 0;
-
-  setElapsedMs(preciseElapsed);
-  setTimeLeft(0);
-  setRunning(false);
-  setFinished(true);
-  setMobileFocused(false);
-  mobileInputRef.current?.blur();
-
-  if (musicRef.current) {
-    musicRef.current.pause();
-    musicRef.current.currentTime = 0;
-  }
-}, [duration]);
-  const toggleSound = useCallback(() => {
-  setSoundOn((current) => {
-    const next = !current;
-
-    if (musicRef.current) {
-      if (!next) {
-        musicRef.current.pause();
-      } else if (running && !finished) {
-        musicRef.current.volume = 0.80;
-        musicRef.current.play().catch(() => {});
-      }
+    if (mobileInputRef.current) {
+      mobileInputRef.current.value = "";
+      mobileInputRef.current.blur();
     }
 
-    return next;
-  });
-}, [finished, running]);
+    if (musicRef.current) {
+      musicRef.current.pause();
+      musicRef.current.currentTime = 0;
+    }
+
+    requestAnimationFrame(() =>
+      appRef.current?.focus({ preventScroll: true })
+    );
+  }, [duration, mode, langWords]);
+
+  // Handle language change from dropdown
+  const handleLanguageChange = (newLang) => {
+    setSelectedLang(newLang);
+    if (newLang === "english") {
+      resetSession(mode, duration, null);
+    }
+  };
+
+  // When loaded words change, reset text automatically
+  useEffect(() => {
+    if (!running) {
+      setText(makeText(mode, langWords));
+      setInput("");
+      startedAtRef.current = 0;
+      setElapsedMs(0);
+    }
+  }, [langWords]);
+
+  const finishSession = useCallback(() => {
+    const preciseElapsed = startedAtRef.current
+      ? Math.min(duration * 1000, performance.now() - startedAtRef.current)
+      : 0;
+
+    setElapsedMs(preciseElapsed);
+    setTimeLeft(0);
+    setRunning(false);
+    setFinished(true);
+    setMobileFocused(false);
+    mobileInputRef.current?.blur();
+
+    if (musicRef.current) {
+      musicRef.current.pause();
+      musicRef.current.currentTime = 0;
+    }
+  }, [duration]);
+
+  const toggleSound = useCallback(() => {
+    setSoundOn((current) => {
+      const next = !current;
+
+      if (musicRef.current) {
+        if (!next) {
+          musicRef.current.pause();
+        } else if (running && !finished) {
+          musicRef.current.volume = 0.80;
+          musicRef.current.play().catch(() => {});
+        }
+      }
+
+      return next;
+    });
+  }, [finished, running]);
+
   useEffect(() => { appRef.current?.focus({ preventScroll: true }); }, []);
 
   useEffect(() => {
@@ -545,7 +617,7 @@ const [elapsedMs, setElapsedMs] = useState(0);
     return () => cancelAnimationFrame(frameId);
   }, [duration, finishSession, finished, running]);
 
-useEffect(() => {
+  useEffect(() => {
     if (!finished || savedRef.current) return;
     savedRef.current = true;
     const nextBest = Math.max(bestWpm, wpm);
@@ -589,201 +661,204 @@ useEffect(() => {
   }, [accuracy, duration, finished, input.length, mode, score, user, wpm]);
 
   const processCharacter = useCallback((character) => {
-  if (!character || character.length !== 1 || finished) return;
+    if (!character || character.length !== 1 || finished) return;
 
-  if (!running) {
-    startedAtRef.current = performance.now() - elapsedMs;
-    setRunning(true);
-  }
-
-  if (!running && soundOn && musicRef.current) {
-    musicRef.current.volume = 0.90;
-    musicRef.current.play().catch(() => {});
-  }
-
-  setInput((previous) => {
-    if (previous.length >= text.length) return previous;
-
-  playTone(
-  character === text[previous.length],
-  soundOn && !mobileLike()
-);
-
-    const next = previous + character;
-
-    if (next.length >= text.length) {
-      window.setTimeout(finishSession, 0);
+    if (!running) {
+      startedAtRef.current = performance.now() - elapsedMs;
+      setRunning(true);
     }
 
-    return next;
-  });
-}, [elapsedMs, finishSession, finished, running, soundOn, text]);
-  
-const removeCharacter = useCallback(() => {
-  if (!finished && !noBackspace) {
-    setInput((previous) => previous.slice(0, -1));
-  }
-}, [finished, noBackspace]);
-
-const focusTyping = useCallback(() => {
-  if (mobileLike()) {
-    setMobileFocused(true);
-
-    const target = mobileInputRef.current;
-    if (!target) return;
-
-    try {
-      target.focus({ preventScroll: true });
-    } catch {
-      target.focus();
-    }
-  } else {
-    appRef.current?.focus({ preventScroll: true });
-  }
-}, []);
-
-const handleDesktopKeyDown = useCallback(
-  (event) => {
-    const target = event.target;
-
-    if (
-      target instanceof HTMLInputElement ||
-      target instanceof HTMLTextAreaElement ||
-      target instanceof HTMLSelectElement ||
-      target instanceof HTMLButtonElement ||
-      target?.isContentEditable ||
-      target === mobileInputRef.current
-    ) {
-      return;
+    if (!running && soundOn && musicRef.current) {
+      musicRef.current.volume = 0.90;
+      musicRef.current.play().catch(() => {});
     }
 
-    if (event.ctrlKey || event.altKey || event.metaKey) return;
+    setInput((previous) => {
+      if (previous.length >= text.length) return previous;
 
-    if (event.key === "Tab") {
-      event.preventDefault();
-      resetSession();
-      return;
-    }
+      playTone(
+        character === text[previous.length],
+        soundOn && !mobileLike()
+      );
 
-    if (event.key === "Escape") {
-      event.preventDefault();
-      setRunning(false);
-      setMobileFocused(false);
-      mobileInputRef.current?.blur();
-      return;
-    }
+      const next = previous + character;
 
-    if (event.key === "Backspace") {
-      event.preventDefault();
-      removeCharacter();
-      return;
-    }
-
-    if (event.key.length === 1) {
-      event.preventDefault();
-      processCharacter(event.key);
-    }
-  },
-  [processCharacter, removeCharacter, resetSession]
-);
-
-const handleMobileInput = useCallback(
-  (event) => {
-    const value = event.currentTarget.value;
-    const previous = mobileBufferRef.current;
-
-    if (value.length > previous.length) {
-      for (const character of value.slice(previous.length)) {
-        processCharacter(character);
+      if (next.length >= text.length) {
+        window.setTimeout(finishSession, 0);
       }
-    } else if (value.length < previous.length) {
-      if (noBackspace) {
-        event.currentTarget.value = previous;
-      } else {
-        for (let i = 0; i < previous.length - value.length; i += 1) {
-          removeCharacter();
+
+      return next;
+    });
+  }, [elapsedMs, finishSession, finished, running, soundOn, text]);
+
+  const removeCharacter = useCallback(() => {
+    if (!finished && !noBackspace) {
+      setInput((previous) => previous.slice(0, -1));
+    }
+  }, [finished, noBackspace]);
+
+  const focusTyping = useCallback(() => {
+    if (mobileLike()) {
+      setMobileFocused(true);
+
+      const target = mobileInputRef.current;
+      if (!target) return;
+
+      try {
+        target.focus({ preventScroll: true });
+      } catch {
+        target.focus();
+      }
+    } else {
+      appRef.current?.focus({ preventScroll: true });
+    }
+  }, []);
+
+  const handleDesktopKeyDown = useCallback(
+    (event) => {
+      const target = event.target;
+
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        target instanceof HTMLButtonElement ||
+        target?.isContentEditable ||
+        target === mobileInputRef.current
+      ) {
+        return;
+      }
+
+      if (event.ctrlKey || event.altKey || event.metaKey) return;
+
+      if (event.key === "Tab") {
+        event.preventDefault();
+        resetSession();
+        return;
+      }
+
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setRunning(false);
+        setMobileFocused(false);
+        mobileInputRef.current?.blur();
+        return;
+      }
+
+      if (event.key === "Backspace") {
+        event.preventDefault();
+        removeCharacter();
+        return;
+      }
+
+      if (event.key.length === 1) {
+        event.preventDefault();
+        processCharacter(event.key);
+      }
+    },
+    [processCharacter, removeCharacter, resetSession]
+  );
+
+  const handleMobileInput = useCallback(
+    (event) => {
+      const value = event.currentTarget.value;
+      const previous = mobileBufferRef.current;
+
+      if (value.length > previous.length) {
+        for (const character of value.slice(previous.length)) {
+          processCharacter(character);
+        }
+      } else if (value.length < previous.length) {
+        if (noBackspace) {
+          event.currentTarget.value = previous;
+        } else {
+          for (let i = 0; i < previous.length - value.length; i += 1) {
+            removeCharacter();
+          }
         }
       }
+
+      mobileBufferRef.current = event.currentTarget.value;
+
+      if (mobileBufferRef.current.length > 40) {
+        event.currentTarget.value = "";
+        mobileBufferRef.current = "";
+      }
+    },
+    [noBackspace, processCharacter, removeCharacter]
+  );
+
+  useEffect(() => {
+    const caret = caretRef.current;
+    const currentLetter = currentCharRef.current;
+    const container = wordsContainerRef.current;
+
+    if (!caret || !currentLetter || !container || finished) return undefined;
+
+    const updateCaretPosition = () => {
+      const letterRect = currentLetter.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+
+      const x =
+        letterRect.left -
+        containerRect.left +
+        container.scrollLeft;
+
+      const y =
+        letterRect.top -
+        containerRect.top +
+        container.scrollTop;
+
+      caret.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    };
+
+    updateCaretPosition();
+    window.addEventListener("resize", updateCaretPosition);
+
+    return () => {
+      window.removeEventListener("resize", updateCaretPosition);
+    };
+  }, [finished, input.length, text]);
+
+  const logout = useCallback(async () => {
+    if (!supabase) return;
+
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error("Logout failed:", error.message);
     }
+  }, []);
 
-    mobileBufferRef.current = event.currentTarget.value;
+  const durationLabel = duration === 300 ? "5 MIN" : `${duration}S`;
 
-    if (mobileBufferRef.current.length > 40) {
-      event.currentTarget.value = "";
-      mobileBufferRef.current = "";
-    }
-  },
-  [noBackspace, processCharacter, removeCharacter]
-);
-
-useEffect(() => {
-  const caret = caretRef.current;
-  const currentLetter = currentCharRef.current;
-  const container = wordsContainerRef.current;
-
-  if (!caret || !currentLetter || !container || finished) return undefined;
-
-  const updateCaretPosition = () => {
-    const letterRect = currentLetter.getBoundingClientRect();
-    const containerRect = container.getBoundingClientRect();
-
-    const x =
-      letterRect.left -
-      containerRect.left +
-      container.scrollLeft;
-
-    const y =
-      letterRect.top -
-      containerRect.top +
-      container.scrollTop;
-
-    caret.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-  };
-
-  updateCaretPosition();
-  window.addEventListener("resize", updateCaretPosition);
-
-  return () => {
-    window.removeEventListener("resize", updateCaretPosition);
-  };
-}, [finished, input.length, text]);
-
-const logout = useCallback(async () => {
-  if (!supabase) return;
-
-  const { error } = await supabase.auth.signOut();
-
-  if (error) {
-    console.error("Logout failed:", error.message);
-  }
-}, []);
-
-const durationLabel = duration === 300 ? "5 MIN" : `${duration}S`;
-
-return (
-  <main
-    ref={appRef}
-    tabIndex={0}
-  className={`app ${sessionActive ? "session-active" : ""} ${
-  finished ? "result-active" : ""
-}`}
-    onKeyDown={handleDesktopKeyDown}
-  >
-    <header className="topbar">
-      <div className="brand">
-        <div className="logo-mark">
-          <img
-            src="/TeksType.jpeg"
-            alt="Type Perfectly logo"
-          />
-        </div>
-          <div><div className="brand-title">Type Perfectly</div><div className="brand-subtitle">Typing Performance Lab</div></div>
+  return (
+    <main
+      ref={appRef}
+      tabIndex={0}
+      className={`app ${sessionActive ? "session-active" : ""} ${
+        finished ? "result-active" : ""
+      }`}
+      onKeyDown={handleDesktopKeyDown}
+    >
+      <header className="topbar">
+        <div className="brand">
+          <div className="logo-mark">
+            <img
+              src="/TeksType.jpeg"
+              alt="Type Perfectly logo"
+            />
+          </div>
+          <div>
+            <div className="brand-title">Type Perfectly</div>
+            <div className="brand-subtitle">Typing Performance Lab</div>
+          </div>
         </div>
         <div className="top-actions">
           <span className="key-hint"><kbd>Tab</kbd> Restart</span>
           <span className="key-hint"><kbd>Esc</kbd> Pause</span>
           <button type="button" className={`ghost-button ${noBackspace ? "active" : ""}`} onClick={() => setNoBackspace((value) => !value)}>{noBackspace ? "BACKSPACE OFF" : "BACKSPACE ON"}</button>
-         <button type="button" className={`ghost-button ${soundOn ? "active" : ""}`} onClick={toggleSound}>{soundOn ? "SOUND ON" : "SOUND OFF"}</button>
+          <button type="button" className={`ghost-button ${soundOn ? "active" : ""}`} onClick={toggleSound}>{soundOn ? "SOUND ON" : "SOUND OFF"}</button>
           {user ? (
             <button
               type="button"
@@ -794,379 +869,342 @@ return (
               LOG OUT
             </button>
           ) : (
-           <button
-  type="button"
-  className="ghost-button auth-header-button"
-  onClick={() => {
-    setAuthMode("login");
-    setAuthOpen(true);
-  }}
->
-  LOG IN
-</button>
+            <button
+              type="button"
+              className="ghost-button auth-header-button"
+              onClick={() => {
+                setAuthMode("login");
+                setAuthOpen(true);
+              }}
+            >
+              LOG IN
+            </button>
           )}
         </div>
       </header>
-    <section className="hero">
-  <div className="hero-copy-wrap">
-    <div className="eyebrow">
-      FREE TYPING SPEED TEST
-    </div>
 
-  <h1>
-  Free Typing Test Online
-  <br />
-  <span>Check Your WPM in 15 Seconds</span>
-</h1>
+      <section className="hero">
+        <div className="hero-copy-wrap">
+          <div className="eyebrow">
+            FREE TYPING SPEED TEST
+          </div>
 
-    <p className="hero-description">
-      Get instant WPM, accuracy and weak-key feedback with English,
-      Hinglish, code and business typing practice.
-    </p>
+          <h1>
+            Free Typing Test Online
+            <br />
+            <span>Check Your WPM in 15 Seconds</span>
+          </h1>
 
-    <button
-      type="button"
-      className="hero-cta"
-      onClick={focusTyping}
-    >
-      START FREE TYPING TEST
-    </button>
+          <p className="hero-description">
+            Get instant WPM, accuracy and weak-key feedback with English,
+            Hinglish, code and business typing practice.
+          </p>
 
-    <div className="hero-trust">
-      Free to use · No account required · Instant results
-    </div>
-  </div>
+          <button
+            type="button"
+            className="hero-cta"
+            onClick={focusTyping}
+          >
+            START FREE TYPING TEST
+          </button>
 
-  <div
-    className="hero-picture"
-    role="img"
-    aria-label="Purple Type Perfectly keyboard"
-  />
-</section>
-   
+          <div className="hero-trust">
+            Free to use · No account required · Instant results
+          </div>
+        </div>
+
+        <div
+          className="hero-picture"
+          role="img"
+          aria-label="Purple Type Perfectly keyboard"
+        />
+      </section>
 
       <section className="controls">
-        <div className="control-section content-control"><div className="control-label">Content</div><div className="button-strip">{MODES.map((item) => <button key={item} type="button" className={mode === item ? "selected" : ""} onClick={() => resetSession(item, duration)}>{item.toUpperCase()}</button>)}</div></div>
-        <div className="control-section"><div className="control-label">Time</div><div className="button-strip time-buttons">{[15, 30, 60, 300].map((value) => <button key={value} type="button" className={duration === value ? "selected" : ""} onClick={() => resetSession(mode, value)}>{value === 300 ? "5 MIN" : `${value}S`}</button>)}</div></div>
+        <div className="control-section">
+          <div className="control-label">Language</div>
+          <div className="button-strip">
+            <select
+              value={selectedLang}
+              onChange={(e) => handleLanguageChange(e.target.value)}
+              style={{
+                padding: "6px 12px",
+                borderRadius: "6px",
+                backgroundColor: "#1e1e1e",
+                color: "#fff",
+                border: "1px solid #333",
+                fontSize: "0.85rem",
+                cursor: "pointer",
+                outline: "none"
+              }}
+            >
+              {LANGUAGES.map((lang) => (
+                <option key={lang.id} value={lang.id}>
+                  {lang.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="control-section content-control">
+          <div className="control-label">Content</div>
+          <div className="button-strip">
+            {MODES.map((item) => (
+              <button
+                key={item}
+                type="button"
+                className={mode === item ? "selected" : ""}
+                onClick={() => resetSession(item, duration)}
+              >
+                {item.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="control-section">
+          <div className="control-label">Time</div>
+          <div className="button-strip time-buttons">
+            {[15, 30, 60, 300].map((value) => (
+              <button
+                key={value}
+                type="button"
+                className={duration === value ? "selected" : ""}
+                onClick={() => resetSession(mode, value)}
+              >
+                {value === 300 ? "5 MIN" : `${value}S`}
+              </button>
+            ))}
+          </div>
+        </div>
       </section>
 
       <section className="practice-layout">
-       <article ref={typingCardRef} className="typing-card">
-        <input
-  ref={mobileInputRef}
-  className="mobile-capture"
-  type="text"
-  aria-label="Typing input"
-  inputMode="text"
-  autoCapitalize="off"
-  autoCorrect="off"
-  autoComplete="off"
-  spellCheck={false}
-  onFocus={() => setMobileFocused(true)}
-  onBlur={() => setMobileFocused(false)}
-  onInput={handleMobileInput}
-  onKeyDown={(event) => {
-    event.stopPropagation();
+        <article ref={typingCardRef} className="typing-card">
+          <input
+            ref={mobileInputRef}
+            className="mobile-capture"
+            type="text"
+            aria-label="Typing input"
+            inputMode="text"
+            autoCapitalize="off"
+            autoCorrect="off"
+            autoComplete="off"
+            spellCheck={false}
+            onFocus={() => setMobileFocused(true)}
+            onBlur={() => setMobileFocused(false)}
+            onInput={handleMobileInput}
+            onKeyDown={(event) => {
+              event.stopPropagation();
 
-    if (event.key === "Backspace" && noBackspace) {
-      event.preventDefault();
-    }
-  }}
-/>
+              if (event.key === "Backspace" && noBackspace) {
+                event.preventDefault();
+              }
+            }}
+          />
 
           <div className="typing-card-header">
-  <div>
-    <span>{durationLabel}</span>
-    <span>{mode.toUpperCase()}</span>
-  </div>
+            <div>
+              <span>{durationLabel}</span>
+              <span>{selectedLang.toUpperCase()} / {mode.toUpperCase()}</span>
+            </div>
 
-  {!finished && (
-    <button
-      type="button"
-      className="primary-button"
-      onClick={focusTyping}
-    >
-      START TYPING
-    </button>
-  )}
-</div>
-      <div
-  ref={wordsContainerRef}
-  className="typing-text"
-  role="textbox"
-  aria-label="Typing practice text. Type the highlighted character."
-  aria-multiline="true"
-  tabIndex={0}
-  onPointerDown={focusTyping}
->
-          {text.split("").map((character, index) => {
-            let className = "char upcoming";
-
-            if (index < input.length) {
-              className =
-                input[index] === character
-                  ? "char correct"
-                  : "char wrong";
-            }
-
-            if (index === input.length && !finished) {
-              className = "char current";
-            }
-
-            return (
-              <span
-                key={`${index}-${character}`}
-                ref={index === input.length ? currentCharRef : null}
-                className={className}
+            {!finished && (
+              <button
+                type="button"
+                className="primary-button"
+                onClick={focusTyping}
               >
-                {character}
-              </span>
-            );
-          })}
+                START TYPING
+              </button>
+            )}
+          </div>
+
+          <div
+            ref={wordsContainerRef}
+            className="typing-text"
+            role="textbox"
+            aria-label="Typing practice text. Type the highlighted character."
+            aria-multiline="true"
+            tabIndex={0}
+            onPointerDown={focusTyping}
+          >
+            {text.split("").map((character, index) => {
+              let className = "char upcoming";
+
+              if (index < input.length) {
+                className =
+                  input[index] === character
+                    ? "char correct"
+                    : "char wrong";
+              }
+
+              if (index === input.length && !finished) {
+                className = "char current";
+              }
+
+              return (
+                <span
+                  key={`${index}-${character}`}
+                  ref={index === input.length ? currentCharRef : null}
+                  className={className}
+                >
+                  {character}
+                </span>
+              );
+            })}
+
+            {!finished && (
+              <span
+                ref={caretRef}
+                className="smooth-caret"
+                aria-hidden="true"
+              />
+            )}
+          </div>
+
+          <div className="legend-row">
+            <span><i className="dot correct-dot" />Correct</span>
+            <span><i className="dot wrong-dot" />Wrong</span>
+            <span><i className="dot upcoming-dot" />Upcoming</span>
+          </div>
 
           {!finished && (
-            <span
-              ref={caretRef}
-              className="smooth-caret"
-              aria-hidden="true"
-            />
+            <div className="typing-actions">
+              <button
+                type="button"
+                className="restart-button"
+                onClick={() => resetSession()}
+              >
+                RESTART SESSION
+              </button>
+            </div>
           )}
-        </div>
-          <div className="legend-row"><span><i className="dot correct-dot" />Correct</span><span><i className="dot wrong-dot" />Wrong</span><span><i className="dot upcoming-dot" />Upcoming</span></div>
-         {!finished && (
-  <div className="typing-actions">
-    <button
-      type="button"
-      className="restart-button"
-      onClick={() => resetSession()}
-    >
-      RESTART SESSION
-    </button>
-  </div>
-)}
         </article>
 
         <aside className="stats-card">
           <div className="stats-title">Live Stats</div>
-         <div className="stats-grid">
-  <div>
-    <span>Time</span>
-    <strong>{finished ? durationLabel : `${timeLeft}s`}</strong>
-  </div>
+          <div className="stats-grid">
+            <div>
+              <span>Time</span>
+              <strong>{finished ? durationLabel : `${timeLeft}s`}</strong>
+            </div>
 
-  <div>
-    <span>WPM</span>
-    <strong>{wpm}</strong>
-  </div>
+            <div>
+              <span>WPM</span>
+              <strong>{wpm}</strong>
+            </div>
 
-  <div>
-    <span>Accuracy</span>
-    <strong>{accuracy}%</strong>
-  </div>
-</div>
+            <div>
+              <span>Accuracy</span>
+              <strong>{accuracy}%</strong>
+            </div>
+          </div>
 
-{finished && (
-  <div className="finished-box">
-    <strong>Great job!</strong>
-    <span>{wpm} WPM · {accuracy}% Accuracy</span>
-    <span>Score: {score}</span>
+          {finished && (
+            <div className="finished-box">
+              <strong>Great job!</strong>
+              <span>{wpm} WPM · {accuracy}% Accuracy</span>
+              <span>Score: {score}</span>
 
-    <button type="button" onClick={() => resetSession()}>
-      TRY AGAIN
-    </button>
+              <button type="button" onClick={() => resetSession()}>
+                TRY AGAIN
+              </button>
 
-    {!user ? (
-     <button
-  type="button"
-  className="save-progress-button"
-  onClick={() => {
-    setAuthMode("signup");
-    setAuthOpen(true);
-  }}
->
-  CREATE FREE ACCOUNT TO SAVE THIS SCORE
-</button>
-    ) : (
-      <small className={`cloud-save-status ${cloudSaveStatus}`} role="status">
-        {cloudSaveStatus === "saving" && "Saving to your account..."}
-        {cloudSaveStatus === "saved" && "Saved to your account"}
-        {cloudSaveStatus === "error" && "Cloud save failed. Try again later."}
-        {cloudSaveStatus === "idle" && "Your result will be saved automatically."}
-      </small>
-    )}
-  </div>
-)}
+              {!user ? (
+                <button
+                  type="button"
+                  className="save-progress-button"
+                  onClick={() => {
+                    setAuthMode("signup");
+                    setAuthOpen(true);
+                  }}
+                >
+                  CREATE FREE ACCOUNT TO SAVE THIS SCORE
+                </button>
+              ) : (
+                <small className={`cloud-save-status ${cloudSaveStatus}`} role="status">
+                  {cloudSaveStatus === "saving" && "Saving to your account..."}
+                  {cloudSaveStatus === "saved" && "Saved to your account"}
+                  {cloudSaveStatus === "error" && "Cloud save failed. Try again later."}
+                  {cloudSaveStatus === "idle" && "Your result will be saved automatically."}
+                </small>
+              )}
+            </div>
+          )}
         </aside>
       </section>
 
-    {finished && (
-  <section
-    className="result-dashboard"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="result-dashboard-title"
-  >
-    <div className="result-dashboard-card">
-      <p className="result-dashboard-label">TEST COMPLETE</p>
-
-      <h2 id="result-dashboard-title">
-        Your Typing Result
-      </h2>
-
-      <p className="result-dashboard-subtitle">
-        {mode.toUpperCase()} · {durationLabel}
-      </p>
-
-      <div className="result-dashboard-stats">
-        <div>
-          <span>WPM</span>
-          <strong>{wpm}</strong>
-        </div>
-
-        <div>
-          <span>Accuracy</span>
-          <strong>{accuracy}%</strong>
-        </div>
-
-        <div>
-          <span>Score</span>
-          <strong>{score}</strong>
-        </div>
-      </div>
-
-      <div className="result-dashboard-actions">
-        <button
-          type="button"
-          onClick={() => resetSession()}
+      {finished && (
+        <section
+          className="result-dashboard"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="result-dashboard-title"
         >
-          TRY AGAIN
-        </button>
+          <div className="result-dashboard-card">
+            <p className="result-dashboard-label">TEST COMPLETE</p>
 
-        {!user && (
-          <button
-            type="button"
-            className="result-save-button"
-            onClick={() => {
-              setAuthMode("signup");
-              setAuthOpen(true);
-            }}
-          >
-            CREATE FREE ACCOUNT
-          </button>
-        )}
-      </div>
-    </div>
-  </section>
-)}
-      <section className="insights-grid">
-        <article className="insight-card"><div className="insight-title">Personal Best</div><div className="big-number">{bestWpm}</div><span>Best WPM</span></article>
-        <article className="insight-card history-card"><div className="insight-title">Recent Sessions</div>{history.length ? history.map((item, index) => <div className="history-row" key={`${item.date}-${index}`}><span>{item.mode}</span><strong>{item.wpm} WPM</strong><span>{item.accuracy}%</span></div>) : <p>No completed sessions yet.</p>}</article>
-        <article className="insight-card"><div className="insight-title">Needs Practice</div>{weakKeys.length ? weakKeys.map(([key, count]) => <div className="weak-row" key={key}><strong>{key}</strong><div><span style={{ width: `${Math.min(100, count * 24)}%` }} /></div><small>{count}</small></div>) : <p>Type a session to discover weak keys.</p>}</article>
-      </section>
-<section className="seo-content">
-  <article>
-    <h2>How Our Free Typing Test Works</h2>
-    <p>
-      Choose a test duration, start typing, and get your WPM and accuracy
-      result instantly. No signup is required.
-    </p>
-  </article>
+            <h2 id="result-dashboard-title">
+              Your Typing Result
+            </h2>
 
-  <article>
-    <h2>How WPM Is Calculated</h2>
-    <p>
-      WPM is calculated using correctly typed characters, divided by five,
-      and then divided by the time used.
-    </p>
-  </article>
+            <p className="result-dashboard-subtitle">
+              {selectedLang.toUpperCase()} · {mode.toUpperCase()} · {durationLabel}
+            </p>
 
-  <article>
-    <h2>Improve Your Typing Accuracy</h2>
-    <p>
-      Focus on correct keystrokes first. Use the weak-key report to find
-      letters that need more practice.
-    </p>
-  </article>
+            <div className="result-dashboard-stats">
+              <div>
+                <span>WPM</span>
+                <strong>{wpm}</strong>
+              </div>
 
-  <article>
-    <h2>Practice for Different Goals</h2>
-    <p>
-      Practice English words, Hinglish, code, business vocabulary, quotes,
-      and useful conversations.
-    </p>
-  </article>
-</section>
+              <div>
+                <span>Accuracy</span>
+                <strong>{accuracy}%</strong>
+              </div>
 
-<section className="faq-section">
-  <h2>Frequently Asked Questions</h2>
+              <div>
+                <span>Score</span>
+                <strong>{score}</strong>
+              </div>
+            </div>
 
-  <details open>
-    <summary>Is the typing test free?</summary>
-    <p>
-      Yes. You can take typing tests and practice for free without creating
-      an account.
-    </p>
-  </details>
+            <div className="result-dashboard-actions">
+              <button
+                type="button"
+                onClick={() => resetSession()}
+              >
+                TRY AGAIN
+              </button>
 
-  <details>
-    <summary>Do I need an account?</summary>
-    <p>
-      No. An account is optional and can be used to save your progress.
-    </p>
-  </details>
+              {!user && (
+                <button
+                  type="button"
+                  className="result-save-button"
+                  onClick={() => {
+                    setAuthMode("signup");
+                    setAuthOpen(true);
+                  }}
+                >
+                  CREATE FREE ACCOUNT
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
-  <details>
-    <summary>How is WPM calculated?</summary>
-    <p>
-      Correctly typed characters are divided by five and then divided by the
-      number of minutes used.
-    </p>
-  </details>
-
-  <details>
-    <summary>Can I practice Hinglish and code typing?</summary>
-    <p>
-      Yes. Type Perfectly includes Hinglish, code, business, quotes, words,
-      bigrams and trigrams.
-    </p>
-  </details>
-</section>
-<footer className="footer">
-  <div>© 2026 Type Perfectly. All rights reserved.</div>
-
-  <nav>
-    <a href="/about.html">About</a>
-    <a href="/contact.html">Contact</a>
-    <a href="/privacy.html">Privacy</a>
-    <a href="/terms.html">Terms</a>
-    <a href="/disclaimer.html">Disclaimer</a>
-
-    <a
-      href="https://docs.google.com/forms/d/e/1FAIpQLScFhnHdXB3dWVWBhEPFfkQKQz3Xzs23UXhCYOqp7O0Q3mMXQg/viewform"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Feedback
-</a>
-  </nav>
-</footer>
-
-{authOpen && (
-  <Suspense fallback={null}>
-    <AuthModal
-      initialMode={authMode}
-      onClose={() => setAuthOpen(false)}
-    />
-  </Suspense>
-)}
-<audio
-  ref={musicRef}
-  src="/background-music.mp3"
-  loop
-  preload="none"
-/>
-
-</main>
-);
+      {authOpen && (
+        <Suspense fallback={null}>
+          <AuthModal
+            isOpen={authOpen}
+            onClose={() => setAuthOpen(false)}
+            initialMode={authMode}
+          />
+        </Suspense>
+      )}
+    </main>
+  );
 }
-
