@@ -1553,7 +1553,7 @@ input {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
-/* Simple & Clean Language Dropdown */
+/* Perfectly Matched Light Theme Language Dropdown */
 .select-wrapper {
   position: relative;
   display: inline-block;
@@ -1562,37 +1562,42 @@ input {
 .lang-select {
   appearance: none;
   -webkit-appearance: none;
-  background-color: #1e1e2e;
-  color: #e2e8f0;
-  border: 1px solid #334155;
-  border-radius: 8px;
-  padding: 8px 32px 8px 12px;
-  font-size: 14px;
-  font-weight: 500;
+  background-color: #ffffff;        /* White background (HINGLISH/BUSINESS buttons jaisa) */
+  color: #1f1444;                   /* Dark purple text */
+  border: 1.5px solid #e5deef;      /* Soft light-purple border */
+  border-radius: 12px;              /* Soft rounded corners */
+  padding: 10px 36px 10px 16px;
+  font-size: 13px;
+  font-weight: 700;                 /* Bold text */
   cursor: pointer;
   outline: none;
-  transition: border-color 0.2s ease;
+  box-shadow: 0 2px 8px rgba(99, 56, 246, 0.05);
+  transition: all 0.2s ease;
 }
 
+/* Hover/Focus par Purple glow */
 .lang-select:hover,
 .lang-select:focus {
-  border-color: #a78bfa;
+  border-color: #6338f6;
+  box-shadow: 0 4px 12px rgba(99, 56, 246, 0.15);
 }
 
-/* Simple Down Arrow */
+/* Arrow color (Matching Purple) */
 .select-wrapper::after {
   content: "▾";
   position: absolute;
-  right: 12px;
+  right: 14px;
   top: 48%;
   transform: translateY(-50%);
-  color: #a78bfa;
+  color: #6338f6;                  /* Vibrant purple arrow */
   pointer-events: none;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: bold;
 }
 
-/* Option List Dark Theme */
+/* Dropdown list (Open menu styling) */
 .lang-select option {
-  background-color: #1e1e2e;
-  color: #e2e8f0;
+  background-color: #ffffff;
+  color: #1f1444;
+  font-weight: 600;
 }
