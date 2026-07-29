@@ -1,13 +1,5 @@
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase, supabaseConfigured } from "./lib/supabase";
-import {
-  lazy,
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
 import "./App.css";
 
 const AuthModal = lazy(() => import("./AuthModal"));
@@ -16,6 +8,8 @@ const LANGUAGES = [
   { id: "english", name: "English" },
   { id: "english_1k", name: "English 1k" },
   { id: "english_commonly_misspelled", name: "Misspelled Words" },
+  { id: "hindi", name: "Hindi" },
+  { id: "hindi_1k", name: "Hindi 1k" },
   { id: "spanish", name: "Spanish" },
   { id: "spanish_1k", name: "Spanish 1k" },
   { id: "arabic", name: "Arabic" },
@@ -57,34 +51,17 @@ const POOLS = {
     "Discipline today creates freedom tomorrow."
   ],
   hinglish: [
-    `Subah alarm baja, lekin maine snooze kar diya.
-Paanch minute baad alarm phir baja.
-Maine socha, thodi aur neend le leta hoon.
-Aankh khuli to office ka time ho chuka tha.
-Us din meri speed typing me nahi, taiyaar hone me improve hui.`,
-
-    `Main chai peene dukaan par gaya.
-Chai wale bhaiya ne poocha, strong ya normal?
-Maine bola, strong bana do.
-Unhone poocha, kitni strong?
-Maine kaha, itni ki Monday bhi Sunday lagne lage.`
+    `Subah alarm baja, lekin maine snooze kar diya.\nPaanch minute baad alarm phir baja.\nMaine socha, thodi aur neend le leta hoon.\nAankh khuli to office ka time ho chuka tha.\nUs din meri speed typing me nahi, taiyaar hone me improve hui.`,
+    `Main chai peene dukaan par gaya.\nChai wale bhaiya ne poocha, strong ya normal?\nMaine bola, strong bana do.\nUnhone poocha, kitni strong?\nMaine kaha, itni ki Monday bhi Sunday lagne lage.`
   ],
   conversation: [
-    `Aman: Did you study today?
-Ravi: Yes, I opened the book.
-Aman: Then what happened?
-Ravi: I fell asleep.
-Aman: What about your goal?
-Ravi: The goal is still there. My timing is just a little late.`,
-
-    `Boss: Is the report complete?
-Employee: Almost, sir.
-Boss: What does almost mean?
-Employee: The file is open, my confidence is high, and the data is still loading.`
+    `Aman: Did you study today?\nRavi: Yes, I opened the book.\nAman: Then what happened?\nRavi: I fell asleep.\nAman: What about your goal?\nRavi: The goal is still there. My timing is just a little late.`,
+    `Boss: Is the report complete?\nEmployee: Almost, sir.\nBoss: What does almost mean?\nEmployee: The file is open, my confidence is high, and the data is still loading.`
   ]
 };
 
 const LANGUAGE_POOLS = {
+  hindi: "का के कि में है और से ने को इस पर यह भी कर दिए रहे हो गए हुआ अपने साथ तो या तक द्वारा बाद भारत लोग काम बात समय स्थान अधिकार जीवन नाम रूप प्रथम विषय कार्य समाज देश".split(" "),
   arabic: "من على إلى عن في كان هذا التي الذي مع ما لا الله كل بعد حتى بين ذلك عدم ليس حول إلا قبل قد جدا حيث هناك تكون وكان قال أكثر كما كان يعمل".split(" "),
   spanish: "que de no a la el es por un para con una los del las se como mas pero sus le ya este si porque esta entre cuando muy sin sobre tambien hasta".split(" "),
   french: "que de ne pas le la les un une du des et en pour etre il ce qui sur avec plus par se meme tout faire sa son".split(" "),
@@ -95,6 +72,9 @@ const LANGUAGE_POOLS = {
   code_python: "def return import from class if else elif for while in try except with as lambda async await True False None print len range list dict set int str".split(" "),
   code_javascript: "const let var function return import export default async await if else for while switch case break try catch throw new class extends element".split(" "),
 };
+
+// In-memory JSON cache to reduce network bandwidth
+const jsonCache = new Map();
 
 const randomItem = (items) => items[Math.floor(Math.random() * items.length)];
 
@@ -115,7 +95,8 @@ function makeText(mode, selectedLang, customWords = null) {
     return randomItem(POOLS[mode] || POOLS.quotes);
   }
 
-  const langPool = LANGUAGE_POOLS[selectedLang];
+  const baseLangKey = selectedLang.replace("_1k", "");
+  const langPool = LANGUAGE_POOLS[baseLangKey] || LANGUAGE_POOLS[selectedLang];
   if (langPool && langPool.length > 0) {
     return Array.from({ length: 36 }, () => randomItem(langPool)).join(" ");
   }
@@ -131,32 +112,6 @@ function accuracyOf(correct, total) {
 
 function mobileLike() {
   return window.matchMedia?.("(pointer: coarse)").matches || window.innerWidth <= 768;
-}
-
-let keySoundPool = [];
-let keySoundIndex = 0;
-
-function playTone(correct, enabled) {
-  if (!enabled) return;
-
-  try {
-    if (keySoundPool.length === 0) {
-      keySoundPool = Array.from({ length: 6 }, () => {
-        const audio = new Audio("/public_sound.mp3");
-        audio.preload = "auto";
-        audio.volume = 0.35;
-        return audio;
-      });
-    }
-
-    const sound = keySoundPool[keySoundIndex];
-    keySoundIndex = (keySoundIndex + 1) % keySoundPool.length;
-
-    sound.currentTime = 0;
-    sound.play().catch(() => {});
-  } catch {
-    // Silent fail if audio fails
-  }
 }
 
 export default function App() {
@@ -183,17 +138,37 @@ export default function App() {
   });
 
   const appRef = useRef(null);
-  const typingCardRef = useRef(null);
   const mobileInputRef = useRef(null);
-  const wordsContainerRef = useRef(null);
-  const currentCharRef = useRef(null);
-  const caretRef = useRef(null);
   const mobileBufferRef = useRef("");
   const savedRef = useRef(false);
   const cloudSavedRef = useRef(false);
-  const musicRef = useRef(null);
   const startedAtRef = useRef(0);
   const [elapsedMs, setElapsedMs] = useState(0);
+
+  // Audio Pool inside Ref to prevent scope leaks
+  const audioPoolRef = useRef([]);
+  const audioIndexRef = useRef(0);
+
+  useEffect(() => {
+    audioPoolRef.current = Array.from({ length: 6 }, () => {
+      const audio = new Audio("/public_sound.mp3");
+      audio.preload = "auto";
+      audio.volume = 0.35;
+      return audio;
+    });
+  }, []);
+
+  const playTone = useCallback(() => {
+    if (!soundOn || mobileLike() || audioPoolRef.current.length === 0) return;
+    try {
+      const sound = audioPoolRef.current[audioIndexRef.current];
+      audioIndexRef.current = (audioIndexRef.current + 1) % audioPoolRef.current.length;
+      sound.currentTime = 0;
+      sound.play().catch(() => {});
+    } catch {
+      // Audio playback catch
+    }
+  }, [soundOn]);
 
   const resetSession = useCallback((nextMode = mode, nextDuration = duration, nextWords = langWords, nextLang = selectedLang) => {
     setMode(nextMode);
@@ -216,21 +191,21 @@ export default function App() {
       mobileInputRef.current.blur();
     }
 
-    if (musicRef.current) {
-      musicRef.current.pause();
-      musicRef.current.currentTime = 0;
-    }
-
-    requestAnimationFrame(() =>
-      appRef.current?.focus({ preventScroll: true })
-    );
+    requestAnimationFrame(() => appRef.current?.focus({ preventScroll: true }));
   }, [duration, mode, langWords, selectedLang]);
 
-  // Fetch JSON directly from public/ root
+  // Fetch JSON with in-memory cache
   useEffect(() => {
     if (selectedLang === "english") {
       setLangWords(null);
       resetSession("words", duration, null, "english");
+      return;
+    }
+
+    if (jsonCache.has(selectedLang)) {
+      const words = jsonCache.get(selectedLang);
+      setLangWords(words);
+      resetSession("words", duration, words, selectedLang);
       return;
     }
 
@@ -244,6 +219,7 @@ export default function App() {
         if (!active) return;
         const words = extractWords(data);
         if (words && words.length > 0) {
+          jsonCache.set(selectedLang, words);
           setLangWords(words);
           resetSession("words", duration, words, selectedLang);
         } else {
@@ -259,9 +235,7 @@ export default function App() {
         }
       });
 
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [selectedLang]);
 
   const handleLanguageChange = (newLang) => {
@@ -271,16 +245,17 @@ export default function App() {
 
   const correctChars = useMemo(() => {
     let correct = 0;
-    for (let i = 0; i < input.length; i += 1) if (input[i] === text[i]) correct += 1;
+    for (let i = 0; i < input.length; i += 1) {
+      if (input[i] === text[i]) correct += 1;
+    }
     return correct;
   }, [input, text]);
 
   const accuracy = accuracyOf(correctChars, input.length);
   const elapsedMinutes = Math.max(elapsedMs, 1) / 60000;
-  const wpm =
-    input.length && elapsedMs >= 250
-      ? Math.round((correctChars / 5) / elapsedMinutes)
-      : 0;
+  const wpm = input.length && elapsedMs >= 250
+    ? Math.round((correctChars / 5) / elapsedMinutes)
+    : 0;
   const score = correctChars * 10 + wpm * 2;
   const sessionActive = mobileFocused || running;
   const isRTL = selectedLang === "arabic";
@@ -296,35 +271,42 @@ export default function App() {
     setFinished(true);
     setMobileFocused(false);
     mobileInputRef.current?.blur();
-
-    if (musicRef.current) {
-      musicRef.current.pause();
-      musicRef.current.currentTime = 0;
-    }
   }, [duration]);
 
-  const toggleSound = useCallback(() => {
-    setSoundOn((current) => {
-      const next = !current;
+  // Pure Keystroke Handlers
+  const processCharacter = useCallback((character) => {
+    if (!character || character.length !== 1 || finished) return;
 
-      if (musicRef.current) {
-        if (!next) {
-          musicRef.current.pause();
-        } else if (running && !finished) {
-          musicRef.current.volume = 0.80;
-          musicRef.current.play().catch(() => {});
-        }
-      }
+    if (!running) {
+      startedAtRef.current = performance.now() - elapsedMs;
+      setRunning(true);
+    }
 
-      return next;
+    setInput((previous) => {
+      if (previous.length >= text.length) return previous;
+      playTone();
+      return previous + character;
     });
-  }, [finished, running]);
+  }, [elapsedMs, finished, playTone, running, text.length]);
+
+  const removeCharacter = useCallback(() => {
+    if (!finished && !noBackspace) {
+      setInput((previous) => previous.slice(0, -1));
+    }
+  }, [finished, noBackspace]);
+
+  // Clean Declarative Trigger for Session Completion (Fixes state updater side-effect)
+  useEffect(() => {
+    if (text.length > 0 && input.length >= text.length && running && !finished) {
+      finishSession();
+    }
+  }, [input.length, text.length, running, finished, finishSession]);
 
   useEffect(() => { appRef.current?.focus({ preventScroll: true }); }, []);
 
+  // Supabase Auth Listener
   useEffect(() => {
     if (!supabaseConfigured || !supabase) return undefined;
-
     let active = true;
 
     supabase.auth.getSession().then(({ data, error }) => {
@@ -336,9 +318,7 @@ export default function App() {
       setUser(data.session?.user || null);
     });
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (active) setUser(session?.user || null);
     });
 
@@ -348,6 +328,7 @@ export default function App() {
     };
   }, []);
 
+  // High-precision Timer
   useEffect(() => {
     if (!running || finished) return undefined;
 
@@ -359,12 +340,7 @@ export default function App() {
 
       if (now - lastUpdate >= 250) {
         setElapsedMs(elapsed);
-
-        const remainingMs = Math.max(
-          0,
-          duration * 1000 - elapsed
-        );
-
+        const remainingMs = Math.max(0, duration * 1000 - elapsed);
         setTimeLeft(Math.ceil(remainingMs / 1000));
         lastUpdate = now;
       }
@@ -378,10 +354,10 @@ export default function App() {
     };
 
     frameId = requestAnimationFrame(updateTimer);
-
     return () => cancelAnimationFrame(frameId);
   }, [duration, finishSession, finished, running]);
 
+  // Local Storage Saver
   useEffect(() => {
     if (!finished || savedRef.current) return;
     savedRef.current = true;
@@ -396,6 +372,7 @@ export default function App() {
     });
   }, [accuracy, bestWpm, duration, finished, mode, score, wpm]);
 
+  // Supabase Cloud Saver
   useEffect(() => {
     if (!finished || !user || !supabase || cloudSavedRef.current) return;
 
@@ -425,50 +402,11 @@ export default function App() {
     saveSession();
   }, [accuracy, duration, finished, input.length, mode, score, user, wpm]);
 
-  const processCharacter = useCallback((character) => {
-    if (!character || character.length !== 1 || finished) return;
-
-    if (!running) {
-      startedAtRef.current = performance.now() - elapsedMs;
-      setRunning(true);
-    }
-
-    if (!running && soundOn && musicRef.current) {
-      musicRef.current.volume = 0.90;
-      musicRef.current.play().catch(() => {});
-    }
-
-    setInput((previous) => {
-      if (previous.length >= text.length) return previous;
-
-      playTone(
-        character === text[previous.length],
-        soundOn && !mobileLike()
-      );
-
-      const next = previous + character;
-
-      if (next.length >= text.length) {
-        window.setTimeout(finishSession, 0);
-      }
-
-      return next;
-    });
-  }, [elapsedMs, finishSession, finished, running, soundOn, text]);
-
-  const removeCharacter = useCallback(() => {
-    if (!finished && !noBackspace) {
-      setInput((previous) => previous.slice(0, -1));
-    }
-  }, [finished, noBackspace]);
-
   const focusTyping = useCallback(() => {
     if (mobileLike()) {
       setMobileFocused(true);
-
       const target = mobileInputRef.current;
       if (!target) return;
-
       try {
         target.focus({ preventScroll: true });
       } catch {
@@ -479,120 +417,78 @@ export default function App() {
     }
   }, []);
 
-  const handleDesktopKeyDown = useCallback(
-    (event) => {
-      const target = event.target;
+  const handleDesktopKeyDown = useCallback((event) => {
+    const target = event.target;
 
-      if (
-        target instanceof HTMLInputElement ||
-        target instanceof HTMLTextAreaElement ||
-        target instanceof HTMLSelectElement ||
-        target instanceof HTMLButtonElement ||
-        target?.isContentEditable ||
-        target === mobileInputRef.current
-      ) {
-        return;
+    if (
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLTextAreaElement ||
+      target instanceof HTMLSelectElement ||
+      target instanceof HTMLButtonElement ||
+      target?.isContentEditable ||
+      target === mobileInputRef.current
+    ) {
+      return;
+    }
+
+    if (event.ctrlKey || event.altKey || event.metaKey) return;
+
+    if (event.key === "Tab") {
+      event.preventDefault();
+      resetSession();
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setRunning(false);
+      setMobileFocused(false);
+      mobileInputRef.current?.blur();
+      return;
+    }
+
+    if (event.key === "Backspace") {
+      event.preventDefault();
+      removeCharacter();
+      return;
+    }
+
+    if (event.key.length === 1) {
+      event.preventDefault();
+      processCharacter(event.key);
+    }
+  }, [processCharacter, removeCharacter, resetSession]);
+
+  const handleMobileInput = useCallback((event) => {
+    const value = event.currentTarget.value;
+    const previous = mobileBufferRef.current;
+
+    if (value.length > previous.length) {
+      for (const character of value.slice(previous.length)) {
+        processCharacter(character);
       }
-
-      if (event.ctrlKey || event.altKey || event.metaKey) return;
-
-      if (event.key === "Tab") {
-        event.preventDefault();
-        resetSession();
-        return;
-      }
-
-      if (event.key === "Escape") {
-        event.preventDefault();
-        setRunning(false);
-        setMobileFocused(false);
-        mobileInputRef.current?.blur();
-        return;
-      }
-
-      if (event.key === "Backspace") {
-        event.preventDefault();
-        removeCharacter();
-        return;
-      }
-
-      if (event.key.length === 1) {
-        event.preventDefault();
-        processCharacter(event.key);
-      }
-    },
-    [processCharacter, removeCharacter, resetSession]
-  );
-
-  const handleMobileInput = useCallback(
-    (event) => {
-      const value = event.currentTarget.value;
-      const previous = mobileBufferRef.current;
-
-      if (value.length > previous.length) {
-        for (const character of value.slice(previous.length)) {
-          processCharacter(character);
-        }
-      } else if (value.length < previous.length) {
-        if (noBackspace) {
-          event.currentTarget.value = previous;
-        } else {
-          for (let i = 0; i < previous.length - value.length; i += 1) {
-            removeCharacter();
-          }
+    } else if (value.length < previous.length) {
+      if (noBackspace) {
+        event.currentTarget.value = previous;
+      } else {
+        for (let i = 0; i < previous.length - value.length; i += 1) {
+          removeCharacter();
         }
       }
+    }
 
-      mobileBufferRef.current = event.currentTarget.value;
+    mobileBufferRef.current = event.currentTarget.value;
 
-      if (mobileBufferRef.current.length > 40) {
-        event.currentTarget.value = "";
-        mobileBufferRef.current = "";
-      }
-    },
-    [noBackspace, processCharacter, removeCharacter]
-  );
-
-  useEffect(() => {
-    const caret = caretRef.current;
-    const currentLetter = currentCharRef.current;
-    const container = wordsContainerRef.current;
-
-    if (!caret || !currentLetter || !container || finished) return undefined;
-
-    const updateCaretPosition = () => {
-      const letterRect = currentLetter.getBoundingClientRect();
-      const containerRect = container.getBoundingClientRect();
-
-      const x =
-        letterRect.left -
-        containerRect.left +
-        container.scrollLeft;
-
-      const y =
-        letterRect.top -
-        containerRect.top +
-        container.scrollTop;
-
-      caret.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-    };
-
-    updateCaretPosition();
-    window.addEventListener("resize", updateCaretPosition);
-
-    return () => {
-      window.removeEventListener("resize", updateCaretPosition);
-    };
-  }, [finished, input.length, text]);
+    if (mobileBufferRef.current.length > 40) {
+      event.currentTarget.value = "";
+      mobileBufferRef.current = "";
+    }
+  }, [noBackspace, processCharacter, removeCharacter]);
 
   const logout = useCallback(async () => {
     if (!supabase) return;
-
     const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      console.error("Logout failed:", error.message);
-    }
+    if (error) console.error("Logout failed:", error.message);
   }, []);
 
   const durationLabel = duration === 300 ? "5 MIN" : `${duration}S`;
@@ -601,18 +497,13 @@ export default function App() {
     <main
       ref={appRef}
       tabIndex={0}
-      className={`app ${sessionActive ? "session-active" : ""} ${
-        finished ? "result-active" : ""
-      }`}
+      className={`app ${sessionActive ? "session-active" : ""} ${finished ? "result-active" : ""}`}
       onKeyDown={handleDesktopKeyDown}
     >
       <header className="topbar">
         <div className="brand">
           <div className="logo-mark">
-            <img
-              src="/TeksType.jpeg"
-              alt="Type Perfectly logo"
-            />
+            <img src="/TeksType.jpeg" alt="Type Perfectly logo" />
           </div>
           <div>
             <div className="brand-title">Type Perfectly</div>
@@ -622,26 +513,18 @@ export default function App() {
         <div className="top-actions">
           <span className="key-hint"><kbd>Tab</kbd> Restart</span>
           <span className="key-hint"><kbd>Esc</kbd> Pause</span>
-          <button type="button" className={`ghost-button ${noBackspace ? "active" : ""}`} onClick={() => setNoBackspace((value) => !value)}>{noBackspace ? "BACKSPACE OFF" : "BACKSPACE ON"}</button>
-          <button type="button" className={`ghost-button ${soundOn ? "active" : ""}`} onClick={toggleSound}>{soundOn ? "SOUND ON" : "SOUND OFF"}</button>
+          <button type="button" className={`ghost-button ${noBackspace ? "active" : ""}`} onClick={() => setNoBackspace((val) => !val)}>
+            {noBackspace ? "BACKSPACE OFF" : "BACKSPACE ON"}
+          </button>
+          <button type="button" className={`ghost-button ${soundOn ? "active" : ""}`} onClick={() => setSoundOn((val) => !val)}>
+            {soundOn ? "SOUND ON" : "SOUND OFF"}
+          </button>
           {user ? (
-            <button
-              type="button"
-              className="ghost-button auth-header-button active"
-              onClick={logout}
-              title={user.email || "Signed in"}
-            >
+            <button type="button" className="ghost-button auth-header-button active" onClick={logout} title={user.email || "Signed in"}>
               LOG OUT
             </button>
           ) : (
-            <button
-              type="button"
-              className="ghost-button auth-header-button"
-              onClick={() => {
-                setAuthMode("login");
-                setAuthOpen(true);
-              }}
-            >
+            <button type="button" className="ghost-button auth-header-button" onClick={() => { setAuthMode("login"); setAuthOpen(true); }}>
               LOG IN
             </button>
           )}
@@ -650,65 +533,33 @@ export default function App() {
 
       <section className="hero">
         <div className="hero-copy-wrap">
-          <div className="eyebrow">
-            FREE TYPING SPEED TEST
-          </div>
-
+          <div className="eyebrow">FREE TYPING SPEED TEST</div>
           <h1>
-            Free Typing Test Online
-            <br />
+            Free Typing Test Online<br />
             <span>Check Your WPM in 15 Seconds</span>
           </h1>
-
           <p className="hero-description">
-            Get instant WPM, accuracy and weak-key feedback with English,
-            Hinglish, code and business typing practice.
+            Get instant WPM, accuracy and weak-key feedback with English, Hinglish, code and business typing practice.
           </p>
-
-          <button
-            type="button"
-            className="hero-cta"
-            onClick={focusTyping}
-          >
+          <button type="button" className="hero-cta" onClick={focusTyping}>
             START FREE TYPING TEST
           </button>
-
-          <div className="hero-trust">
-            Free to use · No account required · Instant results
-          </div>
+          <div className="hero-trust">Free to use · No account required · Instant results</div>
         </div>
-
-        <div
-          className="hero-picture"
-          role="img"
-          aria-label="Purple Type Perfectly keyboard"
-        />
+        <div className="hero-picture" role="img" aria-label="Purple Type Perfectly keyboard" />
       </section>
 
       <section className="controls">
         <div className="control-section">
           <div className="control-label">Language</div>
           <div className="button-strip">
-            <select
-              value={selectedLang}
-              onChange={(e) => handleLanguageChange(e.target.value)}
-              style={{
-                padding: "6px 12px",
-                borderRadius: "6px",
-                backgroundColor: "#1e1e1e",
-                color: "#fff",
-                border: "1px solid #333",
-                fontSize: "0.85rem",
-                cursor: "pointer",
-                outline: "none"
-              }}
-            >
-              {LANGUAGES.map((lang) => (
-                <option key={lang.id} value={lang.id}>
-                  {lang.name}
-                </option>
-              ))}
-            </select>
+            <div className="select-wrapper">
+              <select className="lang-select" value={selectedLang} onChange={(e) => handleLanguageChange(e.target.value)}>
+                {LANGUAGES.map((lang) => (
+                  <option key={lang.id} value={lang.id}>{lang.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
@@ -749,7 +600,7 @@ export default function App() {
       </section>
 
       <section className="practice-layout">
-        <article ref={typingCardRef} className="typing-card">
+        <article className="typing-card">
           <input
             ref={mobileInputRef}
             className="mobile-capture"
@@ -765,10 +616,7 @@ export default function App() {
             onInput={handleMobileInput}
             onKeyDown={(event) => {
               event.stopPropagation();
-
-              if (event.key === "Backspace" && noBackspace) {
-                event.preventDefault();
-              }
+              if (event.key === "Backspace" && noBackspace) event.preventDefault();
             }}
           />
 
@@ -777,60 +625,39 @@ export default function App() {
               <span>{durationLabel}</span>
               <span>{selectedLang.toUpperCase()} / {mode.toUpperCase()}</span>
             </div>
-
             {!finished && (
-              <button
-                type="button"
-                className="primary-button"
-                onClick={focusTyping}
-              >
+              <button type="button" className="primary-button" onClick={focusTyping}>
                 START TYPING
               </button>
             )}
           </div>
 
           <div
-            ref={wordsContainerRef}
             className={`typing-text ${isRTL ? "rtl" : ""}`}
             dir={isRTL ? "rtl" : "ltr"}
             role="textbox"
-            aria-label="Typing practice text. Type the highlighted character."
-            aria-multiline="true"
+            aria-label="Typing practice text."
             tabIndex={0}
             onPointerDown={focusTyping}
           >
             {text.split("").map((character, index) => {
               let className = "char upcoming";
-
               if (index < input.length) {
-                className =
-                  input[index] === character
-                    ? "char correct"
-                    : "char wrong";
-              }
-
-              if (index === input.length && !finished) {
+                className = input[index] === character ? "char correct" : "char wrong";
+              } else if (index === input.length && !finished) {
                 className = "char current";
               }
 
               return (
-                <span
-                  key={`${index}-${character}`}
-                  ref={index === input.length ? currentCharRef : null}
-                  className={className}
-                >
+                <span key={`${index}-${character}`} className={className}>
                   {character}
+                  {/* Zero-Lag CSS Caret */}
+                  {index === input.length && !finished && (
+                    <span className="smooth-caret" aria-hidden="true" />
+                  )}
                 </span>
               );
             })}
-
-            {!finished && (
-              <span
-                ref={caretRef}
-                className="smooth-caret"
-                aria-hidden="true"
-              />
-            )}
           </div>
 
           <div className="legend-row">
@@ -841,11 +668,7 @@ export default function App() {
 
           {!finished && (
             <div className="typing-actions">
-              <button
-                type="button"
-                className="restart-button"
-                onClick={() => resetSession()}
-              >
+              <button type="button" className="restart-button" onClick={() => resetSession()}>
                 RESTART SESSION
               </button>
             </div>
@@ -859,12 +682,10 @@ export default function App() {
               <span>Time</span>
               <strong>{finished ? durationLabel : `${timeLeft}s`}</strong>
             </div>
-
             <div>
               <span>WPM</span>
               <strong>{wpm}</strong>
             </div>
-
             <div>
               <span>Accuracy</span>
               <strong>{accuracy}%</strong>
@@ -882,14 +703,7 @@ export default function App() {
               </button>
 
               {!user ? (
-                <button
-                  type="button"
-                  className="save-progress-button"
-                  onClick={() => {
-                    setAuthMode("signup");
-                    setAuthOpen(true);
-                  }}
-                >
+                <button type="button" className="save-progress-button" onClick={() => { setAuthMode("signup"); setAuthOpen(true); }}>
                   CREATE FREE ACCOUNT TO SAVE THIS SCORE
                 </button>
               ) : (
@@ -906,57 +720,26 @@ export default function App() {
       </section>
 
       {finished && (
-        <section
-          className="result-dashboard"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="result-dashboard-title"
-        >
+        <section className="result-dashboard" role="dialog" aria-modal="true" aria-labelledby="result-dashboard-title">
           <div className="result-dashboard-card">
             <p className="result-dashboard-label">TEST COMPLETE</p>
-
-            <h2 id="result-dashboard-title">
-              Your Typing Result
-            </h2>
-
+            <h2 id="result-dashboard-title">Your Typing Result</h2>
             <p className="result-dashboard-subtitle">
               {selectedLang.toUpperCase()} · {mode.toUpperCase()} · {durationLabel}
             </p>
 
             <div className="result-dashboard-stats">
-              <div>
-                <span>WPM</span>
-                <strong>{wpm}</strong>
-              </div>
-
-              <div>
-                <span>Accuracy</span>
-                <strong>{accuracy}%</strong>
-              </div>
-
-              <div>
-                <span>Score</span>
-                <strong>{score}</strong>
-              </div>
+              <div><span>WPM</span><strong>{wpm}</strong></div>
+              <div><span>Accuracy</span><strong>{accuracy}%</strong></div>
+              <div><span>Score</span><strong>{score}</strong></div>
             </div>
 
             <div className="result-dashboard-actions">
-              <button
-                type="button"
-                onClick={() => resetSession()}
-              >
+              <button type="button" onClick={() => resetSession()}>
                 TRY AGAIN
               </button>
-
               {!user && (
-                <button
-                  type="button"
-                  className="result-save-button"
-                  onClick={() => {
-                    setAuthMode("signup");
-                    setAuthOpen(true);
-                  }}
-                >
+                <button type="button" className="result-save-button" onClick={() => { setAuthMode("signup"); setAuthOpen(true); }}>
                   CREATE FREE ACCOUNT
                 </button>
               )}
@@ -967,11 +750,7 @@ export default function App() {
 
       {authOpen && (
         <Suspense fallback={null}>
-          <AuthModal
-            isOpen={authOpen}
-            onClose={() => setAuthOpen(false)}
-            initialMode={authMode}
-          />
+          <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} initialMode={authMode} />
         </Suspense>
       )}
     </main>
