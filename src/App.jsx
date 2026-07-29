@@ -36,6 +36,7 @@ const MODES = [
   "code",
   "bigrams",
   "trigrams",
+  "custom",
 ];
 
 const POOLS = {
@@ -85,10 +86,21 @@ function extractWords(data) {
   if (Array.isArray(data.default)) return data.default;
   return null;
 }
-
+function cleanCustomWords(value) {
+  return value
+    .normalize("NFKC")
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+}
 function makeText(mode, selectedLang, customWords = null) {
   if (customWords && customWords.length > 0) {
     return Array.from({ length: 36 }, () => randomItem(customWords)).join(" ");
+  }
+
+  if (mode === "custom") {
+    return "";
   }
 
   if (["quotes", "hinglish", "motivation", "conversation"].includes(mode)) {
@@ -118,6 +130,11 @@ export default function App() {
   const [selectedLang, setSelectedLang] = useState("english");
   const [langWords, setLangWords] = useState(null);
   const [mode, setMode] = useState("words");
+  
+  const [customInput, setCustomInput] = useState("");
+  const [isCustomActive, setIsCustomActive] = useState(false);
+  const [customError, setCustomError] = useState("");
+  
   const [duration, setDuration] = useState(15);
   const [text, setText] = useState(() => makeText("words", "english"));
   const [input, setInput] = useState("");
@@ -171,7 +188,16 @@ export default function App() {
     }
   }, [soundOn]);
 
-  const resetSession = useCallback((nextMode = mode, nextDuration = duration, nextWords = langWords, nextLang = selectedLang) => {
+  const resetSession = useCallback(
+  (
+    nextMode = mode,
+    nextDuration = duration,
+    nextWords = langWords,
+    nextLang = selectedLang,
+    options = {}
+  ) => {
+    const { keepCustomActive = false } = options;
+
     setMode(nextMode);
     setDuration(nextDuration);
     setText(makeText(nextMode, nextLang, nextWords));
@@ -179,21 +205,122 @@ export default function App() {
     setRunning(false);
     setFinished(false);
     setTimeLeft(nextDuration);
-    startedAtRef.current = 0;
     setElapsedMs(0);
     setMobileFocused(false);
+
+    setIsCustomActive(
+      nextMode === "custom" && keepCustomActive
+    );
+
+    if (nextMode !== "custom" || !keepCustomActive) {
+      setCustomError("");
+    }
+
+    startedAtRef.current = 0;
     savedRef.current = false;
     cloudSavedRef.current = false;
-    setCloudSaveStatus("idle");
     mobileBufferRef.current = "";
+    lastMobileLineRef.current = -1;
+
+    setCloudSaveStatus("idle");
 
     if (mobileInputRef.current) {
       mobileInputRef.current.value = "";
       mobileInputRef.current.blur();
     }
 
-    requestAnimationFrame(() => appRef.current?.focus({ preventScroll: true }));
-  }, [duration, mode, langWords, selectedLang]);
+    requestAnimationFrame(() => {
+      appRef.current?.focus({
+        preventScroll: true,
+      });
+    });
+  },
+  [duration, mode, langWords, selectedLang]
+);
+
+  const startCustomPractice = useCallback(() => {
+    const words = cleanCustomWords(customInput);
+
+    if (words.length === 0) {
+      setCustomError("Please paste at least one valid word.");
+      return;
+    }
+
+    setCustomError("");
+    setLangWords(null);
+
+    resetSession(
+      "custom",
+      duration,
+      words,
+      selectedLang,
+      { keepCustomActive: true }
+    );
+  }, [customInput, duration, selectedLang, resetSession]);
+
+  const restartCurrentSession = useCallback(() => {
+    if (mode === "custom" && isCustomActive) {
+      const words = cleanCustomWords(customInput);
+
+      if (words.length === 0) {
+        setIsCustomActive(false);
+        setCustomError("Please paste at least one valid word.");
+        return;
+      }
+
+      resetSession(
+        "custom",
+        duration,
+        words,
+        selectedLang,
+        { keepCustomActive: true }
+      );
+      return;
+    }
+
+    resetSession();
+  }, [
+    mode,
+    isCustomActive,
+    customInput,
+    duration,
+    selectedLang,
+    resetSession,
+  ]);
+
+  const changeDuration = useCallback((nextDuration) => {
+    if (mode === "custom") {
+      const words = isCustomActive
+        ? cleanCustomWords(customInput)
+        : null;
+
+      resetSession(
+        "custom",
+        nextDuration,
+        words,
+        selectedLang,
+        {
+          keepCustomActive:
+            isCustomActive && Boolean(words?.length),
+        }
+      );
+      return;
+    }
+
+    resetSession(
+      mode,
+      nextDuration,
+      langWords,
+      selectedLang
+    );
+  }, [
+    mode,
+    isCustomActive,
+    customInput,
+    langWords,
+    selectedLang,
+    resetSession,
+  ]);
 
   // Fetch JSON with in-memory cache
   useEffect(() => {
@@ -240,6 +367,8 @@ export default function App() {
   }, [selectedLang]);
 
   const handleLanguageChange = (newLang) => {
+    setIsCustomActive(false);
+    setCustomError("");
     setSelectedLang(newLang);
     setMode("words");
   };
@@ -436,7 +565,7 @@ export default function App() {
 
     if (event.key === "Tab") {
       event.preventDefault();
-      resetSession();
+      restartCurrentSession();
       return;
     }
 
@@ -458,7 +587,7 @@ export default function App() {
       event.preventDefault();
       processCharacter(event.key);
     }
-  }, [processCharacter, removeCharacter, resetSession]);
+  }, [processCharacter, removeCharacter, restartCurrentSession]);
 
   const handleMobileInput = useCallback((event) => {
     const value = event.currentTarget.value;
@@ -610,7 +739,13 @@ const currentLine =
                 className={mode === item ? "selected" : ""}
                 onClick={() => {
                   setLangWords(null);
-                  resetSession(item, duration, null, selectedLang);
+                  resetSession(
+                    item,
+                    duration,
+                    null,
+                    selectedLang,
+                    { keepCustomActive: false }
+                  );
                 }}
               >
                 {item.toUpperCase()}
@@ -627,7 +762,7 @@ const currentLine =
                 key={value}
                 type="button"
                 className={duration === value ? "selected" : ""}
-                onClick={() => resetSession(mode, value, langWords, selectedLang)}
+                onClick={() => changeDuration(value)}
               >
                 {value === 300 ? "5 MIN" : `${value}S`}
               </button>
@@ -662,13 +797,42 @@ const currentLine =
               <span>{durationLabel}</span>
               <span>{selectedLang.toUpperCase()} / {mode.toUpperCase()}</span>
             </div>
-            {!finished && (
+            {!finished && !(mode === "custom" && !isCustomActive) && (
               <button type="button" className="primary-button" onClick={focusTyping}>
                 START TYPING
               </button>
             )}
           </div>
 
+          {mode === "custom" && !isCustomActive ? (
+            <div className="custom-practice-setup">
+              <textarea
+                className="custom-practice-textarea"
+                value={customInput}
+                rows={8}
+                placeholder="Paste your custom vocabulary or text here..."
+                onChange={(event) => {
+                  setCustomInput(event.target.value);
+                  if (customError) setCustomError("");
+                }}
+              />
+
+              {customError && (
+                <p className="custom-practice-error" role="alert">
+                  {customError}
+                </p>
+              )}
+
+              <button
+                type="button"
+                className="primary-button custom-start-button"
+                onClick={startCustomPractice}
+              >
+                START PRACTICE
+              </button>
+            </div>
+          ) : (
+            <>
           <div
             className={`typing-text ${isRTL ? "rtl" : ""}`}
             dir={isRTL ? "rtl" : "ltr"}
@@ -735,10 +899,12 @@ const currentLine =
 
           {!finished && (
             <div className="typing-actions">
-              <button type="button" className="restart-button" onClick={() => resetSession()}>
+              <button type="button" className="restart-button" onClick={restartCurrentSession}>
                 RESTART SESSION
               </button>
             </div>
+          )}
+            </>
           )}
         </article>
 
@@ -765,7 +931,7 @@ const currentLine =
               <span>{wpm} WPM · {accuracy}% Accuracy</span>
               <span>Score: {score}</span>
 
-              <button type="button" onClick={() => resetSession()}>
+              <button type="button" onClick={restartCurrentSession}>
                 TRY AGAIN
               </button>
 
@@ -802,7 +968,7 @@ const currentLine =
             </div>
 
             <div className="result-dashboard-actions">
-              <button type="button" onClick={() => resetSession()}>
+              <button type="button" onClick={restartCurrentSession}>
                 TRY AGAIN
               </button>
               {!user && (
