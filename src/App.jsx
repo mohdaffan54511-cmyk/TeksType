@@ -895,8 +895,12 @@ const currentLine =
     className="floating-caret"
     aria-hidden="true"
     style={{
-      height: `${caretPos.height}px`,
-      transform: `translate3d(${caretPos.x}px, ${caretPos.y}px, 0)`,
+     height: `${caretPos.height * 0.82}px`,
+transform: `translate3d(
+  ${caretPos.x}px,
+  ${caretPos.y + caretPos.height * 0.09}px,
+  0
+)`,
     }}
   />
 )} 
