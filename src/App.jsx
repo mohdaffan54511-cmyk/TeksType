@@ -1,4 +1,13 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { supabase, supabaseConfigured } from "./lib/supabase";
 import "./App.css";
 
@@ -158,6 +167,15 @@ export default function App() {
   const mobileInputRef = useRef(null);
   const mobileBufferRef = useRef("");
   const lastMobileLineRef = useRef(-1);
+  const textContainerRef = useRef(null);
+  const activeCharRef = useRef(null);
+
+  const [caretPos, setCaretPos] = useState({
+  x: 0,
+  y: 0,
+  height: 0,
+  ready: false,
+});
   const savedRef = useRef(false);
   const cloudSavedRef = useRef(false);
   const startedAtRef = useRef(0);
@@ -651,6 +669,36 @@ const currentLine =
 
   return () => cancelAnimationFrame(frame);
 }, [input.length]);
+  useLayoutEffect(() => {
+  const container = textContainerRef.current;
+  const activeCharacter = activeCharRef.current;
+
+  if (!container || !activeCharacter || finished) {
+    setCaretPos((previous) => ({
+      ...previous,
+      ready: false,
+    }));
+    return;
+  }
+
+  const containerRect = container.getBoundingClientRect();
+  const characterRect = activeCharacter.getBoundingClientRect();
+
+  setCaretPos({
+    x:
+      characterRect.left -
+      containerRect.left +
+      container.scrollLeft,
+
+    y:
+      characterRect.top -
+      containerRect.top +
+      container.scrollTop,
+
+    height: characterRect.height,
+    ready: true,
+  });
+}, [input.length, text, finished, isRTL]);
   const logout = useCallback(async () => {
     if (!supabase) return;
     const { error } = await supabase.auth.signOut();
@@ -834,6 +882,7 @@ const currentLine =
           ) : (
             <>
           <div
+            ref={textContainerRef}
             className={`typing-text ${isRTL ? "rtl" : ""}`}
             dir={isRTL ? "rtl" : "ltr"}
             role="textbox"
@@ -841,6 +890,16 @@ const currentLine =
             tabIndex={0}
             onPointerDown={focusTyping}
           >
+           {!finished && caretPos.ready && (
+  <span
+    className="floating-caret"
+    aria-hidden="true"
+    style={{
+      height: `${caretPos.height}px`,
+      transform: `translate3d(${caretPos.x}px, ${caretPos.y}px, 0)`,
+    }}
+  />
+)} 
             {Array.from(text.matchAll(/\S+|\s+/g)).map((match) => {
               const chunk = match[0];
               const wordStartIndex = match.index ?? 0;
@@ -873,18 +932,20 @@ const currentLine =
                       className = "char current";
                     }
 
-                    return (
-                      <span key={index} className={className}>
-                        {character}
+                   const isActive =
+  index <= input.length &&
+  input.length < index + charLength &&
+  !finished;
 
-                        {index === input.length && !finished && (
-                          <span
-                            className="smooth-caret"
-                            aria-hidden="true"
-                          />
-                        )}
-                      </span>
-                    );
+return (
+  <span
+    key={index}
+    ref={isActive ? activeCharRef : null}
+    className={className}
+  >
+    {character}
+  </span>
+);
                   })}
                 </span>
               );
