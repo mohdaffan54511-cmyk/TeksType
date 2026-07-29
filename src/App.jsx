@@ -502,7 +502,13 @@ export default function App() {
 
     if (!currentCharacter) return;
 
-    const currentLine = currentCharacter.offsetTop;
+    const typingRect = typingBox.getBoundingClientRect();
+const currentRect = currentCharacter.getBoundingClientRect();
+
+const currentLine =
+  currentRect.top -
+  typingRect.top +
+  typingBox.scrollTop;
 
     if (currentLine === lastMobileLineRef.current) return;
 
