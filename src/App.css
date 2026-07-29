@@ -1548,7 +1548,56 @@ input {
   left: auto;
   right: 0;
 }
+/* Language dropdown same style as content buttons */
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+  min-width: 150px;
+}
 
+.lang-select {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 38px 10px 14px;
+
+  border: 1px solid var(--line);
+  border-radius: 13px;
+
+  color: var(--purple-900);
+  background: rgba(255, 255, 255, 0.88);
+
+  box-shadow: 0 8px 20px rgba(74, 36, 199, 0.08);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+}
+
+.lang-select:hover {
+  transform: translateY(-2px);
+}
+
+.lang-select:focus {
+  border-color: var(--purple-500);
+  box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.16);
+}
+
+.select-wrapper::after {
+  content: "▼";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  color: var(--purple-600);
+  font-size: 10px;
+
+  pointer-events: none;
+}
 @keyframes caretBlink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
