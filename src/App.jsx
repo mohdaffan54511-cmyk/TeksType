@@ -67,31 +67,7 @@ Us din meri speed typing me nahi, taiyaar hone me improve hui.`,
 Chai wale bhaiya ne poocha, strong ya normal?
 Maine bola, strong bana do.
 Unhone poocha, kitni strong?
-Maine kaha, itni ki Monday bhi Sunday lagne lage.`,
-
-    `Kal main padhai karne baitha.
-Table saaf ki, notebook nikali, aur pen rakha.
-Phir maine phone sirf ek minute ke liye check kiya.
-Ek ghante baad bhi main reels dekh raha tha.
-Padhai ne mujhe dekha aur chup-chaap kal par chali gayi.`,
-
-    `Mummy ne bola, market se dhaniya le aana.
-Main chips, biscuit, aur cold drink le aaya.
-Mummy ne poocha, dhaniya kahan hai?
-Maine bag ko dobara check kiya.
-Dhaniya meri memory ki tarah missing tha.`,
-
-    `Mera dost gym join karke bahut excited tha.
-Usne shoes, bottle, aur protein shaker kharida.
-Pehle din usne sirf mirror selfie li.
-Doosre din body pain ka excuse bana diya.
-Teesre din bola, Monday se properly start karunga.`,
-
-    `Ek chhota step bhi progress hota hai.
-Har din perfect hona zaroori nahi hai.
-Bas rukna nahi chahiye.
-Galti se seekho aur dobara try karo.
-Daily practice tumhe kal se better banati hai.`
+Maine kaha, itni ki Monday bhi Sunday lagne lage.`
   ],
   conversation: [
     `Aman: Did you study today?
@@ -104,16 +80,33 @@ Ravi: The goal is still there. My timing is just a little late.`,
     `Boss: Is the report complete?
 Employee: Almost, sir.
 Boss: What does almost mean?
-Employee: The file is open, my confidence is high, and the data is still loading.
-Boss: Confidence does not complete a report.
-Employee: Understood, sir. I will message you only after finishing it.`
+Employee: The file is open, my confidence is high, and the data is still loading.`
   ]
+};
+
+const LANGUAGE_POOLS = {
+  arabic: "من على إلى عن في كان هذا التي الذي مع ما لا الله كل بعد حتى بين ذلك عدم ليس حول إلا قبل قد جدا حيث هناك تكون وكان قال أكثر كما كان يعمل".split(" "),
+  spanish: "que de no a la el es por un para con una los del las se como mas pero sus le ya este si porque esta entre cuando muy sin sobre tambien hasta".split(" "),
+  french: "que de ne pas le la les un une du des et en pour etre il ce qui sur avec plus par se meme tout faire sa son".split(" "),
+  german: "das ist du ich nicht die es und der sie fuer mit den dem ein eine sich auf auch als nach wie im um oder aus wenn nur noch bei mir vor".split(" "),
+  russian: "что и в не на с он как я но все по его из за у так о от же сказать который один свой можно только чтобы еще был".split(" "),
+  portuguese: "que de nao a o e um uma para com por os as do da se em como mais mas sua seu voce eu esta este sobre muito sem tambem meu ate".split(" "),
+  bangla: "না এবং এই কি তার সে করে তারা কে আমি বা জন্য সাথে থেকে হয় ছিল যা হয়তো আমার কথা মানুষ কাজ তারা দেশ মন".split(" "),
+  code_python: "def return import from class if else elif for while in try except with as lambda async await True False None print len range list dict set int str".split(" "),
+  code_javascript: "const let var function return import export default async await if else for while switch case break try catch throw new class extends element".split(" "),
 };
 
 const randomItem = (items) => items[Math.floor(Math.random() * items.length)];
 
-function makeText(mode, customWords = null) {
-  // If custom language JSON words are loaded, use them directly
+function extractWords(data) {
+  if (!data) return null;
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data.words)) return data.words;
+  if (Array.isArray(data.default)) return data.default;
+  return null;
+}
+
+function makeText(mode, selectedLang, customWords = null) {
   if (customWords && customWords.length > 0) {
     return Array.from({ length: 36 }, () => randomItem(customWords)).join(" ");
   }
@@ -121,6 +114,12 @@ function makeText(mode, customWords = null) {
   if (["quotes", "hinglish", "motivation", "conversation"].includes(mode)) {
     return randomItem(POOLS[mode] || POOLS.quotes);
   }
+
+  const langPool = LANGUAGE_POOLS[selectedLang];
+  if (langPool && langPool.length > 0) {
+    return Array.from({ length: 36 }, () => randomItem(langPool)).join(" ");
+  }
+
   const count = mode === "bigrams" ? 50 : mode === "trigrams" ? 42 : 36;
   const sourcePool = POOLS[mode] || POOLS.words;
   return Array.from({ length: count }, () => randomItem(sourcePool)).join(" ");
@@ -165,7 +164,7 @@ export default function App() {
   const [langWords, setLangWords] = useState(null);
   const [mode, setMode] = useState("words");
   const [duration, setDuration] = useState(15);
-  const [text, setText] = useState(() => makeText("words"));
+  const [text, setText] = useState(() => makeText("words", "english"));
   const [input, setInput] = useState("");
   const [running, setRunning] = useState(false);
   const [finished, setFinished] = useState(false);
@@ -196,10 +195,10 @@ export default function App() {
   const startedAtRef = useRef(0);
   const [elapsedMs, setElapsedMs] = useState(0);
 
-  const resetSession = useCallback((nextMode = mode, nextDuration = duration, nextWords = langWords) => {
+  const resetSession = useCallback((nextMode = mode, nextDuration = duration, nextWords = langWords, nextLang = selectedLang) => {
     setMode(nextMode);
     setDuration(nextDuration);
-    setText(makeText(nextMode, nextWords));
+    setText(makeText(nextMode, nextLang, nextWords));
     setInput("");
     setRunning(false);
     setFinished(false);
@@ -225,33 +224,38 @@ export default function App() {
     requestAnimationFrame(() =>
       appRef.current?.focus({ preventScroll: true })
     );
-  }, [duration, mode, langWords]);
+  }, [duration, mode, langWords, selectedLang]);
 
-  // Fetch JSON when selected language changes
+  // Fetch JSON directly from public/ root
   useEffect(() => {
     if (selectedLang === "english") {
       setLangWords(null);
-      resetSession("words", duration, null);
+      resetSession("words", duration, null, "english");
       return;
     }
 
     let active = true;
-    fetch(`/languages/${selectedLang}.json`)
+    fetch(`/${selectedLang}.json`)
       .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
       .then((data) => {
-        if (active && data && Array.isArray(data.words)) {
-          setLangWords(data.words);
-          resetSession("words", duration, data.words);
+        if (!active) return;
+        const words = extractWords(data);
+        if (words && words.length > 0) {
+          setLangWords(words);
+          resetSession("words", duration, words, selectedLang);
+        } else {
+          setLangWords(null);
+          resetSession("words", duration, null, selectedLang);
         }
       })
       .catch((err) => {
-        console.error("Failed to load language JSON:", err);
+        console.warn(`Fallback active for ${selectedLang}:`, err.message);
         if (active) {
           setLangWords(null);
-          resetSession("words", duration, null);
+          resetSession("words", duration, null, selectedLang);
         }
       });
 
@@ -262,7 +266,7 @@ export default function App() {
 
   const handleLanguageChange = (newLang) => {
     setSelectedLang(newLang);
-    setMode("words"); // Force mode back to words when changing language
+    setMode("words");
   };
 
   const correctChars = useMemo(() => {
@@ -279,6 +283,7 @@ export default function App() {
       : 0;
   const score = correctChars * 10 + wpm * 2;
   const sessionActive = mobileFocused || running;
+  const isRTL = selectedLang === "arabic";
 
   const finishSession = useCallback(() => {
     const preciseElapsed = startedAtRef.current
@@ -716,8 +721,8 @@ export default function App() {
                 type="button"
                 className={mode === item ? "selected" : ""}
                 onClick={() => {
-                  setLangWords(null); // Clear loaded custom words if manual content mode is picked
-                  resetSession(item, duration, null);
+                  setLangWords(null);
+                  resetSession(item, duration, null, selectedLang);
                 }}
               >
                 {item.toUpperCase()}
@@ -734,7 +739,7 @@ export default function App() {
                 key={value}
                 type="button"
                 className={duration === value ? "selected" : ""}
-                onClick={() => resetSession(mode, value)}
+                onClick={() => resetSession(mode, value, langWords, selectedLang)}
               >
                 {value === 300 ? "5 MIN" : `${value}S`}
               </button>
@@ -786,7 +791,8 @@ export default function App() {
 
           <div
             ref={wordsContainerRef}
-            className="typing-text"
+            className={`typing-text ${isRTL ? "rtl" : ""}`}
+            dir={isRTL ? "rtl" : "ltr"}
             role="textbox"
             aria-label="Typing practice text. Type the highlighted character."
             aria-multiline="true"
