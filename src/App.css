@@ -1553,3 +1553,46 @@ input {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
+/* Simple & Clean Language Dropdown */
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.lang-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #1e1e2e;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 8px 32px 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.lang-select:hover,
+.lang-select:focus {
+  border-color: #a78bfa;
+}
+
+/* Simple Down Arrow */
+.select-wrapper::after {
+  content: "▾";
+  position: absolute;
+  right: 12px;
+  top: 48%;
+  transform: translateY(-50%);
+  color: #a78bfa;
+  pointer-events: none;
+  font-size: 12px;
+}
+
+/* Option List Dark Theme */
+.lang-select option {
+  background-color: #1e1e2e;
+  color: #e2e8f0;
+}
