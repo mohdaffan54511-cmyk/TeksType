@@ -640,24 +640,45 @@ export default function App() {
             tabIndex={0}
             onPointerDown={focusTyping}
           >
-            {text.split("").map((character, index) => {
-              let className = "char upcoming";
-              if (index < input.length) {
-                className = input[index] === character ? "char correct" : "char wrong";
-              } else if (index === input.length && !finished) {
-                className = "char current";
-              }
+           {Array.from(text.matchAll(/\S+|\s+/g)).map((match) => {
+  const chunk = match[0];
+  const startIndex = match.index ?? 0;
+  const isWhitespace = /^\s+$/.test(chunk);
 
-              return (
-                <span key={`${index}-${character}`} className={className}>
-                  {character}
-                  {/* Zero-Lag CSS Caret */}
-                  {index === input.length && !finished && (
-                    <span className="smooth-caret" aria-hidden="true" />
-                  )}
-                </span>
-              );
-            })}
+  return (
+    <span
+      key={`${startIndex}-${chunk}`}
+      className={isWhitespace ? "space-group" : "word-group"}
+    >
+      {chunk.split("").map((character, offset) => {
+        const index = startIndex + offset;
+        let className = "char upcoming";
+
+        if (index < input.length) {
+          className =
+            input[index] === character
+              ? "char correct"
+              : "char wrong";
+        } else if (index === input.length && !finished) {
+          className = "char current";
+        }
+
+        return (
+          <span key={index} className={className}>
+            {character}
+
+            {index === input.length && !finished && (
+              <span
+                className="smooth-caret"
+                aria-hidden="true"
+              />
+            )}
+          </span>
+        );
+      })}
+    </span>
+  );
+})}
           </div>
 
           <div className="legend-row">
