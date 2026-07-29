@@ -1610,3 +1610,52 @@ input {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
+.custom-practice-setup {
+  display: grid;
+  gap: 16px;
+  padding: 12px 4px 8px;
+}
+
+.custom-practice-textarea {
+  width: 100%;
+  min-height: 220px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  outline: none;
+  resize: vertical;
+  color: var(--ink);
+  background: #ffffff;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.custom-practice-textarea:focus {
+  border-color: var(--purple-500);
+  box-shadow: 0 0 0 4px rgba(124, 77, 255, 0.12);
+}
+
+.custom-practice-error {
+  margin: 0;
+  color: var(--wrong);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.custom-start-button {
+  width: fit-content;
+  min-height: 48px;
+  padding: 0 24px;
+}
+
+@media (max-width: 700px) {
+  .custom-practice-textarea {
+    min-height: 260px;
+    font-size: 16px;
+  }
+
+  .custom-start-button {
+    width: 100%;
+  }
+}
