@@ -1526,3 +1526,30 @@ input {
     transition: none !important;
   }
 }
+/* Zero-Lag CSS Caret Mechanism */
+.char {
+  position: relative;
+  display: inline-block;
+  white-space: pre;
+}
+
+.char.current .smooth-caret {
+  position: absolute;
+  left: 0;
+  top: 10%;
+  width: 2px;
+  height: 80%;
+  background-color: var(--caret-color, #a78bfa);
+  animation: caretBlink 1s infinite;
+  pointer-events: none;
+}
+
+.rtl .char.current .smooth-caret {
+  left: auto;
+  right: 0;
+}
+
+@keyframes caretBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
