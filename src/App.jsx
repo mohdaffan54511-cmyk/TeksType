@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { supabase, supabaseConfigured } from "./lib/supabase";
+import FAQ from "./FAQ";
 import "./App.css";
 
 const AuthModal = lazy(() => import("./AuthModal"));
@@ -1045,7 +1046,7 @@ return (
           </div>
         </section>
       )}
-
+      <FAQ />
       <footer className="footer">
         <div>© 2026 Type Perfectly. All rights reserved.</div>
 
