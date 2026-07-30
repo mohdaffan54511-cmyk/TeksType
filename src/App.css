@@ -846,8 +846,8 @@ word-break: normal;
   .app.session-active .typing-text {
     min-height: 240px;
     max-height: 46dvh;
-    padding-bottom: 160px;
-    scroll-padding-bottom: 160px;
+    padding-bottom: 24px;
+    scroll-padding-bottom: 24px;
   }
 }
 
