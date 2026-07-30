@@ -1548,7 +1548,7 @@ input {
   width: 2px;
   height: 80%;
   background-color: var(--caret-color, #a78bfa);
-  animation: caretBlink 1s infinite;
+  animation: caretBlink 1.4s infinite;
   pointer-events: none;
 }
 
