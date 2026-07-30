@@ -1257,7 +1257,7 @@ input {
 }
 
 .char.current::before {
-  animation: caret-blink 0.9s ease-in-out infinite;
+  animation: caret-blink 1.4s ease-in-out infinite;
 }
 /* Clean typing screen while test is running */
 .app.session-active .seo-content,
