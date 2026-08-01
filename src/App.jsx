@@ -1048,7 +1048,6 @@ return (
         </section>
       )}
 <FAQ />
-
 <SocialFooter wpm={finished ? wpm : null} />
 
 <footer className="footer">
