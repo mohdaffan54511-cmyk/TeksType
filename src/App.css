@@ -1,1085 +1,1825 @@
-import {
-  lazy,
-  Suspense,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { supabase, supabaseConfigured } from "./lib/supabase";
-import FAQ from "./FAQ";
-import SocialFooter from "./SocialFooter";
-import "./App.css";
-
-const AuthModal = lazy(() => import("./AuthModal"));
-
-const LANGUAGES = [
-  { id: "english", name: "English" },
-  { id: "english_1k", name: "English 1k" },
-  { id: "english_commonly_misspelled", name: "Misspelled Words" },
-  { id: "hindi", name: "Hindi" },
-  { id: "hindi_1k", name: "Hindi 1k" },
-  { id: "spanish", name: "Spanish" },
-  { id: "spanish_1k", name: "Spanish 1k" },
-  { id: "arabic", name: "Arabic" },
-  { id: "french", name: "French" },
-  { id: "french_1k", name: "French 1k" },
-  { id: "german", name: "German" },
-  { id: "german_1k", name: "German 1k" },
-  { id: "russian", name: "Russian" },
-  { id: "russian_1k", name: "Russian 1k" },
-  { id: "portuguese", name: "Portuguese" },
-  { id: "portuguese_1k", name: "Portuguese 1k" },
-  { id: "bangla", name: "Bangla" },
-  { id: "code_python", name: "Python Code" },
-  { id: "code_python_1k", name: "Python 1k" },
-  { id: "code_javascript", name: "JavaScript Code" },
-];
-
-const MODES = [
-  "words",
-  "hinglish",
-  "business",
-  "conversation",
-  "quotes",
-  "code",
-  "bigrams",
-  "trigrams",
-  "custom",
-];
-
-const POOLS = {
-  words: "home now even used said government once any to and know world number another something until without when right less school both there almost people system place group around because through while every important possible between business support future strong learn focus better growth skill progress".split(" "),
-  bigrams: "th he in er an re on at en nd ti es or te of ed is it al ar st to nt ng se ha as ou io le".split(" "),
-  trigrams: "the ing and ion ent her tha nth was eth for hat his you ter ere all res ver not".split(" "),
-  code: "const return function import export async await array object string number boolean component state effect promise server client render props value index".split(" "),
-  business: "client report project meeting growth revenue profit budget invoice market sales target dashboard strategy analysis finance team planning success quality".split(" "),
-  quotes: [
-    "The quick brown fox jumps over the lazy dog.",
-    "Small steps every day build big results tomorrow.",
-    "Focus on progress, not on perfection.",
-    "Discipline today creates freedom tomorrow."
-  ],
-  hinglish: [
-    `Subah alarm baja, lekin maine snooze kar diya.\nPaanch minute baad alarm phir baja.\nMaine socha, thodi aur neend le leta hoon.\nAankh khuli to office ka time ho chuka tha.\nUs din meri speed typing me nahi, taiyaar hone me improve hui.`,
-    `Main chai peene dukaan par gaya.\nChai wale bhaiya ne poocha, strong ya normal?\nMaine bola, strong bana do.\nUnhone poocha, kitni strong?\nMaine kaha, itni ki Monday bhi Sunday lagne lage.`
-  ],
-  conversation: [
-    `Aman: Did you study today?\nRavi: Yes, I opened the book.\nAman: Then what happened?\nRavi: I fell asleep.\nAman: What about your goal?\nRavi: The goal is still there. My timing is just a little late.`,
-    `Boss: Is the report complete?\nEmployee: Almost, sir.\nBoss: What does almost mean?\nEmployee: The file is open, my confidence is high, and the data is still loading.`
-  ]
-};
-
-const LANGUAGE_POOLS = {
-  hindi: "का के कि में है और से ने को इस पर यह भी कर दिए रहे हो गए हुआ अपने साथ तो या तक द्वारा बाद भारत लोग काम बात समय स्थान अधिकार जीवन नाम रूप प्रथम विषय कार्य समाज देश".split(" "),
-  arabic: "من على إلى عن في كان هذا التي الذي مع ما لا الله كل بعد حتى بين ذلك عدم ليس حول إلا قبل قد جدا حيث هناك تكون وكان قال أكثر كما كان يعمل".split(" "),
-  spanish: "que de no a la el es por un para con una los del las se como mas pero sus le ya este si porque esta entre cuando muy sin sobre tambien hasta".split(" "),
-  french: "que de ne pas le la les un une du des et en pour etre il ce qui sur avec plus par se meme tout faire sa son".split(" "),
-  german: "das ist du ich nicht die es und der sie fuer mit den dem ein eine sich auf auch als nach wie im um oder aus wenn nur noch bei mir vor".split(" "),
-  russian: "что и в не на с он как я но все по его из за у так о от же сказать который один свой можно только чтобы еще был".split(" "),
-  portuguese: "que de nao a o e um uma para com por os as do da se em como mais mas sua seu voce eu esta este sobre muito sem tambem meu ate".split(" "),
-  bangla: "না এবং এই কি তার সে করে তারা কে আমি বা জন্য সাথে থেকে হয় ছিল যা হয়তো আমার কথা মানুষ কাজ তারা দেশ মন".split(" "),
-  code_python: "def return import from class if else elif for while in try except with as lambda async await True False None print len range list dict set int str".split(" "),
-  code_javascript: "const let var function return import export default async await if else for while switch case break try catch throw new class extends element".split(" "),
-};
-
-// In-memory JSON cache to reduce network bandwidth
-const jsonCache = new Map();
-
-const randomItem = (items) => items[Math.floor(Math.random() * items.length)];
-
-function extractWords(data) {
-  if (!data) return null;
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data.words)) return data.words;
-  if (Array.isArray(data.default)) return data.default;
-  return null;
-}
-function cleanCustomWords(value) {
-  return value
-    .normalize("NFKC")
-    .replace(/[^\p{L}\p{N}]+/gu, " ")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-}
-function makeText(mode, selectedLang, customWords = null) {
-  if (customWords && customWords.length > 0) {
-    return Array.from({ length: 36 }, () => randomItem(customWords)).join(" ");
-  }
-
-  if (mode === "custom") {
-    return "";
-  }
-
-  if (["quotes", "hinglish", "motivation", "conversation"].includes(mode)) {
-    return randomItem(POOLS[mode] || POOLS.quotes);
-  }
-
-  const baseLangKey = selectedLang.replace("_1k", "");
-  const langPool = LANGUAGE_POOLS[baseLangKey] || LANGUAGE_POOLS[selectedLang];
-  if (langPool && langPool.length > 0) {
-    return Array.from({ length: 36 }, () => randomItem(langPool)).join(" ");
-  }
-
-  const count = mode === "bigrams" ? 50 : mode === "trigrams" ? 42 : 36;
-  const sourcePool = POOLS[mode] || POOLS.words;
-  return Array.from({ length: count }, () => randomItem(sourcePool)).join(" ");
+:root {
+  --page-bg: #f6f1ff;
+  --surface: rgba(255, 255, 255, 0.94);
+  --surface-solid: #ffffff;
+  --ink: #17112c;
+  --muted: #625a78;
+  --purple-300: #b796ff;
+  --purple-500: #7c4dff;
+  --purple-600: #6538ed;
+  --purple-700: #4a24c7;
+  --purple-900: #241056;
+  --line: rgba(101, 56, 237, 0.14);
+  --shadow: 0 18px 45px rgba(71, 42, 151, 0.12);
+  --shadow-strong: 0 28px 70px rgba(71, 42, 151, 0.18);
+  --wrong: #d92d57;
 }
 
-function accuracyOf(correct, total) {
-  return total ? Math.round((correct / total) * 100) : 100;
+* {
+  box-sizing: border-box;
 }
 
-function mobileLike() {
-  return window.matchMedia?.("(pointer: coarse)").matches || window.innerWidth <= 768;
+button,
+input {
+  font: inherit;
 }
 
-export default function App() {
-  const [selectedLang, setSelectedLang] = useState("english");
-  const [langWords, setLangWords] = useState(null);
-  const [mode, setMode] = useState("words");
-  
-  const [customInput, setCustomInput] = useState("");
-  const [isCustomActive, setIsCustomActive] = useState(false);
-  const [customError, setCustomError] = useState("");
-  
-  const [duration, setDuration] = useState(15);
-  const [text, setText] = useState(() => makeText("words", "english"));
-  const [input, setInput] = useState("");
-  const [running, setRunning] = useState(false);
-  const [finished, setFinished] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(15);
-  const [soundOn, setSoundOn] = useState(false);
-  const [noBackspace, setNoBackspace] = useState(false);
-  const [mobileFocused, setMobileFocused] = useState(false);
-  const [user, setUser] = useState(null);
-  const [authOpen, setAuthOpen] = useState(false);
-  const [authMode, setAuthMode] = useState("login");
-  const [cloudSaveStatus, setCloudSaveStatus] = useState("idle");
-  const [bestWpm, setBestWpm] = useState(() => Number(localStorage.getItem("Type Perfectly-best") || 0));
-  const [history, setHistory] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("Type Perfectly-history") || "[]"); }
-    catch { return []; }
-  });
-
-  const appRef = useRef(null);
-  const mobileInputRef = useRef(null);
-  const mobileBufferRef = useRef("");
-  const lastMobileLineRef = useRef(-1);
-  const textContainerRef = useRef(null);
-  const activeCharRef = useRef(null);
-
-  const [caretPos, setCaretPos] = useState({
-  x: 0,
-  y: 0,
-  height: 0,
-  ready: false,
-});
-  const savedRef = useRef(false);
-  const cloudSavedRef = useRef(false);
-  const startedAtRef = useRef(0);
-  const [elapsedMs, setElapsedMs] = useState(0);
-
-  // Audio Pool inside Ref to prevent scope leaks
-  const audioPoolRef = useRef([]);
-  const audioIndexRef = useRef(0);
-
-  useEffect(() => {
-    audioPoolRef.current = Array.from({ length: 6 }, () => {
-      const audio = new Audio("/public_sound.mp3");
-      audio.preload = "auto";
-      audio.volume = 0.35;
-      return audio;
-    });
-  }, []);
-
-  const playTone = useCallback(() => {
-    if (!soundOn || mobileLike() || audioPoolRef.current.length === 0) return;
-    try {
-      const sound = audioPoolRef.current[audioIndexRef.current];
-      audioIndexRef.current = (audioIndexRef.current + 1) % audioPoolRef.current.length;
-      sound.currentTime = 0;
-      sound.play().catch(() => {});
-    } catch {
-      // Audio playback catch
-    }
-  }, [soundOn]);
-
-  const resetSession = useCallback(
-  (
-    nextMode = mode,
-    nextDuration = duration,
-    nextWords = langWords,
-    nextLang = selectedLang,
-    options = {}
-  ) => {
-    const { keepCustomActive = false } = options;
-
-    setMode(nextMode);
-    setDuration(nextDuration);
-    setText(makeText(nextMode, nextLang, nextWords));
-    setInput("");
-    setRunning(false);
-    setFinished(false);
-    setTimeLeft(nextDuration);
-    setElapsedMs(0);
-    setMobileFocused(false);
-
-    setIsCustomActive(
-      nextMode === "custom" && keepCustomActive
-    );
-
-    if (nextMode !== "custom" || !keepCustomActive) {
-      setCustomError("");
-    }
-
-    startedAtRef.current = 0;
-    savedRef.current = false;
-    cloudSavedRef.current = false;
-    mobileBufferRef.current = "";
-    lastMobileLineRef.current = -1;
-
-    setCloudSaveStatus("idle");
-
-    if (mobileInputRef.current) {
-      mobileInputRef.current.value = "";
-      mobileInputRef.current.blur();
-    }
-
-    requestAnimationFrame(() => {
-      appRef.current?.focus({
-        preventScroll: true,
-      });
-    });
-  },
-  [duration, mode, langWords, selectedLang]
-);
-
-  const startCustomPractice = useCallback(() => {
-    const words = cleanCustomWords(customInput);
-
-    if (words.length === 0) {
-      setCustomError("Please paste at least one valid word.");
-      return;
-    }
-
-    setCustomError("");
-    setLangWords(null);
-
-    resetSession(
-      "custom",
-      duration,
-      words,
-      selectedLang,
-      { keepCustomActive: true }
-    );
-  }, [customInput, duration, selectedLang, resetSession]);
-
-  const restartCurrentSession = useCallback(() => {
-    if (mode === "custom" && isCustomActive) {
-      const words = cleanCustomWords(customInput);
-
-      if (words.length === 0) {
-        setIsCustomActive(false);
-        setCustomError("Please paste at least one valid word.");
-        return;
-      }
-
-      resetSession(
-        "custom",
-        duration,
-        words,
-        selectedLang,
-        { keepCustomActive: true }
-      );
-      return;
-    }
-
-    resetSession();
-  }, [
-    mode,
-    isCustomActive,
-    customInput,
-    duration,
-    selectedLang,
-    resetSession,
-  ]);
-
-  const changeDuration = useCallback((nextDuration) => {
-    if (mode === "custom") {
-      const words = isCustomActive
-        ? cleanCustomWords(customInput)
-        : null;
-
-      resetSession(
-        "custom",
-        nextDuration,
-        words,
-        selectedLang,
-        {
-          keepCustomActive:
-            isCustomActive && Boolean(words?.length),
-        }
-      );
-      return;
-    }
-
-    resetSession(
-      mode,
-      nextDuration,
-      langWords,
-      selectedLang
-    );
-  }, [
-    mode,
-    isCustomActive,
-    customInput,
-    langWords,
-    selectedLang,
-    resetSession,
-  ]);
-
-  // Fetch JSON with in-memory cache
-  useEffect(() => {
-    if (selectedLang === "english") {
-      setLangWords(null);
-      resetSession("words", duration, null, "english");
-      return;
-    }
-
-    if (jsonCache.has(selectedLang)) {
-      const words = jsonCache.get(selectedLang);
-      setLangWords(words);
-      resetSession("words", duration, words, selectedLang);
-      return;
-    }
-
-    let active = true;
-    fetch(`/${selectedLang}.json`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        if (!active) return;
-        const words = extractWords(data);
-        if (words && words.length > 0) {
-          jsonCache.set(selectedLang, words);
-          setLangWords(words);
-          resetSession("words", duration, words, selectedLang);
-        } else {
-          setLangWords(null);
-          resetSession("words", duration, null, selectedLang);
-        }
-      })
-      .catch((err) => {
-        console.warn(`Fallback active for ${selectedLang}:`, err.message);
-        if (active) {
-          setLangWords(null);
-          resetSession("words", duration, null, selectedLang);
-        }
-      });
-
-    return () => { active = false; };
-  }, [selectedLang]);
-
-  const handleLanguageChange = (newLang) => {
-    setIsCustomActive(false);
-    setCustomError("");
-    setSelectedLang(newLang);
-    setMode("words");
-  };
-
-  const correctChars = useMemo(() => {
-    let correct = 0;
-    for (let i = 0; i < input.length; i += 1) {
-      if (input[i] === text[i]) correct += 1;
-    }
-    return correct;
-  }, [input, text]);
-
-  const accuracy = accuracyOf(correctChars, input.length);
-  const elapsedMinutes = Math.max(elapsedMs, 1) / 60000;
-  const wpm = input.length && elapsedMs >= 250
-    ? Math.round((correctChars / 5) / elapsedMinutes)
-    : 0;
-  const score = correctChars * 10 + wpm * 2;
-  const sessionActive = mobileFocused || running;
-  const isRTL = selectedLang === "arabic";
-
-  const finishSession = useCallback(() => {
-    const preciseElapsed = startedAtRef.current
-      ? Math.min(duration * 1000, performance.now() - startedAtRef.current)
-      : 0;
-
-    setElapsedMs(preciseElapsed);
-    setTimeLeft(0);
-    setRunning(false);
-    setFinished(true);
-    setMobileFocused(false);
-    mobileInputRef.current?.blur();
-  }, [duration]);
-
-  // Pure Keystroke Handlers
-  const processCharacter = useCallback((character) => {
-    if (!character || character.length !== 1 || finished) return;
-
-    if (!running) {
-      startedAtRef.current = performance.now() - elapsedMs;
-      setRunning(true);
-    }
-
-    setInput((previous) => {
-      if (previous.length >= text.length) return previous;
-      playTone();
-      return previous + character;
-    });
-  }, [elapsedMs, finished, playTone, running, text.length]);
-
-  const removeCharacter = useCallback(() => {
-    if (!finished && !noBackspace) {
-      setInput((previous) => previous.slice(0, -1));
-    }
-  }, [finished, noBackspace]);
-
-  // Clean Declarative Trigger for Session Completion (Fixes state updater side-effect)
-  useEffect(() => {
-    if (text.length > 0 && input.length >= text.length && running && !finished) {
-      finishSession();
-    }
-  }, [input.length, text.length, running, finished, finishSession]);
-
-  useEffect(() => { appRef.current?.focus({ preventScroll: true }); }, []);
-
-  // Supabase Auth Listener
-  useEffect(() => {
-    if (!supabaseConfigured || !supabase) return undefined;
-    let active = true;
-
-    supabase.auth.getSession().then(({ data, error }) => {
-      if (!active) return;
-      if (error) {
-        console.error("Could not read auth session:", error.message);
-        return;
-      }
-      setUser(data.session?.user || null);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (active) setUser(session?.user || null);
-    });
-
-    return () => {
-      active = false;
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  // High-precision Timer
-  useEffect(() => {
-    if (!running || finished) return undefined;
-
-    let frameId = 0;
-    let lastUpdate = 0;
-
-    const updateTimer = (now) => {
-      const elapsed = now - startedAtRef.current;
-
-      if (now - lastUpdate >= 250) {
-        setElapsedMs(elapsed);
-        const remainingMs = Math.max(0, duration * 1000 - elapsed);
-        setTimeLeft(Math.ceil(remainingMs / 1000));
-        lastUpdate = now;
-      }
-
-      if (elapsed >= duration * 1000) {
-        finishSession();
-        return;
-      }
-
-      frameId = requestAnimationFrame(updateTimer);
-    };
-
-    frameId = requestAnimationFrame(updateTimer);
-    return () => cancelAnimationFrame(frameId);
-  }, [duration, finishSession, finished, running]);
-
-  // Local Storage Saver
-  useEffect(() => {
-    if (!finished || savedRef.current) return;
-    savedRef.current = true;
-    const nextBest = Math.max(bestWpm, wpm);
-    setBestWpm(nextBest);
-    localStorage.setItem("Type Perfectly-best", String(nextBest));
-    const entry = { mode, wpm, accuracy, duration, score, date: new Date().toLocaleString() };
-    setHistory((previous) => {
-      const next = [entry, ...previous].slice(0, 6);
-      localStorage.setItem("Type Perfectly-history", JSON.stringify(next));
-      return next;
-    });
-  }, [accuracy, bestWpm, duration, finished, mode, score, wpm]);
-
-  // Supabase Cloud Saver
-  useEffect(() => {
-    if (!finished || !user || !supabase || cloudSavedRef.current) return;
-
-    cloudSavedRef.current = true;
-    setCloudSaveStatus("saving");
-
-    const saveSession = async () => {
-      const { error } = await supabase.from("typing_sessions").insert({
-        mode,
-        duration_seconds: duration,
-        wpm,
-        accuracy,
-        score,
-        characters: input.length,
-      });
-
-      if (error) {
-        console.error("Cloud session save failed:", error.message);
-        cloudSavedRef.current = false;
-        setCloudSaveStatus("error");
-        return;
-      }
-
-      setCloudSaveStatus("saved");
-    };
-
-    saveSession();
-  }, [accuracy, duration, finished, input.length, mode, score, user, wpm]);
-
-  const focusTyping = useCallback(() => {
-    if (mobileLike()) {
-      setMobileFocused(true);
-      const target = mobileInputRef.current;
-      if (!target) return;
-      try {
-        target.focus({ preventScroll: true });
-      } catch {
-        target.focus();
-      }
-    } else {
-      appRef.current?.focus({ preventScroll: true });
-    }
-  }, []);
-
-  const handleDesktopKeyDown = useCallback((event) => {
-    const target = event.target;
-
-    if (
-      target instanceof HTMLInputElement ||
-      target instanceof HTMLTextAreaElement ||
-      target instanceof HTMLSelectElement ||
-      target instanceof HTMLButtonElement ||
-      target?.isContentEditable ||
-      target === mobileInputRef.current
-    ) {
-      return;
-    }
-
-    if (event.ctrlKey || event.altKey || event.metaKey) return;
-
-    if (event.key === "Tab") {
-      event.preventDefault();
-      restartCurrentSession();
-      return;
-    }
-
-    if (event.key === "Escape") {
-      event.preventDefault();
-      setRunning(false);
-      setMobileFocused(false);
-      mobileInputRef.current?.blur();
-      return;
-    }
-
-    if (event.key === "Backspace") {
-      event.preventDefault();
-      removeCharacter();
-      return;
-    }
-
-    if (event.key.length === 1) {
-      event.preventDefault();
-      processCharacter(event.key);
-    }
-  }, [processCharacter, removeCharacter, restartCurrentSession]);
-
-  const handleMobileInput = useCallback((event) => {
-    const value = event.currentTarget.value;
-    const previous = mobileBufferRef.current;
-
-    if (value.length > previous.length) {
-      for (const character of value.slice(previous.length)) {
-        processCharacter(character);
-      }
-    } else if (value.length < previous.length) {
-      if (noBackspace) {
-        event.currentTarget.value = previous;
-      } else {
-        for (let i = 0; i < previous.length - value.length; i += 1) {
-          removeCharacter();
-        }
-      }
-    }
-
-    mobileBufferRef.current = event.currentTarget.value;
-
-    if (mobileBufferRef.current.length > 40) {
-      event.currentTarget.value = "";
-      mobileBufferRef.current = "";
-    }
-  }, [noBackspace, processCharacter, removeCharacter]);
- useEffect(() => {
-  if (!mobileLike()) return undefined;
-
-  const frame = requestAnimationFrame(() => {
-    const typingBox = document.querySelector(".typing-text");
-    const currentCharacter = typingBox?.querySelector(".char.current");
-
-    if (!typingBox) return;
-
-    if (input.length === 0) {
-      lastMobileLineRef.current = -1;
-      typingBox.scrollTop = 0;
-      return;
-    }
-
-    if (!currentCharacter) return;
-
-    const typingRect = typingBox.getBoundingClientRect();
-const currentRect = currentCharacter.getBoundingClientRect();
-
-const currentLine =
-  currentRect.top -
-  typingRect.top +
-  typingBox.scrollTop;
-
-    if (currentLine === lastMobileLineRef.current) return;
-
-    lastMobileLineRef.current = currentLine;
-
-    typingBox.scrollTo({
-      top: Math.max(0, currentLine - typingBox.clientHeight * 0.32),
-      behavior: "smooth",
-    });
-  });
-
-  return () => cancelAnimationFrame(frame);
-}, [input.length]);
-  useLayoutEffect(() => {
-  const container = textContainerRef.current;
-  const activeCharacter = activeCharRef.current;
-
-  if (!container || !activeCharacter || finished) {
-    setCaretPos((previous) => ({
-      ...previous,
-      ready: false,
-    }));
-    return;
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgba(124, 77, 255, 0.36);
+  outline-offset: 3px;
+}
+
+.app {
+  width: min(1240px, calc(100% - 28px));
+  min-height: calc(100dvh - 24px);
+  margin: 12px auto;
+  padding: 0 18px 18px;
+  color: var(--ink);
+  border: 1px solid rgba(255, 255, 255, 0.86);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 12% 5%, rgba(183, 150, 255, 0.3), transparent 30%),
+    radial-gradient(circle at 90% 10%, rgba(124, 77, 255, 0.2), transparent 28%),
+    rgba(255, 255, 255, 0.38);
+  box-shadow: 0 20px 70px rgba(66, 38, 136, 0.09);
+  outline: none;
+  overflow: clip;
+}
+
+.topbar {
+  min-height: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.logo-mark {
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+}
+
+.logo-mark img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  padding: 0;
+}
+
+.brand-title {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.brand-subtitle {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.key-hint {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+kbd {
+  display: inline-flex;
+  margin-right: 4px;
+  padding: 5px 7px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--purple-700);
+  background: white;
+}
+
+.ghost-button,
+.button-strip button {
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  color: var(--purple-900);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 8px 20px rgba(74, 36, 199, 0.08);
+  cursor: pointer;
+}
+
+.ghost-button {
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ghost-button.active,
+.button-strip button.selected {
+  color: white;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--purple-500), var(--purple-700));
+}
+
+.hero {
+  min-height: 350px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
+  align-items: center;
+  gap: 30px;
+  padding: 34px 34px 26px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  padding: 8px 13px;
+  border: 1px solid rgba(101, 56, 237, 0.28);
+  border-radius: 999px;
+  color: var(--purple-700);
+  background: rgba(255, 255, 255, 0.66);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.hero h1 {
+  max-width: 760px;
+  margin: 18px 0 12px;
+  font-size: clamp(52px, 6vw, 84px);
+  line-height: 0.93;
+  letter-spacing: -0.062em;
+  font-weight: 900;
+}
+
+.hero h1 span {
+  color: var(--purple-600);
+}
+
+.hero p {
+  max-width: 620px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.hero-seo-title {
+  margin: 14px 0 8px;
+  color: var(--purple-700);
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 800;
+}
+
+.hero-picture {
+  width: min(100%, 520px);
+  height: 330px;
+  min-width: 0;
+  justify-self: end;
+  overflow: hidden;
+  border: none;
+  border-radius: 38px;
+ background: url("/typing-hero.png") center / contain no-repeat;
+  box-shadow: none;
+}
+
+.hero-picture img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: 42% center;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  padding: 18px;
+  margin: 0 8px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.control-section {
+  min-width: 0;
+}
+
+.control-label {
+  margin-bottom: 10px;
+  color: var(--purple-700);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.button-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.button-strip button {
+  min-height: 42px;
+  padding: 10px 13px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.practice-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  align-items: start;
+  gap: 18px;
+  margin: 0 8px;
+}
+
+.typing-card,
+.stats-card,
+.insight-card {
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.typing-card {
+  position: relative;
+  padding: 20px;
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.mobile-capture {
+  position: absolute;
+  left: 18px;
+  top: 72px;
+  width: 2px;
+  height: 2px;
+  padding: 0;
+  border: 0;
+  opacity: 0.01;
+  color: transparent;
+  background: transparent;
+  caret-color: transparent;
+  z-index: 2;
+}
+
+.typing-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.typing-card-header > div {
+  display: flex;
+  gap: 10px;
+  color: var(--purple-700);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+}
+
+.primary-button,
+.restart-button,
+.finished-box button {
+  border: 0;
+  border-radius: 13px;
+  color: white;
+  background: linear-gradient(135deg, var(--purple-500), var(--purple-700));
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 12px 26px rgba(74, 36, 199, 0.24);
+}
+
+.primary-button {
+  padding: 11px 15px;
+  font-size: 12px;
+}
+
+.typing-text {
+  min-height: 250px;
+  max-height: 390px;
+  padding: 8px 4px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  color: rgba(23, 17, 44, 0.34);
+  font-size: clamp(26px, 2.8vw, 40px);
+  line-height: 1.62;
+  letter-spacing: 0.01em;
+  font-weight: 700;
+  text-align: left;
+  white-space: pre-wrap;
+overflow-wrap: normal;
+word-break: normal;
+  cursor: text;
+}
+.word-group {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.space-group {
+  white-space: pre-wrap;
+}
+.char {
+  transition: color 0.05s linear, background 0.05s linear;
+}
+
+.char.correct {
+  color: var(--ink);
+}
+
+.char.wrong {
+  color: var(--wrong);
+  background: rgba(217, 45, 87, 0.12);
+  border-radius: 4px;
+}
+
+.char.current {
+  position: relative;
+  color: var(--purple-600);
+}
+
+.char.current::before {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: 0.08em;
+  bottom: 0.08em;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--purple-500);
+  animation: caret-blink 0.85s infinite;
+}
+
+@keyframes caret-blink {
+  0%,
+  100% {
+    opacity: 1;
   }
 
-  const containerRect = container.getBoundingClientRect();
-  const characterRect = activeCharacter.getBoundingClientRect();
+  50% {
+    opacity: 0.2;
+  }
+}
 
-  setCaretPos({
-    x:
-      characterRect.left -
-      containerRect.left +
-      container.scrollLeft,
+.legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 12px;
+}
 
-    y:
-      characterRect.top -
-      containerRect.top +
-      container.scrollTop,
+.legend-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
 
-    height: characterRect.height,
-    ready: true,
-  });
-}, [input.length, text, finished, isRTL]);
-  const logout = useCallback(async () => {
-    if (!supabase) return;
-    const { error } = await supabase.auth.signOut();
-    if (error) console.error("Logout failed:", error.message);
-  }, []);
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
 
-  const durationLabel = duration === 300 ? "5 MIN" : `${duration}S`;
+.correct-dot {
+  background: var(--purple-500);
+}
 
-  return (
-    <main
-      ref={appRef}
-      tabIndex={0}
-      className={`app ${sessionActive ? "session-active" : ""} ${finished ? "result-active" : ""}`}
-      onKeyDown={handleDesktopKeyDown}
-    >
-      <header className="topbar">
-        <div className="brand">
-          <div className="logo-mark">
-            <img src="/TeksType.jpeg" alt="Type Perfectly logo" />
-          </div>
-          <div>
-            <div className="brand-title">Type Perfectly</div>
-            <div className="brand-subtitle">Typing Performance Lab</div>
-          </div>
-        </div>
-        <div className="top-actions">
-          <span className="key-hint"><kbd>Tab</kbd> Restart</span>
-          <span className="key-hint"><kbd>Esc</kbd> Pause</span>
-          <button type="button" className={`ghost-button ${noBackspace ? "active" : ""}`} onClick={() => setNoBackspace((val) => !val)}>
-            {noBackspace ? "BACKSPACE OFF" : "BACKSPACE ON"}
-          </button>
-          <button type="button" className={`ghost-button ${soundOn ? "active" : ""}`} onClick={() => setSoundOn((val) => !val)}>
-            {soundOn ? "SOUND ON" : "SOUND OFF"}
-          </button>
-          {user ? (
-            <button type="button" className="ghost-button auth-header-button active" onClick={logout} title={user.email || "Signed in"}>
-              LOG OUT
-            </button>
-          ) : (
-            <button type="button" className="ghost-button auth-header-button" onClick={() => { setAuthMode("login"); setAuthOpen(true); }}>
-              LOG IN
-            </button>
-          )}
-        </div>
-      </header>
+.wrong-dot {
+  background: var(--wrong);
+}
 
-      <section className="hero">
-        <div className="hero-copy-wrap">
-          <div className="eyebrow">FREE TYPING SPEED TEST</div>
-          <h1>
-            Free Typing Test Online<br />
-            <span>Check Your WPM in 15 Seconds</span>
-          </h1>
-          <p className="hero-description">
-            Get instant WPM, accuracy and weak-key feedback with English, Hinglish, code and business typing practice.
-          </p>
-          <button type="button" className="hero-cta" onClick={focusTyping}>
-            START FREE TYPING TEST
-          </button>
-          <div className="hero-trust">Free to use · No account required · Instant results</div>
-        </div>
-        <div className="hero-picture" role="img" aria-label="Purple Type Perfectly keyboard" />
-      </section>
+.upcoming-dot {
+  background: #aaa4b7;
+}
 
-      <section className="controls">
-        <div className="control-section">
-          <div className="control-label">Language</div>
-          <div className="button-strip">
-            <div className="select-wrapper">
-              <select className="lang-select" value={selectedLang} onChange={(e) => handleLanguageChange(e.target.value)}>
-                {LANGUAGES.map((lang) => (
-                  <option key={lang.id} value={lang.id}>{lang.name}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
+.typing-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
 
-        <div className="control-section content-control">
-          <div className="control-label">Content</div>
-          <div className="button-strip">
-            {MODES.map((item) => (
-              <button
-                key={item}
-                type="button"
-                className={mode === item ? "selected" : ""}
-                onClick={() => {
-                  setLangWords(null);
-                  resetSession(
-                    item,
-                    duration,
-                    null,
-                    selectedLang,
-                    { keepCustomActive: false }
-                  );
-                }}
-              >
-                {item.toUpperCase()}
-              </button>
-            ))}
-          </div>
-        </div>
+.restart-button {
+  padding: 12px 22px;
+  font-size: 12px;
+}
 
-        <div className="control-section">
-          <div className="control-label">Time</div>
-          <div className="button-strip time-buttons">
-            {[15, 30, 60, 300].map((value) => (
-              <button
-                key={value}
-                type="button"
-                className={duration === value ? "selected" : ""}
-                onClick={() => changeDuration(value)}
-              >
-                {value === 300 ? "5 MIN" : `${value}S`}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
+.stats-card {
+  padding: 20px;
+  border-radius: 24px;
+}
 
-      <section className="practice-layout">
-        <article className="typing-card">
-          <input
-            ref={mobileInputRef}
-            className="mobile-capture"
-            type="text"
-            aria-label="Typing input"
-            inputMode="text"
-            autoCapitalize="off"
-            autoCorrect="off"
-            autoComplete="off"
-            spellCheck={false}
-            onFocus={() => setMobileFocused(true)}
-            onBlur={() => setMobileFocused(false)}
-            onInput={handleMobileInput}
-            onKeyDown={(event) => {
-              event.stopPropagation();
-              if (event.key === "Backspace" && noBackspace) event.preventDefault();
-            }}
-          />
+.stats-title,
+.insight-title {
+  margin-bottom: 14px;
+  color: var(--purple-700);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
 
-          <div className="typing-card-header">
-            <div>
-              <span>{durationLabel}</span>
-              <span>{selectedLang.toUpperCase()} / {mode.toUpperCase()}</span>
-            </div>
-            {!finished && !(mode === "custom" && !isCustomActive) && (
-              <button type="button" className="primary-button" onClick={focusTyping}>
-                START TYPING
-              </button>
-            )}
-          </div>
+.stats-grid {
+  display: grid;
+  gap: 10px;
+}
 
-          {mode === "custom" && !isCustomActive ? (
-            <div className="custom-practice-setup">
-              <textarea
-                className="custom-practice-textarea"
-                value={customInput}
-                rows={8}
-                placeholder="Paste your custom vocabulary or text here..."
-                onChange={(event) => {
-                  setCustomInput(event.target.value);
-                  if (customError) setCustomError("");
-                }}
-              />
+.stats-grid > div {
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: rgba(255, 255, 255, 0.78);
+}
 
-              {customError && (
-                <p className="custom-practice-error" role="alert">
-                  {customError}
-                </p>
-              )}
+.stats-grid span {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
 
-              <button
-                type="button"
-                className="primary-button custom-start-button"
-                onClick={startCustomPractice}
-              >
-                START PRACTICE
-              </button>
-            </div>
-          ) : (
-            <>
-          <div
-            ref={textContainerRef}
-            className={`typing-text ${isRTL ? "rtl" : ""}`}
-            dir={isRTL ? "rtl" : "ltr"}
-            role="textbox"
-            aria-label="Typing practice text."
-            tabIndex={0}
-            onPointerDown={focusTyping}
-          >
-           {!finished && caretPos.ready && (
-  <span
-    className="floating-caret"
-    aria-hidden="true"
-    style={{
-     height: `${caretPos.height * 0.82}px`,
-transform: `translate3d(
-  ${caretPos.x}px,
-  ${caretPos.y + caretPos.height * 0.09}px,
-  0
-)`,
-    }}
-  />
-)} 
-            {Array.from(text.matchAll(/\S+|\s+/g)).map((match) => {
-              const chunk = match[0];
-              const wordStartIndex = match.index ?? 0;
-              const isWhitespace = /^\s+$/.test(chunk);
+.stats-grid strong {
+  display: block;
+  margin-top: 5px;
+  color: var(--purple-700);
+  font-size: 24px;
+}
 
-              const characters = typeof Intl !== "undefined" && Intl.Segmenter
-                ? Array.from(new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(chunk), (s) => s.segment)
-                : Array.from(chunk);
+.finished-box {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 17px;
+  color: white;
+  background: linear-gradient(135deg, var(--purple-600), var(--purple-900));
+}
 
-              let currentOffset = 0;
+.finished-box span {
+  font-size: 12px;
+  opacity: 0.88;
+}
 
-              return (
-                <span
-                  key={`${wordStartIndex}-${chunk}`}
-                  className={isWhitespace ? "space-group" : "word-group"}
-                >
-                  {characters.map((character) => {
-                    const index = wordStartIndex + currentOffset;
-                    const charLength = character.length;
-                    currentOffset += charLength;
+.finished-box button {
+  padding: 10px;
+  color: var(--purple-700);
+  background: white;
+  box-shadow: none;
+}
 
-                    let className = "char upcoming";
+/* Makes signup/save the primary result action even though it appears
+   after Try Again in the current JSX. */
+.save-progress-button {
+  order: -1;
+  color: white !important;
+  background: linear-gradient(135deg, #9b70ff, #6b3df0) !important;
+  box-shadow: 0 10px 22px rgba(155, 112, 255, 0.26) !important;
+}
 
-                    if (index < input.length) {
-                      className =
-                        input.slice(index, index + charLength) === character
-                          ? "char correct"
-                          : "char wrong";
-                    } else if (index <= input.length && input.length < index + charLength && !finished) {
-                      className = "char current";
-                    }
+.cloud-save-status {
+  display: block;
+  margin-top: 10px;
+  color: #eee8ff;
+  text-align: center;
+}
 
-                   const isActive =
-  index <= input.length &&
-  input.length < index + charLength &&
-  !finished;
+.cloud-save-status.saved {
+  color: #bcffd6;
+}
 
-return (
-  <span
-    key={index}
-    ref={isActive ? activeCharRef : null}
-    className={className}
-  >
-    {character}
-  </span>
-);
-                  })}
-                </span>
-              );
-            })}
-          </div>
+.cloud-save-status.error {
+  color: #ffd0d8;
+}
 
-          <div className="legend-row">
-            <span><i className="dot correct-dot" />Correct</span>
-            <span><i className="dot wrong-dot" />Wrong</span>
-            <span><i className="dot upcoming-dot" />Upcoming</span>
-          </div>
+.insights-grid {
+  display: grid;
+  grid-template-columns: 0.72fr 1.35fr 1fr;
+  gap: 18px;
+  margin: 18px 8px 0;
+  content-visibility: auto;
+  contain-intrinsic-size: 420px;
+}
 
-          {!finished && (
-            <div className="typing-actions">
-              <button type="button" className="restart-button" onClick={restartCurrentSession}>
-                RESTART SESSION
-              </button>
-            </div>
-          )}
-            </>
-          )}
-        </article>
+.insight-card {
+  min-width: 0;
+  padding: 20px;
+  border-radius: 24px;
+}
 
-        <aside className="stats-card">
-          <div className="stats-title">Live Stats</div>
-          <div className="stats-grid">
-            <div>
-              <span>Time</span>
-              <strong>{finished ? durationLabel : `${timeLeft}s`}</strong>
-            </div>
-            <div>
-              <span>WPM</span>
-              <strong>{wpm}</strong>
-            </div>
-            <div>
-              <span>Accuracy</span>
-              <strong>{accuracy}%</strong>
-            </div>
-          </div>
+.insight-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
 
-          {finished && (
-            <div className="finished-box">
-              <strong>Great job!</strong>
-              <span>{wpm} WPM · {accuracy}% Accuracy</span>
-              <span>Score: {score}</span>
+.big-number {
+  color: var(--purple-700);
+  font-size: 58px;
+  line-height: 1;
+  font-weight: 900;
+}
 
-              <button type="button" onClick={restartCurrentSession}>
-                TRY AGAIN
-              </button>
+.insight-card > span {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 12px;
+}
 
-              {!user ? (
-                <button type="button" className="save-progress-button" onClick={() => { setAuthMode("signup"); setAuthOpen(true); }}>
-                  CREATE FREE ACCOUNT TO SAVE THIS SCORE
-                </button>
-              ) : (
-                <small className={`cloud-save-status ${cloudSaveStatus}`} role="status">
-                  {cloudSaveStatus === "saving" && "Saving to your account..."}
-                  {cloudSaveStatus === "saved" && "Saved to your account"}
-                  {cloudSaveStatus === "error" && "Cloud save failed. Try again later."}
-                  {cloudSaveStatus === "idle" && "Your result will be saved automatically."}
-                </small>
-              )}
-            </div>
-          )}
-        </aside>
-      </section>
+.history-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
 
-      {finished && (
-        <section className="result-dashboard" role="dialog" aria-modal="true" aria-labelledby="result-dashboard-title">
-          <div className="result-dashboard-card">
-            <p className="result-dashboard-label">TEST COMPLETE</p>
-            <h2 id="result-dashboard-title">Your Typing Result</h2>
-            <p className="result-dashboard-subtitle">
-              {selectedLang.toUpperCase()} · {mode.toUpperCase()} · {durationLabel}
-            </p>
+.history-row:last-child {
+  border-bottom: 0;
+}
 
-            <div className="result-dashboard-stats">
-              <div><span>WPM</span><strong>{wpm}</strong></div>
-              <div><span>Accuracy</span><strong>{accuracy}%</strong></div>
-              <div><span>Score</span><strong>{score}</strong></div>
-            </div>
+.history-row strong {
+  color: var(--ink);
+}
 
-            <div className="result-dashboard-actions">
-              <button type="button" onClick={restartCurrentSession}>
-                TRY AGAIN
-              </button>
-              {!user && (
-                <button type="button" className="result-save-button" onClick={() => { setAuthMode("signup"); setAuthOpen(true); }}>
-                  CREATE FREE ACCOUNT
-                </button>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
-<FAQ />
-<SocialFooter wpm={finished ? wpm : null} />
+.weak-row {
+  display: grid;
+  grid-template-columns: 42px 1fr 26px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
 
-<footer className="footer">
-  <div>© 2026 Type Perfectly. All rights reserved.</div>
+.weak-row strong {
+  color: var(--purple-700);
+}
 
-  <nav aria-label="Legal and information links">
-    <a href="/about.html">About</a>
-    <a href="/contact.html">Contact</a>
-    <a href="/privacy.html">Privacy</a>
-    <a href="/terms.html">Terms</a>
-    <a href="/disclaimer.html">Disclaimer</a>
+.weak-row > div {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(101, 56, 237, 0.12);
+}
 
-    <a
-      href="https://docs.google.com/forms/d/e/1FAIpQLScFhnHdXB3dWVWBhEPFfkQKQz3Xzs23UXhCYOqp7O0Q3mMXQg/viewform"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Feedback
-    </a>
-  </nav>
-</footer>
+.weak-row > div span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--purple-300), var(--purple-700));
+}
 
-{authOpen ? (
-  <Suspense fallback={null}>
-    <AuthModal
-      isOpen={authOpen}
-      onClose={() => setAuthOpen(false)}
-      initialMode={authMode}
-    />
-  </Suspense>
-) : null}
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 18px 8px 0;
+  padding: 18px 20px;
+  border-radius: 20px;
+  color: white;
+  background: linear-gradient(135deg, var(--purple-600), var(--purple-900));
+  font-size: 12px;
+  content-visibility: auto;
+  contain-intrinsic-size: 120px;
+}
 
-    </main>
+.footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.footer a {
+  color: white;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 980px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-picture {
+    width: min(100%, 620px);
+    height: 320px;
+    justify-self: center;
+  }
+
+  .controls {
+    grid-template-columns: 1fr;
+  }
+
+  .practice-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .insights-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .history-card {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 700px) {
+  .app {
+    width: 100%;
+    min-height: 100dvh;
+    margin: 0;
+    padding: 0 12px calc(18px + env(safe-area-inset-bottom));
+    border: 0;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .topbar {
+    min-height: 74px;
+    padding: 10px 2px;
+    order: 0;
+  }
+
+  .hero {
+    min-height: 0;
+    padding: 20px 8px 14px;
+    gap: 14px;
+    order: 1;
+  }
+
+  .practice-layout {
+    margin: 0;
+    order: 2;
+  }
+
+  .controls {
+    margin: 14px 0 0;
+    padding: 15px;
+    border-radius: 20px;
+    order: 3;
+  }
+
+  .insights-grid {
+    grid-template-columns: 1fr;
+    margin: 14px 0 0;
+    order: 4;
+  }
+
+  .footer {
+    margin: 14px 0 0;
+    flex-direction: column;
+    order: 5;
+  }
+
+  .logo-mark {
+    width: 52px;
+    height: 52px;
+    flex: 0 0 52px;
+    border-radius: 15px;
+  }
+
+  .brand-title {
+    font-size: 21px;
+  }
+
+  .brand-subtitle,
+  .key-hint {
+    display: none;
+  }
+
+  .top-actions {
+    gap: 6px;
+  }
+
+  .ghost-button {
+    padding: 9px 10px;
+    font-size: 10px;
+  }
+
+  .hero h1 {
+    margin-top: 14px;
+    font-size: clamp(42px, 12vw, 56px);
+    line-height: 0.95;
+  }
+
+  .hero-picture,
+  .hero-seo-title,
+  .hero p {
+    display: none;
+  }
+
+  .content-control .button-strip {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    scrollbar-width: none;
+  }
+
+  .content-control .button-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .content-control .button-strip button {
+    flex: 0 0 auto;
+  }
+
+  .time-buttons button {
+    flex: 1;
+  }
+
+  .typing-card,
+  .stats-card,
+  .insight-card {
+    border-radius: 20px;
+    background: var(--surface-solid);
+    backdrop-filter: none;
+  }
+
+  .typing-card {
+    padding: 16px;
+  }
+
+  .typing-card-header {
+    align-items: flex-start;
+  }
+
+  .typing-text {
+    min-height: 280px;
+    max-height: 48dvh;
+    font-size: clamp(24px, 7.2vw, 34px);
+    line-height: 1.58;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .stats-grid > div {
+    padding: 12px 8px;
+    text-align: center;
+  }
+
+  .stats-grid strong {
+    font-size: 20px;
+  }
+
+  .history-card {
+    grid-column: auto;
+  }
+
+  .app.session-active .hero,
+  .app.session-active .controls,
+  .app.session-active .insights-grid,
+  .app.session-active .footer {
+    display: none;
+  }
+
+  .app.session-active .topbar {
+    min-height: 66px;
+  }
+
+  .app.session-active .brand-subtitle,
+  .app.session-active .top-actions {
+    display: none;
+  }
+
+  .app.session-active .practice-layout {
+    margin-top: 10px;
+    order: 1;
+  }
+
+  .app.session-active .typing-text {
+    min-height: 240px;
+    max-height: 46dvh;
+    padding-bottom: 24px;
+    scroll-padding-bottom: 24px;
+  }
+}
+
+@media (max-width: 430px) {
+  .brand-title {
+    font-size: 19px;
+  }
+
+  .top-actions .ghost-button:first-of-type {
+    display: none;
+  }
+
+  .eyebrow {
+    font-size: 10px;
+  }
+
+  .hero h1 {
+    font-size: 44px;
+  }
+
+  .primary-button {
+    padding: 10px 12px;
+    font-size: 10px;
+  }
+
+  .typing-card-header > div {
+    gap: 7px;
+    font-size: 10px;
+  }
+
+  .legend-row {
+    gap: 12px;
+  }
+}
+
+@media (min-width: 701px) {
+  .app.session-active {
+    width: 100%;
+    min-height: 100dvh;
+    margin: 0;
+    padding: 20px;
+    border: 0;
+    border-radius: 0;
+    overflow: auto;
+  }
+
+  .app.session-active .topbar,
+  .app.session-active .hero,
+  .app.session-active .controls,
+  .app.session-active .insights-grid,
+  .app.session-active .footer {
+    display: none;
+  }
+
+  .app.session-active .practice-layout {
+    grid-template-columns: minmax(0, 1fr) 280px;
+    align-items: stretch;
+    gap: 20px;
+    margin: 0;
+    min-height: calc(100dvh - 40px);
+  }
+
+  .app.session-active .typing-card {
+    min-height: calc(100dvh - 40px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .app.session-active .typing-text {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+  }
+
+  .app.session-active .stats-card {
+    align-self: start;
+  }
+
+  .hero-picture img {
+    animation: hero-float 4s ease-in-out infinite;
+  }
+}
+
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.primary-button,
+.restart-button,
+.finished-box button,
+.button-strip button,
+.ghost-button {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+@media (hover: hover) {
+  .primary-button:hover,
+  .restart-button:hover,
+  .finished-box button:hover,
+  .button-strip button:hover,
+  .ghost-button:hover {
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+/* Premium header typography */
+body,
+button,
+input {
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+}
+
+.brand-title {
+  font-size: 25px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.brand-subtitle {
+  margin-top: 6px;
+  color: #655b7d;
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+}
+
+.top-actions {
+  gap: 10px;
+}
+
+.ghost-button {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 15px;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+}
+
+.key-hint {
+  font-size: 13px;
+}
+
+.logo-mark {
+  box-shadow:
+    0 10px 24px rgba(87, 54, 190, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 700px) {
+  .brand-title {
+    font-size: 21px;
+  }
+
+  .ghost-button {
+    min-height: 38px;
+    padding: 0 11px;
+    font-size: 10px;
+  }
+}
+.hero-description {
+  max-width: 610px;
+  margin: 18px 0 24px;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.hero-cta {
+  min-height: 58px;
+  padding: 0 25px;
+  border: 0;
+  border-radius: 17px;
+  color: white;
+  background: linear-gradient(
+    135deg,
+    var(--purple-500),
+    var(--purple-700)
   );
+  box-shadow: 0 16px 30px rgba(74, 36, 199, 0.28);
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.hero-cta:hover {
+  transform: translateY(-2px);
+}
+
+.hero-trust {
+  margin-top: 14px;
+  color: #655b7d;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.hero-picture {
+  width: min(100%, 560px);
+  height: 340px;
+  min-width: 0;
+  justify-self: end;
+  border: 0;
+  border-radius: 28px;
+  background: url("/typing-hero.png") center / 135% auto no-repeat;
+  box-shadow: none;
+  animation: keyboardFloat 4s ease-in-out infinite;
+}
+
+@keyframes keyboardFloat {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-8px) scale(1.02);
+  }
+}
+
+@media (max-width: 700px) {
+  .hero .hero-description {
+    display: block;
+    margin: 14px 0 19px;
+    font-size: 15px;
+  }
+
+  .hero-cta {
+    width: 100%;
+    min-height: 54px;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+
+  .hero-trust {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+}
+.seo-content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin: 28px 8px 0;
+}
+
+.seo-content article {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.seo-content h2,
+.faq-section h2 {
+  margin: 0 0 12px;
+  color: var(--purple-700);
+  font-size: 22px;
+}
+
+.seo-content p,
+.faq-section p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.faq-section {
+  margin: 28px 8px 0;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.faq-section details {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.faq-section details:last-child {
+  border-bottom: 0;
+}
+
+.faq-section summary {
+  cursor: pointer;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.faq-section details p {
+  margin-top: 10px;
+}
+
+@media (max-width: 700px) {
+  .seo-content {
+    grid-template-columns: 1fr;
+  }
+
+  .seo-content article,
+  .faq-section {
+    padding: 20px;
+  }
+}
+
+.app:focus-within .typing-card,
+.app:focus-within .stats-card {
+  backdrop-filter: none;
+}
+
+.typing-text {
+  will-change: contents;
+  contain: layout paint;
+}
+
+.char {
+  transition: none;
+}
+@media (max-width: 700px) {
+  .seo-content {
+    order: 5;
+    margin: 18px 0 0;
+    gap: 14px;
+  }
+
+  .seo-content article {
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .seo-content h2,
+  .faq-section h2 {
+    font-size: 20px;
+    line-height: 1.25;
+  }
+
+  .seo-content p,
+  .faq-section p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .faq-section {
+    order: 6;
+    margin: 18px 0 0;
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .footer {
+    order: 7;
+  }
+}
+/* Smooth and clean typing feedback */
+.typing-text {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.char {
+  transition:
+    color 70ms ease-out,
+    background-color 70ms ease-out,
+    text-shadow 90ms ease-out;
+}
+
+.char.correct {
+  color: var(--ink);
+}
+
+.char.wrong {
+  color: var(--wrong);
+  background-color: rgba(217, 45, 87, 0.1);
+}
+
+.char.current {
+  color: var(--purple-600);
+  text-shadow: 0 0 10px rgba(124, 77, 255, 0.22);
+}
+
+.char.current::before {
+  animation: caret-blink 1.4s ease-in-out infinite;
+}
+/* Clean typing screen while test is running */
+.app.session-active .seo-content,
+.app.session-active .faq-section {
+  display: none;
+}
+
+@media (min-width: 701px) {
+  .app.session-active .practice-layout {
+    min-height: 0;
+    align-items: start;
+  }
+
+  .app.session-active .typing-card {
+    min-height: 520px;
+  }
+
+  .app.session-active .typing-text {
+    flex: none;
+    min-height: 320px;
+    max-height: 420px;
+  }
+}
+
+@media (max-width: 700px) {
+  .app.session-active .seo-content,
+  .app.session-active .faq-section {
+    display: none;
+  }
+}
+/* Full-screen result dashboard */
+.result-dashboard {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  overflow-y: auto;
+  background: rgba(31, 18, 78, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.result-dashboard-card {
+  width: min(680px, 100%);
+  padding: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 30px;
+  text-align: center;
+  background: linear-gradient(145deg, #ffffff, #f2ecff);
+  box-shadow: 0 30px 80px rgba(20, 10, 65, 0.4);
+}
+
+.result-dashboard-label {
+  margin: 0 0 10px;
+  color: var(--purple-600);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+}
+
+.result-dashboard-card h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(34px, 6vw, 56px);
+  line-height: 1;
+}
+
+.result-dashboard-subtitle {
+  margin: 14px 0 26px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.result-dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.result-dashboard-stats > div {
+  padding: 22px 12px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: white;
+}
+
+.result-dashboard-stats span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.result-dashboard-stats strong {
+  display: block;
+  margin-top: 7px;
+  color: var(--purple-700);
+  font-size: 40px;
+  line-height: 1;
+}
+
+.result-dashboard-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.result-dashboard-actions button {
+  min-height: 54px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 15px;
+  color: white;
+  background: linear-gradient(
+    135deg,
+    var(--purple-500),
+    var(--purple-700)
+  );
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.result-dashboard-actions .result-save-button {
+  color: var(--purple-700);
+  border: 1px solid var(--line);
+  background: white;
+}
+
+@media (max-width: 600px) {
+  .result-dashboard {
+    padding: 12px;
+  }
+
+  .result-dashboard-card {
+    padding: 28px 18px;
+    border-radius: 24px;
+  }
+
+  .result-dashboard-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .result-dashboard-stats > div {
+    padding: 16px;
+  }
+
+  .result-dashboard-stats strong {
+    font-size: 34px;
+  }
+
+  .result-dashboard-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   FINAL PERFORMANCE + SMOOTH CARET UPDATE
+   Keep this block at the very bottom of App.css.
+   ========================================================= */
+
+/* The custom caret is positioned relative to this container. */
+.typing-text {
+  position: relative;
+  contain: layout paint;
+  will-change: auto;
+}
+
+/* Avoid repaint-heavy transitions on every typed character. */
+.char {
+  transition: none;
+}
+
+/* Disable the previous pseudo-element caret. */
+.char.current::before {
+  display: none !important;
+}
+
+/* GPU-friendly custom caret used by the updated App.jsx. */
+.smooth-caret {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 1.3em;
+  border-radius: 999px;
+  background: var(--purple-500);
+  box-shadow: 0 0 10px rgba(124, 77, 255, 0.28);
+  pointer-events: none;
+  z-index: 5;
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition: transform 70ms ease-out;
+  will-change: transform;
+}
+
+/* Hide the caret after the test ends. */
+.app.result-active .smooth-caret {
+  opacity: 0;
+}
+
+/* Render lower-page content only when it approaches the viewport. */
+.seo-content,
+.faq-section,
+.footer,
+.insights-grid {
+  content-visibility: auto;
+  contain-intrinsic-size: 400px;
+}
+
+/* Remove expensive effects while a typing session is active. */
+.app.session-active .typing-card,
+.app.session-active .stats-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Keep the typing screen distraction-free while running. */
+.app.session-active .hero,
+.app.session-active .controls,
+.app.session-active .insights-grid,
+.app.session-active .seo-content,
+.app.session-active .faq-section,
+.app.session-active .footer {
+  display: none !important;
+}
+
+@media (max-width: 700px) {
+  /* Heavy blur and continuous hero animation can lag on low-end phones. */
+  .controls,
+  .typing-card,
+  .stats-card,
+  .insight-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .hero-picture {
+    animation: none !important;
+  }
+
+  /* Remove the old 160px empty space below the typing text. */
+  .app.session-active .typing-text {
+    flex: 1;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding-bottom: 24px !important;
+    scroll-padding-bottom: 24px !important;
+    overflow-y: auto;
+  }
+
+  .app.session-active .practice-layout {
+    width: 100%;
+    min-height: calc(100dvh - 82px);
+    margin-top: 8px !important;
+  }
+
+  .app.session-active .typing-card {
+    min-height: calc(100dvh - 94px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .smooth-caret {
+    transition-duration: 50ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smooth-caret {
+    transition: none !important;
+  }
+}
+/* Zero-Lag CSS Caret Mechanism */
+.char {
+  position: relative;
+  display: inline-block;
+  white-space: pre;
+}
+
+.char.current .smooth-caret {
+  position: absolute;
+  left: 0;
+  top: 10%;
+  width: 2px;
+  height: 80%;
+  background-color: var(--caret-color, #a78bfa);
+  animation: caretBlink 1.4s infinite;
+  pointer-events: none;
+}
+
+.rtl .char.current .smooth-caret {
+  left: auto;
+  right: 0;
+}
+/* Language dropdown same style as content buttons */
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+  min-width: 150px;
+}
+
+.lang-select {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 38px 10px 14px;
+
+  border: 1px solid var(--line);
+  border-radius: 13px;
+
+  color: var(--purple-900);
+  background: rgba(255, 255, 255, 0.88);
+
+  box-shadow: 0 8px 20px rgba(74, 36, 199, 0.08);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+}
+
+.lang-select:hover {
+  transform: translateY(-2px);
+}
+
+.lang-select:focus {
+  border-color: var(--purple-500);
+  box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.16);
+}
+
+.select-wrapper::after {
+  content: "▼";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  color: var(--purple-600);
+  font-size: 10px;
+
+  pointer-events: none;
+}
+@keyframes caretBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.custom-practice-setup {
+  display: grid;
+  gap: 16px;
+  padding: 12px 4px 8px;
+}
+
+.custom-practice-textarea {
+  width: 100%;
+  min-height: 220px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  outline: none;
+  resize: vertical;
+  color: var(--ink);
+  background: #ffffff;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.custom-practice-textarea:focus {
+  border-color: var(--purple-500);
+  box-shadow: 0 0 0 4px rgba(124, 77, 255, 0.12);
+}
+
+.custom-practice-error {
+  margin: 0;
+  color: var(--wrong);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.custom-start-button {
+  width: fit-content;
+  min-height: 48px;
+  padding: 0 24px;
+}
+
+@media (max-width: 700px) {
+  .custom-practice-textarea {
+    min-height: 260px;
+    font-size: 16px;
+  }
+
+  .custom-start-button {
+    width: 100%;
+  }
+}
+.typing-text {
+  position: relative;
+}
+
+.floating-caret {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--purple-500);
+  box-shadow: 0 0 8px rgba(124, 77, 255, 0.3);
+  pointer-events: none;
+  z-index: 10;
+  will-change: transform;
+
+  transition:
+    transform 85ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    height 85ms ease-out;
+
+  animation: caretBlink 1s step-end infinite;
+}
+.social-footer {
+  margin: 28px 8px 0;
+  overflow: hidden;
+  border: 1px solid #e0e6e0;
+  border-radius: 20px;
+  background: #f4f7f4;
+}
+
+.social-footer-top {
+  min-height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 28px;
+}
+
+.social-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  color: #008a5e;
+  font-size: 22px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.social-brand img {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.social-share {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.social-share a,
+.social-share button {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #303832;
+  background: transparent;
+  font-size: 17px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.social-share a:hover,
+.social-share button:hover {
+  color: #008a5e;
+  background: #e3eee8;
+  transform: translateY(-2px);
+}
+
+.social-footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 15px 28px;
+  border-top: 1px solid #e0e6e0;
+  color: #5c665f;
+  font-size: 12px;
+}
+
+.social-footer-bottom nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.social-footer-bottom a {
+  color: #455048;
+  text-decoration: none;
+}
+
+.social-footer-bottom a:hover {
+  color: #008a5e;
+  text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+  .social-footer {
+    margin: 18px 0 0;
+  }
+
+  .social-footer-top {
+    padding: 16px;
+  }
+
+  .social-brand {
+    font-size: 17px;
+  }
+
+  .social-brand img {
+    width: 38px;
+    height: 38px;
+  }
+
+  .social-share {
+    gap: 3px;
+  }
+
+  .social-share a,
+  .social-share button {
+    width: 37px;
+    height: 37px;
+  }
+
+  .social-footer-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 14px 16px;
+  }
+}
+.social-share svg {
+  width: 21px;
+  height: 21px;
+  display: block;
+}
+
+.social-share a svg {
+  fill: currentColor;
+}
+
+.social-share a:nth-child(3) svg {
+  fill: none;
 }
