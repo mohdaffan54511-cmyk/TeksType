@@ -16,21 +16,26 @@ export default function SocialFooter({ wpm = null }) {
           text: shareText,
           url: websiteUrl,
         });
+
         return;
       }
 
       await navigator.clipboard.writeText(websiteUrl);
       alert("Website link copied!");
     } catch {
-      // Sharing cancelled
+      // User cancelled sharing
     }
   };
 
   return (
     <footer className="social-footer">
       <div className="social-footer-top">
-        <a href="/" className="social-brand" aria-label="Type Perfectly home">
-          <img src="/TeksType.jpeg" alt="" />
+        <a
+          href="/"
+          className="social-brand"
+          aria-label="Type Perfectly home"
+        >
+          <img src="/TeksType.jpeg" alt="Type Perfectly logo" />
           <span>Type Perfectly</span>
         </a>
 
@@ -76,6 +81,7 @@ export default function SocialFooter({ wpm = null }) {
                 stroke="currentColor"
                 strokeWidth="2"
               />
+
               <circle
                 cx="12"
                 cy="12"
@@ -83,7 +89,13 @@ export default function SocialFooter({ wpm = null }) {
                 stroke="currentColor"
                 strokeWidth="2"
               />
-              <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" />
+
+              <circle
+                cx="17.5"
+                cy="6.5"
+                r="1.2"
+                fill="currentColor"
+              />
             </svg>
           </a>
 
