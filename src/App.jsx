@@ -1049,8 +1049,10 @@ return (
       )}
       <FAQ />
 <SocialFooter wpm={finished ? wpm : null} />
+
 <footer className="footer">
   <div>© 2026 Type Perfectly. All rights reserved.</div>
+
   <nav aria-label="Legal and information links">
     <a href="/about.html">About</a>
     <a href="/contact.html">Contact</a>
@@ -1067,6 +1069,8 @@ return (
     </a>
   </nav>
 </footer>
+
+{authOpen && (
       {authOpen && (
         <Suspense fallback={null}>
           <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} initialMode={authMode} />
