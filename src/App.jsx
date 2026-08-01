@@ -1069,8 +1069,6 @@ return (
     </a>
   </nav>
 </footer>
-
-{authOpen && (
       {authOpen && (
         <Suspense fallback={null}>
           <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} initialMode={authMode} />
