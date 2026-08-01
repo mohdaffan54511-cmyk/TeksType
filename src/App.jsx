@@ -1048,7 +1048,7 @@ return (
         </section>
       )}
       <FAQ />
-
+<SocialFooter wpm={finished ? wpm : null} />
 
 <footer className="footer">
   <div>© 2026 Type Perfectly. All rights reserved.</div>
