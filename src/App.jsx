@@ -10,7 +10,7 @@ import {
 } from "react";
 import { supabase, supabaseConfigured } from "./lib/supabase";
 import FAQ from "./FAQ";
-
+import SocialFooter from "./SocialFooter";
 import "./App.css";
 
 const AuthModal = lazy(() => import("./AuthModal"));
