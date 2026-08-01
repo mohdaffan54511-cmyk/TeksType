@@ -1047,7 +1047,8 @@ return (
           </div>
         </section>
       )}
-      <FAQ />
+<FAQ />
+
 <SocialFooter wpm={finished ? wpm : null} />
 
 <footer className="footer">
@@ -1069,11 +1070,17 @@ return (
     </a>
   </nav>
 </footer>
-      {authOpen && (
-        <Suspense fallback={null}>
-          <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} initialMode={authMode} />
-        </Suspense>
-      )}
+
+{authOpen && (
+  <Suspense fallback={null}>
+    <AuthModal
+      isOpen={authOpen}
+      onClose={() => setAuthOpen(false)}
+      initialMode={authMode}
+    />
+  </Suspense>
+)}
+
     </main>
   );
 }
