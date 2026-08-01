@@ -1810,3 +1810,16 @@ input {
     padding: 14px 16px;
   }
 }
+.social-share svg {
+  width: 21px;
+  height: 21px;
+  display: block;
+}
+
+.social-share a svg {
+  fill: currentColor;
+}
+
+.social-share a:nth-child(3) svg {
+  fill: none;
+}
