@@ -1050,26 +1050,6 @@ return (
 <FAQ />
 <SocialFooter wpm={finished ? wpm : null} />
 
-<footer className="footer">
-  <div>© 2026 Type Perfectly. All rights reserved.</div>
-
-  <nav aria-label="Legal and information links">
-    <a href="/about.html">About</a>
-    <a href="/contact.html">Contact</a>
-    <a href="/privacy.html">Privacy</a>
-    <a href="/terms.html">Terms</a>
-    <a href="/disclaimer.html">Disclaimer</a>
-
-    <a
-      href="https://docs.google.com/forms/d/e/1FAIpQLScFhnHdXB3dWVWBhEPFfkQKQz3Xzs23UXhCYOqp7O0Q3mMXQg/viewform"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Feedback
-    </a>
-  </nav>
-</footer>
-
 {authOpen ? (
   <Suspense fallback={null}>
     <AuthModal
