@@ -1070,7 +1070,7 @@ return (
   </nav>
 </footer>
 
-{authOpen && (
+{authOpen ? (
   <Suspense fallback={null}>
     <AuthModal
       isOpen={authOpen}
@@ -1078,7 +1078,7 @@ return (
       initialMode={authMode}
     />
   </Suspense>
-)}
+) : null}
 
     </main>
   );
