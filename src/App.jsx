@@ -10,7 +10,7 @@ import {
 } from "react";
 import { supabase, supabaseConfigured } from "./lib/supabase";
 import FAQ from "./FAQ";
-import SocialFooter from "./SocialFooter";
+
 import "./App.css";
 
 const AuthModal = lazy(() => import("./AuthModal"));
@@ -1048,7 +1048,7 @@ return (
         </section>
       )}
       <FAQ />
-<SocialFooter wpm={finished ? wpm : null} />
+
 
 <footer className="footer">
   <div>© 2026 Type Perfectly. All rights reserved.</div>
