@@ -65,40 +65,39 @@ export default function SocialFooter({ wpm = null }) {
           </a>
 
           <a
-            href="https://www.instagram.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Open Instagram"
-            title="Open Instagram"
-          >
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <rect
-                x="3"
-                y="3"
-                width="18"
-                height="18"
-                rx="5"
-                stroke="currentColor"
-                strokeWidth="2"
-              />
+  href="https://www.instagram.com/typeperfectly/"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Follow Type Perfectly on Instagram"
+  title="Follow us on Instagram"
+>
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <rect
+      x="3"
+      y="3"
+      width="18"
+      height="18"
+      rx="5"
+      stroke="currentColor"
+      strokeWidth="2"
+    />
 
-              <circle
-                cx="12"
-                cy="12"
-                r="4"
-                stroke="currentColor"
-                strokeWidth="2"
-              />
+    <circle
+      cx="12"
+      cy="12"
+      r="4"
+      stroke="currentColor"
+      strokeWidth="2"
+    />
 
-              <circle
-                cx="17.5"
-                cy="6.5"
-                r="1.2"
-                fill="currentColor"
-              />
-            </svg>
-          </a>
-
+    <circle
+      cx="17.5"
+      cy="6.5"
+      r="1.2"
+      fill="currentColor"
+    />
+  </svg>
+</a>
           <button
             type="button"
             onClick={handleShare}
