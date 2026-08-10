@@ -1,3 +1,4 @@
+import "./PublisherContent.css";
 export default function PublisherContent() {
   return (
     <section className="publisher-content">
