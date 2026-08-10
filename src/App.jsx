@@ -11,6 +11,7 @@ import {
 import { supabase, supabaseConfigured } from "./lib/supabase";
 import FAQ from "./FAQ";
 import SocialFooter from "./SocialFooter";
+import PublisherContent from "./PublisherContent";
 import "./App.css";
 
 const AuthModal = lazy(() => import("./AuthModal"));
@@ -1047,9 +1048,11 @@ return (
           </div>
         </section>
       )}
-<FAQ />
-<SocialFooter wpm={finished ? wpm : null} />
+<PublisherContent />
 
+<FAQ />
+
+<SocialFooter wpm={finished ? wpm : null} />
 {authOpen ? (
   <Suspense fallback={null}>
     <AuthModal
