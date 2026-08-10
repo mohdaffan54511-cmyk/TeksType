@@ -1,0 +1,121 @@
+.publisher-content {
+  margin: 32px 8px 0;
+  display: grid;
+  gap: 18px;
+}
+
+.publisher-content-header {
+  text-align: center;
+  padding: 36px 28px;
+  border: 1px solid rgba(101, 56, 237, 0.14);
+  border-radius: 24px;
+  background: linear-gradient(
+    145deg,
+    #ffffff,
+    #f5f0ff
+  );
+  box-shadow: 0 18px 45px rgba(71, 42, 151, 0.08);
+}
+
+.publisher-eyebrow {
+  margin: 0 0 10px;
+  color: #6538ed;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.publisher-content-header h2 {
+  max-width: 760px;
+  margin: 0 auto;
+  color: #17112c;
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.1;
+}
+
+.publisher-content-header > p:last-child {
+  max-width: 760px;
+  margin: 14px auto 0;
+  color: #625a78;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.publisher-content article {
+  padding: 28px;
+  border: 1px solid rgba(101, 56, 237, 0.14);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 14px 35px rgba(71, 42, 151, 0.06);
+}
+
+.publisher-content article h3 {
+  margin: 0 0 12px;
+  color: #241056;
+  font-size: 23px;
+  line-height: 1.25;
+}
+
+.publisher-content article p {
+  margin: 0 0 14px;
+  color: #625a78;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.publisher-content article p:last-child {
+  margin-bottom: 0;
+}
+
+.publisher-content ul,
+.publisher-content ol {
+  margin: 14px 0 0;
+  padding-left: 24px;
+}
+
+.publisher-content li {
+  margin-bottom: 9px;
+  color: #625a78;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.publisher-content strong {
+  color: #4a24c7;
+}
+
+/* Mobile */
+
+@media (max-width: 700px) {
+  .publisher-content {
+    margin: 20px 0 0;
+    gap: 14px;
+  }
+
+  .publisher-content-header {
+    padding: 26px 18px;
+    border-radius: 20px;
+  }
+
+  .publisher-content-header h2 {
+    font-size: 28px;
+  }
+
+  .publisher-content-header > p:last-child {
+    font-size: 14px;
+  }
+
+  .publisher-content article {
+    padding: 22px 18px;
+    border-radius: 18px;
+  }
+
+  .publisher-content article h3 {
+    font-size: 20px;
+  }
+
+  .publisher-content article p,
+  .publisher-content li {
+    font-size: 14px;
+  }
+}
