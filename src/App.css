@@ -1843,3 +1843,135 @@ input {
     gap: 12px;
   }
 }
+/* ==================================================
+   FINAL MOBILE ORDER + SMOOTH SCROLL FIX
+================================================== */
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 16px;
+}
+
+/* Smooth scrolling inside scrollable areas */
+.typing-text,
+.content-control .button-strip {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+
+/* =========================
+   MOBILE FINAL PAGE ORDER
+========================= */
+
+@media (max-width: 700px) {
+
+  .app {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 1. Header */
+  .topbar {
+    order: 0;
+  }
+
+  /* 2. Hero */
+  .hero {
+    order: 1;
+  }
+
+  /* 3. Language / Content / Time */
+  .controls {
+    order: 2;
+    margin-top: 8px;
+  }
+
+  /* 4. Typing test */
+  .practice-layout {
+    order: 3;
+    margin-top: 14px;
+  }
+
+  /* 5. Learning content */
+  .publisher-content {
+    order: 4;
+  }
+
+  /* 6. FAQ */
+  .faq {
+    order: 5;
+  }
+
+  /* 7. Footer */
+  .social-footer {
+    order: 6;
+  }
+
+
+  /* smoother horizontal content buttons */
+
+  .content-control .button-strip {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+  }
+
+  .content-control .button-strip button {
+    scroll-snap-align: start;
+  }
+
+
+  /* cleaner mobile typing area */
+
+  .typing-text {
+    overscroll-behavior: contain;
+  }
+
+
+  /* compact mobile header */
+
+  .topbar {
+    gap: 8px;
+  }
+
+  .brand {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .top-actions {
+    flex-wrap: nowrap;
+    gap: 5px;
+  }
+
+  .ghost-button {
+    min-height: 36px;
+    padding: 0 9px;
+    font-size: 9px;
+  }
+}
+
+
+/* While typing: keep typing area directly below header */
+
+@media (max-width: 700px) {
+
+  .app.session-active .practice-layout {
+    order: 1;
+    margin-top: 8px !important;
+  }
+
+}
+
+
+/* Respect users who disable motion */
+
+@media (prefers-reduced-motion: reduce) {
+
+  html,
+  .typing-text,
+  .content-control .button-strip {
+    scroll-behavior: auto;
+  }
+}
