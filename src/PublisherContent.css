@@ -1,10 +1,10 @@
 /* =========================================
-   TYPEPERFECTLY — PREMIUM LEARNING CENTER
+   TYPEPERFECTLY — PREMIUM BENTO LEARNING
 ========================================= */
 
 .publisher-content {
   width: min(1080px, calc(100% - 24px));
-  margin: 42px auto 0;
+  margin: 52px auto 0;
 
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -15,95 +15,71 @@
 
 
 /* =========================================
-   MAIN HEADER
+   BIG CENTER HEADING
 ========================================= */
 
 .publisher-content-header {
   grid-column: 1 / -1;
-  position: relative;
-  overflow: hidden;
 
-  padding: 54px 32px;
+  padding: 38px 20px 48px;
+
   text-align: center;
 
-  border: 1px solid rgba(101, 56, 237, 0.13);
-  border-radius: 28px;
-
-  background:
-    radial-gradient(
-      circle at 85% 15%,
-      rgba(124, 77, 255, 0.15),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 12% 90%,
-      rgba(183, 150, 255, 0.12),
-      transparent 32%
-    ),
-    linear-gradient(
-      145deg,
-      #ffffff,
-      #f8f5ff
-    );
-
-  box-shadow:
-    0 18px 45px rgba(71, 42, 151, 0.08);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 
 .publisher-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
 
-  margin: 0 0 13px;
-  padding: 7px 11px;
+  margin: 0 0 12px;
 
-  border-radius: 999px;
-
-  color: #6538ed;
-  background: rgba(124, 77, 255, 0.08);
+  color: #7c4dff;
 
   font-size: 10px;
   font-weight: 900;
 
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
 }
 
 
 .publisher-content-header h2 {
-  position: relative;
-  z-index: 1;
+  max-width: 850px;
 
-  max-width: 720px;
   margin: 0 auto;
 
-  color: #17112c;
+  color: #11111b;
 
-  font-size: clamp(32px, 4vw, 46px);
-  line-height: 1.08;
+  font-size: clamp(42px, 6vw, 68px);
+  line-height: 0.98;
 
-  letter-spacing: -0.035em;
+  font-weight: 900;
+
+  letter-spacing: -0.055em;
+}
+
+
+.publisher-content-header h2 span {
+  color: #4a4ed6;
 }
 
 
 .publisher-content-header > p:last-child {
-  position: relative;
-  z-index: 1;
+  max-width: 620px;
 
-  max-width: 670px;
+  margin: 18px auto 0;
 
-  margin: 15px auto 0;
-
-  color: #6b637d;
+  color: #6c6680;
 
   font-size: 15px;
-  line-height: 1.7;
+  line-height: 1.65;
 }
 
 
 /* =========================================
-   CARDS
+   ALL CARDS
 ========================================= */
 
 .publisher-content article {
@@ -111,174 +87,243 @@
 
   position: relative;
 
-  display: flex;
-  flex-direction: column;
-
   min-width: 0;
-  min-height: 100%;
 
-  padding: 27px 28px;
+  padding: 36px 34px;
 
   overflow: hidden;
 
-  border: 1px solid rgba(101, 56, 237, 0.11);
-  border-radius: 21px;
+  border-radius: 26px;
 
-  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(101, 56, 237, 0.10);
 
-  box-shadow:
-    0 8px 24px rgba(71, 42, 151, 0.055);
+  background: #f5f4fb;
+
+  box-shadow: none;
 
   transition:
     transform 180ms ease,
-    box-shadow 180ms ease,
-    border-color 180ms ease;
+    box-shadow 180ms ease;
 }
 
 
-/* subtle purple top accent */
-
-.publisher-content article::after {
-  content: "";
-
-  position: absolute;
-  top: 0;
-  left: 28px;
-
-  width: 46px;
-  height: 3px;
-
-  border-radius: 0 0 999px 999px;
-
-  background: linear-gradient(
-    90deg,
-    #7c4dff,
-    #b796ff
-  );
-}
-
-
-/* card number */
+/* number */
 
 .publisher-content article::before {
   content: counter(learning-card, decimal-leading-zero);
 
-  width: fit-content;
+  display: block;
 
-  margin-bottom: 16px;
-  padding: 5px 9px;
+  margin-bottom: 22px;
 
-  border-radius: 999px;
+  color: #7c4dff;
 
-  color: #6538ed;
-  background: #f3efff;
-
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 900;
 
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
+}
+
+
+/* remove old purple top line */
+
+.publisher-content article::after {
+  display: none;
 }
 
 
 .publisher-content article h3 {
-  margin: 0 0 11px;
+  max-width: 440px;
 
-  color: #241056;
+  margin: 0 0 16px;
 
-  font-size: 21px;
-  line-height: 1.28;
+  color: #11111b;
 
-  letter-spacing: -0.025em;
+  font-size: clamp(24px, 3vw, 32px);
+  line-height: 1.05;
+
+  font-weight: 900;
+
+  letter-spacing: -0.04em;
 }
 
 
 .publisher-content article p {
-  margin: 0 0 12px;
+  max-width: 700px;
 
-  color: #686078;
+  margin: 0 0 14px;
 
-  font-size: 14.5px;
-  line-height: 1.72;
-}
+  color: #625d73;
 
-
-.publisher-content article p:last-child {
-  margin-bottom: 0;
+  font-size: 15px;
+  line-height: 1.7;
 }
 
 
 .publisher-content ul,
 .publisher-content ol {
-  margin: 14px 0 0;
+  margin: 18px 0 0;
   padding-left: 21px;
 }
 
 
 .publisher-content li {
-  margin-bottom: 8px;
+  margin-bottom: 9px;
 
-  color: #686078;
+  color: #625d73;
 
-  font-size: 14.5px;
-  line-height: 1.62;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 
 .publisher-content strong {
-  color: #5630ce;
+  color: #5440cf;
 }
 
 
 /* =========================================
-   FEATURED CARDS
+   FIRST CARD — LARGE LIGHT CARD
 ========================================= */
 
-/* Routine card */
+.publisher-content article:nth-of-type(1) {
+  grid-column: 1 / -1;
 
-.publisher-content article:nth-of-type(4) {
+  min-height: 260px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 48px 46px;
+
   background:
+    radial-gradient(
+      circle at 88% 50%,
+      rgba(124, 77, 255, 0.17),
+      transparent 28%
+    ),
     linear-gradient(
-      145deg,
-      #ffffff,
-      #f9f6ff
+      135deg,
+      #f4f4fa,
+      #eeecf8
     );
 }
 
 
-/* Result understanding */
+.publisher-content article:nth-of-type(1) h3 {
+  font-size: clamp(30px, 4vw, 42px);
+}
 
-.publisher-content article:nth-of-type(8) {
+
+/* =========================================
+   SECOND CARD — DARK PURPLE
+========================================= */
+
+.publisher-content article:nth-of-type(2) {
+  min-height: 270px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  background:
+    radial-gradient(
+      circle at 85% 50%,
+      rgba(183, 150, 255, 0.16),
+      transparent 35%
+    ),
+    #292d7b;
+
+  border-color: transparent;
+}
+
+
+.publisher-content article:nth-of-type(2)::before {
+  color: #bdbdff;
+}
+
+
+.publisher-content article:nth-of-type(2) h3,
+.publisher-content article:nth-of-type(2) p,
+.publisher-content article:nth-of-type(2) li,
+.publisher-content article:nth-of-type(2) strong {
+  color: #ffffff;
+}
+
+
+/* =========================================
+   THIRD CARD — BRIGHT PURPLE
+========================================= */
+
+.publisher-content article:nth-of-type(3) {
+  min-height: 270px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  background:
+    radial-gradient(
+      circle at 90% 50%,
+      rgba(255, 255, 255, 0.10),
+      transparent 32%
+    ),
+    linear-gradient(
+      135deg,
+      #5d5ce2,
+      #444bd2
+    );
+
+  border-color: transparent;
+}
+
+
+.publisher-content article:nth-of-type(3)::before {
+  color: #dedcff;
+}
+
+
+.publisher-content article:nth-of-type(3) h3,
+.publisher-content article:nth-of-type(3) p,
+.publisher-content article:nth-of-type(3) li,
+.publisher-content article:nth-of-type(3) strong {
+  color: #ffffff;
+}
+
+
+/* =========================================
+   REMAINING CARDS
+========================================= */
+
+.publisher-content article:nth-of-type(n + 4) {
   background:
     linear-gradient(
       145deg,
       #ffffff,
-      #f8f5ff
+      #f8f6ff
     );
 }
 
 
-/* Last card gets a wide finish on desktop */
+/* last card full width */
 
 .publisher-content article:last-of-type {
   grid-column: 1 / -1;
-
-  min-height: auto;
 }
 
 
 /* =========================================
-   HOVER — DESKTOP ONLY
+   HOVER
 ========================================= */
 
 @media (hover: hover) {
 
   .publisher-content article:hover {
-    transform: translateY(-3px);
-
-    border-color: rgba(124, 77, 255, 0.22);
+    transform: translateY(-4px);
 
     box-shadow:
-      0 15px 38px rgba(74, 36, 199, 0.10);
+      0 18px 42px rgba(50, 35, 120, 0.10);
   }
 }
 
@@ -290,15 +335,12 @@
 @media (max-width: 900px) {
 
   .publisher-content {
-    width: min(720px, calc(100% - 24px));
-
     grid-template-columns: 1fr;
-
-    gap: 15px;
   }
 
 
   .publisher-content-header,
+  .publisher-content article:nth-of-type(1),
   .publisher-content article:last-of-type {
     grid-column: auto;
   }
@@ -314,7 +356,7 @@
   .publisher-content {
     width: 100%;
 
-    margin: 24px 0 0;
+    margin: 32px 0 0;
 
     grid-template-columns: 1fr;
 
@@ -323,24 +365,15 @@
 
 
   .publisher-content-header {
-    padding: 32px 18px;
-
-    border-radius: 21px;
-  }
-
-
-  .publisher-eyebrow {
-    margin-bottom: 11px;
-
-    font-size: 9px;
+    padding: 28px 14px 34px;
   }
 
 
   .publisher-content-header h2 {
-    max-width: 330px;
+    max-width: 350px;
 
-    font-size: 29px;
-    line-height: 1.08;
+    font-size: 38px;
+    line-height: 0.98;
   }
 
 
@@ -348,57 +381,48 @@
     max-width: 330px;
 
     font-size: 13px;
-    line-height: 1.6;
   }
 
 
   .publisher-content article,
+  .publisher-content article:nth-of-type(1),
+  .publisher-content article:nth-of-type(2),
+  .publisher-content article:nth-of-type(3),
   .publisher-content article:last-of-type {
     grid-column: auto;
 
-    padding: 22px 19px;
+    min-height: auto;
 
-    border-radius: 18px;
-  }
+    padding: 27px 22px;
 
-
-  .publisher-content article::after {
-    left: 19px;
-
-    width: 38px;
+    border-radius: 21px;
   }
 
 
   .publisher-content article::before {
-    margin-bottom: 13px;
-
-    padding: 4px 8px;
+    margin-bottom: 15px;
 
     font-size: 9px;
   }
 
 
-  .publisher-content article h3 {
-    font-size: 18px;
+  .publisher-content article h3,
+  .publisher-content article:nth-of-type(1) h3 {
+    font-size: 23px;
+    line-height: 1.08;
   }
 
 
   .publisher-content article p,
   .publisher-content li {
     font-size: 13.5px;
-    line-height: 1.65;
-  }
-
-
-  .publisher-content ul,
-  .publisher-content ol {
-    padding-left: 19px;
+    line-height: 1.62;
   }
 }
 
 
 /* =========================================
-   TYPING SESSION
+   ACTIVE TYPING SESSION
 ========================================= */
 
 .app.session-active .publisher-content {
@@ -407,7 +431,7 @@
 
 
 /* =========================================
-   ACCESSIBILITY / PERFORMANCE
+   ACCESSIBILITY
 ========================================= */
 
 @media (prefers-reduced-motion: reduce) {
