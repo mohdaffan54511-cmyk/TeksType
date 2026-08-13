@@ -409,6 +409,16 @@ export default function App() {
     : 0;
   const score = correctChars * 10 + wpm * 2;
   const sessionActive = mobileFocused || running;
+  useEffect(() => {
+  if (!sessionActive) return;
+
+  requestAnimationFrame(() => {
+    document.querySelector(".practice-layout")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  });
+}, [sessionActive]);
   const isRTL = selectedLang === "arabic";
 
   const finishSession = useCallback(() => {
