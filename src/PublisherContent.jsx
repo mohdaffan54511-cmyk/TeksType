@@ -8,9 +8,9 @@ export default function PublisherContent() {
           TYPING LEARNING CENTER
         </p>
 
-        <h2>
-          Learn How to Improve Your Typing Speed
-        </h2>
+       <h2>
+  Improve Your <span>Typing Speed</span>
+</h2>
 
         <p>
           Use these practical typing tips to improve your WPM,
