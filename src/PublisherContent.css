@@ -1,124 +1,349 @@
+/* =========================================
+   TYPEPERFECTLY LEARNING CENTER
+========================================= */
+
 .publisher-content {
-  margin: 32px 8px 0;
+  width: min(1120px, calc(100% - 16px));
+  margin: 36px auto 0;
+
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
+
+  counter-reset: learning-card;
 }
+
+
+/* ===== MAIN HEADING ===== */
 
 .publisher-content-header {
+  grid-column: 1 / -1;
+
+  position: relative;
+  overflow: hidden;
+
+  padding: 52px 30px;
   text-align: center;
-  padding: 36px 28px;
-  border: 1px solid rgba(101, 56, 237, 0.14);
-  border-radius: 24px;
-  background: linear-gradient(
-    145deg,
-    #ffffff,
-    #f5f0ff
-  );
-  box-shadow: 0 18px 45px rgba(71, 42, 151, 0.08);
+
+  border: 1px solid rgba(101, 56, 237, 0.16);
+  border-radius: 28px;
+
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(124, 77, 255, 0.18),
+      transparent 35%
+    ),
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #f3edff
+    );
+
+  box-shadow:
+    0 20px 55px rgba(74, 36, 199, 0.10);
 }
+
+
+/* purple decorative glow */
+
+.publisher-content-header::after {
+  content: "";
+  position: absolute;
+
+  width: 220px;
+  height: 220px;
+
+  right: -80px;
+  bottom: -100px;
+
+  border-radius: 50%;
+
+  background: rgba(124, 77, 255, 0.12);
+  filter: blur(10px);
+
+  pointer-events: none;
+}
+
 
 .publisher-eyebrow {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
+
   color: #6538ed;
+
   font-size: 11px;
   font-weight: 900;
-  letter-spacing: 0.14em;
+
+  letter-spacing: 0.18em;
 }
+
 
 .publisher-content-header h2 {
-  max-width: 760px;
+  position: relative;
+  z-index: 2;
+
+  max-width: 720px;
+
   margin: 0 auto;
+
   color: #17112c;
-  font-size: clamp(28px, 4vw, 44px);
-  line-height: 1.1;
+
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 1.06;
+  letter-spacing: -0.035em;
 }
 
+
 .publisher-content-header > p:last-child {
-  max-width: 760px;
-  margin: 14px auto 0;
+  position: relative;
+  z-index: 2;
+
+  max-width: 700px;
+
+  margin: 16px auto 0;
+
   color: #625a78;
+
   font-size: 16px;
   line-height: 1.7;
 }
 
+
+/* =========================================
+   CONTENT CARDS
+========================================= */
+
 .publisher-content article {
-  padding: 28px;
-  border: 1px solid rgba(101, 56, 237, 0.14);
+  counter-increment: learning-card;
+
+  position: relative;
+
+  min-width: 0;
+
+  padding: 30px;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(101, 56, 237, 0.13);
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 14px 35px rgba(71, 42, 151, 0.06);
+
+  background: rgba(255, 255, 255, 0.95);
+
+  box-shadow:
+    0 12px 30px rgba(71, 42, 151, 0.06);
+
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
 }
+
+
+/* purple top accent */
+
+.publisher-content article::after {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 4px;
+
+  background: linear-gradient(
+    90deg,
+    #7c4dff,
+    #a78bfa
+  );
+}
+
+
+/* number badge */
+
+.publisher-content article::before {
+  content: counter(learning-card, decimal-leading-zero);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 38px;
+  height: 28px;
+
+  margin-bottom: 18px;
+
+  border-radius: 999px;
+
+  color: #6538ed;
+
+  background: #f1ebff;
+
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
 
 .publisher-content article h3 {
   margin: 0 0 12px;
+
   color: #241056;
-  font-size: 23px;
+
+  font-size: 22px;
   line-height: 1.25;
+  letter-spacing: -0.02em;
 }
 
+
 .publisher-content article p {
-  margin: 0 0 14px;
+  margin: 0 0 13px;
+
   color: #625a78;
-  font-size: 16px;
+
+  font-size: 15px;
   line-height: 1.75;
 }
+
 
 .publisher-content article p:last-child {
   margin-bottom: 0;
 }
 
+
 .publisher-content ul,
 .publisher-content ol {
-  margin: 14px 0 0;
-  padding-left: 24px;
+  margin: 16px 0 0;
+  padding-left: 22px;
 }
+
 
 .publisher-content li {
   margin-bottom: 9px;
+
   color: #625a78;
-  font-size: 16px;
+
+  font-size: 15px;
   line-height: 1.65;
 }
 
+
 .publisher-content strong {
-  color: #4a24c7;
+  color: #5b32d6;
 }
 
-/* Mobile */
+
+/* =========================================
+   IMPORTANT CARDS FULL WIDTH
+========================================= */
+
+/* 15-minute routine */
+
+.publisher-content article:nth-of-type(4) {
+  grid-column: 1 / -1;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #f7f3ff
+    );
+}
+
+
+/* practice modes */
+
+.publisher-content article:nth-of-type(6) {
+  grid-column: 1 / -1;
+}
+
+
+/* =========================================
+   HOVER
+========================================= */
+
+@media (hover: hover) {
+
+  .publisher-content article:hover {
+    transform: translateY(-5px);
+
+    border-color: rgba(124, 77, 255, 0.28);
+
+    box-shadow:
+      0 20px 45px rgba(74, 36, 199, 0.12);
+  }
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
 
 @media (max-width: 700px) {
+
   .publisher-content {
-    margin: 20px 0 0;
+    width: 100%;
+
+    margin: 22px 0 0;
+
+    grid-template-columns: 1fr;
+
     gap: 14px;
   }
 
+
   .publisher-content-header {
-    padding: 26px 18px;
-    border-radius: 20px;
+    padding: 34px 20px;
+
+    border-radius: 22px;
   }
 
+
   .publisher-content-header h2 {
-    font-size: 28px;
+    font-size: 30px;
   }
+
 
   .publisher-content-header > p:last-child {
     font-size: 14px;
+    line-height: 1.65;
   }
 
-  .publisher-content article {
-    padding: 22px 18px;
-    border-radius: 18px;
+
+  .publisher-content article,
+  .publisher-content article:nth-of-type(4),
+  .publisher-content article:nth-of-type(6) {
+    grid-column: auto;
+
+    padding: 23px 20px;
+
+    border-radius: 19px;
   }
+
+
+  .publisher-content article::before {
+    width: 34px;
+    height: 26px;
+
+    margin-bottom: 14px;
+  }
+
 
   .publisher-content article h3 {
-    font-size: 20px;
+    font-size: 19px;
   }
+
 
   .publisher-content article p,
   .publisher-content li {
     font-size: 14px;
   }
 }
+
+
+/* =========================================
+   HIDE WHILE USER IS TYPING
+========================================= */
 
 .app.session-active .publisher-content {
   display: none !important;
