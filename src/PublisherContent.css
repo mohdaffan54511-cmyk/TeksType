@@ -119,3 +119,7 @@
     font-size: 14px;
   }
 }
+
+.app.session-active .publisher-content {
+  display: none !important;
+}
