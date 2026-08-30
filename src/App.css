@@ -1980,3 +1980,8 @@ html {
   opacity: 1 !important;
   visibility: visible !important;
 }
+/* Ensure result dashboard takes 100% full width of the container */
+.practice-layout:has(.tp-results-wrapper) {
+  display: block !important;
+  width: 100% !important;
+}
