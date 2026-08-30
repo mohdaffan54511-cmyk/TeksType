@@ -59,17 +59,16 @@ export default function TypingResults({
   const animatedWpm = useCountUp(wpm, 850, mounted);
   const animatedAccuracy = useCountUp(accuracy, 800, mounted);
 
-  // Derived telemetry metrics
   const correctChars = Math.max(0, characters - errors);
   const calculatedRaw = Math.round(wpm * (100 / Math.max(accuracy, 1)));
   const calculatedConsistency =
     consistency ?? Math.max(30, Math.min(99, Math.round(100 - errors * 8 - (100 - accuracy) * 0.5)));
 
-  // SVG Dual-Axis Chart Setup matching TypePerfectly aesthetic
+  // SVG Dual-Axis Chart Setup (Ultra-wide 1000px stretch)
   const chart = useMemo(() => {
-    const width = 820;
+    const width = 1000;
     const height = 160;
-    const padX = 24;
+    const padX = 28;
     const padY = 20;
 
     const intervals = Math.min(Math.max(time, 5), 15);
@@ -85,12 +84,12 @@ export default function TypingResults({
       const t = i / (intervals - 1);
       const x = padX + t * (width - 2 * padX);
 
-      // Smooth Raw Speed Curve (Lavender Dashed Line)
+      // Lavender Dashed Raw Line
       const rawWpm = Math.max(10, baseSpeed * 1.08 - t * (baseSpeed * 0.25) + Math.sin(t * Math.PI * 1.6) * 2);
       const yRaw = height - padY - ((rawWpm / maxY) * (height - 2 * padY));
       pointsRaw.push({ x, y: yRaw, sec: i + 1 });
 
-      // Dynamic Active Speed Curve (Vibrant Purple Solid Line)
+      // Vibrant Purple Wavy Speed Line
       let waveOffset = 0;
       if (i === Math.floor(intervals * 0.3)) waveOffset = -baseSpeed * 0.35;
       else if (i === Math.floor(intervals * 0.5)) waveOffset = baseSpeed * 0.45;
@@ -100,7 +99,6 @@ export default function TypingResults({
       const yActive = height - padY - ((activeWpm / maxY) * (height - 2 * padY));
       pointsWpm.push({ x, y: yActive, sec: i + 1 });
 
-      // Error marker cross
       if (errors > 0 && i === Math.floor(intervals * 0.5)) {
         errorMarkers.push({ x, y: yRaw - 14, sec: i + 1 });
       }
@@ -141,7 +139,6 @@ export default function TypingResults({
     };
   }, [wpm, time, errors]);
 
-  // Keyboard shortcut listener (Enter -> Try Again)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Enter' && onTryAgain) {
@@ -190,7 +187,6 @@ export default function TypingResults({
 
   return (
     <section className={`tp-hud-theme-card ${mounted ? 'tp-mounted' : ''}`} role="region" aria-label="Typing telemetry result">
-      {/* Toast Alert */}
       <div className={`tp-hud-toast ${copiedToast ? 'tp-toast-show' : ''}`} aria-live="polite">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
           <polyline points="20 6 9 17 4 12" />
@@ -198,9 +194,7 @@ export default function TypingResults({
         Result copied to clipboard!
       </div>
 
-      {/* Main HUD Row */}
       <div className="tp-hud-main">
-        {/* Left Hero Block */}
         <div className="tp-hero-side">
           <div className="tp-hero-unit">
             <span className="tp-label-tag">wpm</span>
@@ -213,11 +207,9 @@ export default function TypingResults({
           </div>
         </div>
 
-        {/* Center / Right Full Telemetry Chart */}
         <div className="tp-chart-stage">
           <span className="tp-y-label-left">Words per Minute</span>
 
-          {/* Left Y Axis Values */}
           <div className="tp-axis-ticks-left">
             {chart.yTicksLeft.map((tick, idx) => (
               <span key={idx} style={{ top: `${(tick.y / chart.height) * 100}%` }}>
@@ -226,30 +218,23 @@ export default function TypingResults({
             ))}
           </div>
 
-          {/* SVG Canvas */}
           <svg className="tp-svg-canvas" viewBox={`0 0 ${chart.width} ${chart.height}`} preserveAspectRatio="none">
-            {/* Horizontal Gridlines */}
             {chart.yTicksLeft.map((tick, idx) => (
               <line key={idx} x1="0" y1={tick.y} x2={chart.width} y2={tick.y} className="tp-chart-grid" />
             ))}
 
-            {/* Lavender Dashed Raw Curve */}
             <path d={chart.rawPath} className="tp-line-raw" />
 
-            {/* Raw Dots */}
             {chart.pointsRaw.map((pt, idx) => (
-              <circle key={`raw-${idx}`} cx={pt.x} cy={pt.y} r="2" className="tp-dot-raw" />
+              <circle key={`raw-${idx}`} cx={pt.x} cy={pt.y} r="2.2" className="tp-dot-raw" />
             ))}
 
-            {/* Vibrant Purple Active Curve */}
             <path d={chart.wpmPath} className="tp-line-wpm" />
 
-            {/* Active Dots */}
             {chart.pointsWpm.map((pt, idx) => (
-              <circle key={`wpm-${idx}`} cx={pt.x} cy={pt.y} r="2.4" className="tp-dot-wpm" />
+              <circle key={`wpm-${idx}`} cx={pt.x} cy={pt.y} r="2.6" className="tp-dot-wpm" />
             ))}
 
-            {/* Error Marker Cross */}
             {chart.errorMarkers.map((err, idx) => (
               <text key={idx} x={err.x} y={err.y} className="tp-err-x" textAnchor="middle">
                 ×
@@ -257,14 +242,12 @@ export default function TypingResults({
             ))}
           </svg>
 
-          {/* Right Y Axis Label & Values */}
           <span className="tp-y-label-right">Errors</span>
           <div className="tp-axis-ticks-right">
             <span style={{ top: '12%' }}>{errors > 0 ? errors : 1}</span>
             <span style={{ top: '88%' }}>0</span>
           </div>
 
-          {/* Bottom X Axis Numbers */}
           <div className="tp-axis-ticks-bottom">
             {chart.pointsWpm.map((pt, idx) => (
               <span key={idx} style={{ left: `${(pt.x / chart.width) * 100}%` }}>
@@ -275,7 +258,6 @@ export default function TypingResults({
         </div>
       </div>
 
-      {/* Bottom Telemetry Monospace Numbers Bar */}
       <div className="tp-telemetry-row">
         <div className="tp-tele-col">
           <span className="tp-tele-lbl">test type</span>
@@ -307,7 +289,6 @@ export default function TypingResults({
         </div>
       </div>
 
-      {/* Sleek Action Buttons Strip */}
       <div className="tp-actions-strip">
         <button type="button" className="tp-btn tp-btn-primary" onClick={onTryAgain} autoFocus>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -322,7 +303,7 @@ export default function TypingResults({
           <button type="button" className="tp-btn tp-btn-secondary" onClick={onChangeTest}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <circle cx="12" cy="12" r="3" />
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
             </svg>
             <span>Change Test</span>
           </button>
