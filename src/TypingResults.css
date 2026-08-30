@@ -1,15 +1,15 @@
 /* ==========================================================================
-   TypePerfectly Signature White/Purple Telemetry Theme
+   TypePerfectly Full-Open Width Telemetry Theme
    ========================================================================== */
 
 .tp-hud-theme-card {
   width: 100% !important;
   max-width: 100% !important;
-  grid-column: 1 / -1;
+  display: block !important;
   background-color: #ffffff !important;
   border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 22px;
-  padding: 32px 40px 24px;
+  border-radius: 24px;
+  padding: 34px 44px 26px;
   box-sizing: border-box;
   opacity: 0;
   transform: translateY(8px);
@@ -27,23 +27,21 @@
   transform: translateY(0);
 }
 
-/* --------------------------------------------------------------------------
-   HUD Main Stage (Left Scores + Right Chart)
-   -------------------------------------------------------------------------- */
-
+/* Main HUD Layout (Left Numbers + Ultra-wide Chart) */
 .tp-hud-main {
   display: grid;
-  grid-template-columns: 150px 1fr;
-  gap: 32px;
+  grid-template-columns: 160px 1fr;
+  gap: 36px;
   align-items: center;
-  padding-bottom: 22px;
+  padding-bottom: 24px;
+  width: 100%;
 }
 
 /* Left Hero Scores */
 .tp-hero-side {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
 .tp-hero-unit {
@@ -52,51 +50,51 @@
 }
 
 .tp-label-tag {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
-  color: #6366f1; /* Vibrant Indigo */
+  color: #6366f1;
   letter-spacing: -0.02em;
   line-height: 1;
-  margin-bottom: 3px;
+  margin-bottom: 4px;
 }
 
 .tp-val-display {
-  font-size: 60px;
+  font-size: 64px;
   font-weight: 900;
   line-height: 0.92;
   letter-spacing: -0.04em;
 }
 
 .tp-purple-display {
-  color: #7c3aed; /* TypePerfectly Signature Violet */
+  color: #7c3aed;
 }
 
 .tp-cyan-display {
-  color: #06b6d4; /* Crisp Cyan */
+  color: #06b6d4;
 }
 
-/* Center / Right Chart Area */
+/* Center / Right Wide Chart Area */
 .tp-chart-stage {
   position: relative;
   width: 100%;
-  height: 160px;
+  height: 165px;
 }
 
 .tp-svg-canvas {
   width: 100%;
   height: 100%;
+  display: block;
   overflow: visible;
 }
 
 .tp-chart-grid {
-  stroke: #f1f5f9; /* Subtle light divider */
+  stroke: #f1f5f9;
   stroke-width: 1;
 }
 
-/* Curves */
 .tp-line-raw {
   fill: none;
-  stroke: #cbd5e1; /* Soft Lavender Gray */
+  stroke: #cbd5e1;
   stroke-width: 2.2;
   stroke-dasharray: 4 4;
   stroke-linecap: round;
@@ -108,7 +106,7 @@
 
 .tp-line-wpm {
   fill: none;
-  stroke: #7c3aed; /* Signature Violet Stroke */
+  stroke: #7c3aed;
   stroke-width: 2.8;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -127,10 +125,9 @@
   font-family: inherit;
 }
 
-/* Left Y-Axis */
 .tp-y-label-left {
   position: absolute;
-  left: -24px;
+  left: -26px;
   top: 50%;
   transform: translateY(-50%) rotate(-90deg);
   font-size: 10px;
@@ -155,10 +152,9 @@
   color: #94a3b8;
 }
 
-/* Right Y-Axis */
 .tp-y-label-right {
   position: absolute;
-  right: -24px;
+  right: -26px;
   top: 50%;
   transform: translateY(-50%) rotate(90deg);
   font-size: 10px;
@@ -183,11 +179,10 @@
   color: #cbd5e1;
 }
 
-/* Bottom X-Axis Numbers */
 .tp-axis-ticks-bottom {
   position: absolute;
   left: 0;
-  bottom: -20px;
+  bottom: -22px;
   width: 100%;
   pointer-events: none;
 }
@@ -200,16 +195,14 @@
   color: #94a3b8;
 }
 
-/* --------------------------------------------------------------------------
-   Bottom Telemetry Stats Row
-   -------------------------------------------------------------------------- */
-
+/* Bottom Telemetry Row */
 .tp-telemetry-row {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1.4fr 1.1fr 1fr;
+  grid-template-columns: 1.5fr 1fr 1.6fr 1.2fr 1.1fr;
   gap: 16px;
-  padding: 24px 0 20px;
+  padding: 26px 0 22px;
   border-top: 1px solid #f8fafc;
+  width: 100%;
 }
 
 .tp-tele-col {
@@ -218,7 +211,7 @@
 }
 
 .tp-tele-lbl {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #6366f1;
   margin-bottom: 4px;
@@ -226,7 +219,7 @@
 }
 
 .tp-tele-val-dark {
-  font-size: 14.5px;
+  font-size: 15px;
   font-weight: 700;
   color: #1e1b4b;
   line-height: 1.2;
@@ -240,7 +233,7 @@
 }
 
 .tp-tele-num {
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 900;
   color: #1e1b4b;
   line-height: 1;
@@ -254,10 +247,7 @@
   margin-top: 4px;
 }
 
-/* --------------------------------------------------------------------------
-   Action Buttons
-   -------------------------------------------------------------------------- */
-
+/* Action Controls */
 .tp-actions-strip {
   display: flex;
   align-items: center;
@@ -271,8 +261,8 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 42px;
-  padding: 0 22px;
+  height: 44px;
+  padding: 0 24px;
   font-size: 13.5px;
   font-weight: 700;
   border-radius: 9999px;
@@ -291,7 +281,6 @@
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.35);
 }
 
-/* Primary Violet Button */
 .tp-btn-primary {
   background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
   color: #ffffff;
@@ -307,7 +296,7 @@
 
 .tp-kbd {
   font-size: 11px;
-  padding: 1px 5px;
+  padding: 1px 6px;
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.25);
   color: #ffffff;
@@ -315,7 +304,6 @@
   line-height: 1;
 }
 
-/* Secondary White Glass Button */
 .tp-btn-secondary {
   background: #ffffff;
   color: #334155;
@@ -330,7 +318,6 @@
   transform: translateY(-1px);
 }
 
-/* Toast */
 .tp-hud-toast {
   position: absolute;
   top: -46px;
@@ -362,10 +349,6 @@
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
-
-/* --------------------------------------------------------------------------
-   Responsive
-   -------------------------------------------------------------------------- */
 
 @media (max-width: 900px) {
   .tp-hud-theme-card {
