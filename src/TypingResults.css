@@ -1,144 +1,153 @@
 /* ==========================================================================
-   TypePerfectly Developer Telemetry HUD Result Styles
+   TypePerfectly Signature White/Purple Telemetry Theme
    ========================================================================== */
 
-.mk-results-card {
+.tp-hud-theme-card {
   width: 100% !important;
   max-width: 100% !important;
   grid-column: 1 / -1;
-  background: #ffffff;
+  background-color: #ffffff !important;
   border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 24px;
-  padding: 32px 40px;
-  box-shadow: 0 20px 45px -12px rgba(109, 40, 217, 0.08),
-              0 2px 6px rgba(0, 0, 0, 0.02);
+  border-radius: 22px;
+  padding: 32px 40px 24px;
   box-sizing: border-box;
   opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 320ms cubic-bezier(0.16, 1, 0.3, 1),
-              transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(8px);
+  transition: opacity 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
   font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
   position: relative;
+  overflow: hidden;
+  box-shadow: 0 16px 36px -8px rgba(109, 40, 217, 0.08),
+              0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
-.mk-results-card.mk-mounted {
+.tp-hud-theme-card.tp-mounted {
   opacity: 1;
   transform: translateY(0);
 }
 
 /* --------------------------------------------------------------------------
-   HUD Row (Left Hero Block + Right SVG Chart)
+   HUD Main Stage (Left Scores + Right Chart)
    -------------------------------------------------------------------------- */
 
-.mk-hud-row {
+.tp-hud-main {
   display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 36px;
+  grid-template-columns: 150px 1fr;
+  gap: 32px;
   align-items: center;
-  padding-bottom: 28px;
-  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 22px;
 }
 
 /* Left Hero Scores */
-.mk-hero-block {
+.tp-hero-side {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
-.mk-hero-stat {
+.tp-hero-unit {
   display: flex;
   flex-direction: column;
 }
 
-.mk-hero-label {
-  font-size: 15px;
-  font-weight: 700;
-  color: #6366f1;
+.tp-label-tag {
+  font-size: 20px;
+  font-weight: 800;
+  color: #6366f1; /* Vibrant Indigo */
   letter-spacing: -0.02em;
   line-height: 1;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
-.mk-hero-value {
-  font-size: 58px;
+.tp-val-display {
+  font-size: 60px;
   font-weight: 900;
-  line-height: 0.95;
+  line-height: 0.92;
   letter-spacing: -0.04em;
 }
 
-.mk-accent-violet {
-  color: #7c3aed;
+.tp-purple-display {
+  color: #7c3aed; /* TypePerfectly Signature Violet */
 }
 
-.mk-accent-cyan {
-  color: #06b6d4;
+.tp-cyan-display {
+  color: #06b6d4; /* Crisp Cyan */
 }
 
-/* --------------------------------------------------------------------------
-   Center / Right Telemetry Chart
-   -------------------------------------------------------------------------- */
-
-.mk-chart-container {
+/* Center / Right Chart Area */
+.tp-chart-stage {
   position: relative;
   width: 100%;
-  height: 150px;
-  display: flex;
-  align-items: center;
+  height: 160px;
 }
 
-.mk-chart-svg {
+.tp-svg-canvas {
   width: 100%;
   height: 100%;
   overflow: visible;
 }
 
-.mk-grid-line {
-  stroke: #f1f5f9;
+.tp-chart-grid {
+  stroke: #f1f5f9; /* Subtle light divider */
   stroke-width: 1;
 }
 
-/* Raw WPM Curve (Dashed) */
-.mk-curve-raw {
+/* Curves */
+.tp-line-raw {
   fill: none;
-  stroke: #cbd5e1;
+  stroke: #cbd5e1; /* Soft Lavender Gray */
   stroke-width: 2.2;
   stroke-dasharray: 4 4;
   stroke-linecap: round;
 }
 
-/* Active WPM Curve (Solid glowing violet) */
-.mk-curve-wpm {
+.tp-dot-raw {
+  fill: #94a3b8;
+}
+
+.tp-line-wpm {
   fill: none;
-  stroke: #7c3aed;
+  stroke: #7c3aed; /* Signature Violet Stroke */
   stroke-width: 2.8;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.mk-dot-wpm {
+.tp-dot-wpm {
   fill: #6366f1;
   stroke: #ffffff;
   stroke-width: 1.5;
 }
 
-.mk-err-cross {
+.tp-err-x {
   fill: #f43f5e;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 900;
   font-family: inherit;
 }
 
-/* Axis Labels */
-.mk-axis-wpm {
+/* Left Y-Axis */
+.tp-y-label-left {
   position: absolute;
   left: -24px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.tp-axis-ticks-left {
+  position: absolute;
+  left: 2px;
   top: 0;
   height: 100%;
   pointer-events: none;
 }
 
-.mk-axis-wpm span {
+.tp-axis-ticks-left span {
   position: absolute;
   transform: translateY(-50%);
   font-size: 10px;
@@ -146,15 +155,27 @@
   color: #94a3b8;
 }
 
-.mk-axis-errors {
+/* Right Y-Axis */
+.tp-y-label-right {
   position: absolute;
-  right: -20px;
+  right: -24px;
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.tp-axis-ticks-right {
+  position: absolute;
+  right: 0;
   top: 0;
   height: 100%;
   pointer-events: none;
 }
 
-.mk-axis-errors span {
+.tp-axis-ticks-right span {
   position: absolute;
   transform: translateY(-50%);
   font-size: 10px;
@@ -162,7 +183,8 @@
   color: #cbd5e1;
 }
 
-.mk-axis-time {
+/* Bottom X-Axis Numbers */
+.tp-axis-ticks-bottom {
   position: absolute;
   left: 0;
   bottom: -20px;
@@ -170,83 +192,86 @@
   pointer-events: none;
 }
 
-.mk-axis-time span {
+.tp-axis-ticks-bottom span {
   position: absolute;
   transform: translateX(-50%);
-  font-size: 10px;
+  font-size: 10.5px;
   font-weight: 700;
   color: #94a3b8;
 }
 
 /* --------------------------------------------------------------------------
-   Bottom Telemetry Metrics Grid
+   Bottom Telemetry Stats Row
    -------------------------------------------------------------------------- */
 
-.mk-metrics-bar {
+.tp-telemetry-row {
   display: grid;
   grid-template-columns: 1.4fr 1fr 1.4fr 1.1fr 1fr;
   gap: 16px;
-  padding: 26px 0 28px;
+  padding: 24px 0 20px;
+  border-top: 1px solid #f8fafc;
 }
 
-.mk-metric-col {
+.tp-tele-col {
   display: flex;
   flex-direction: column;
 }
 
-.mk-sub-label {
-  font-size: 11px;
+.tp-tele-lbl {
+  font-size: 12px;
   font-weight: 700;
   color: #6366f1;
   margin-bottom: 4px;
   text-transform: lowercase;
 }
 
-.mk-sub-text {
-  font-size: 13.5px;
+.tp-tele-val-dark {
+  font-size: 14.5px;
   font-weight: 700;
-  color: #334155;
+  color: #1e1b4b;
+  line-height: 1.2;
 }
 
-.mk-text-dim {
+.tp-tele-val-muted {
+  font-size: 12px;
   color: #94a3b8;
-  font-size: 11.5px;
+  font-weight: 600;
   margin-top: 2px;
 }
 
-.mk-sub-value {
-  font-size: 26px;
+.tp-tele-num {
+  font-size: 30px;
   font-weight: 900;
   color: #1e1b4b;
-  line-height: 1.1;
+  line-height: 1;
   letter-spacing: -0.02em;
 }
 
-.mk-sub-small {
+.tp-tele-sub {
   font-size: 10px;
   font-weight: 600;
   color: #94a3b8;
-  margin-top: 3px;
+  margin-top: 4px;
 }
 
 /* --------------------------------------------------------------------------
    Action Buttons
    -------------------------------------------------------------------------- */
 
-.mk-actions-row {
+.tp-actions-strip {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  padding-top: 4px;
+  gap: 12px;
+  padding-top: 12px;
 }
 
-.mk-btn {
+.tp-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 44px;
+  height: 42px;
   padding: 0 22px;
   font-size: 13.5px;
   font-weight: 700;
@@ -254,34 +279,35 @@
   cursor: pointer;
   outline: none;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 140ms ease, box-shadow 160ms ease, background 160ms ease;
   user-select: none;
 }
 
-.mk-btn:active {
+.tp-btn:active {
   transform: scale(0.97);
 }
 
-.mk-btn:focus-visible {
+.tp-btn:focus-visible {
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.35);
 }
 
-.mk-btn-primary {
+/* Primary Violet Button */
+.tp-btn-primary {
   background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
   color: #ffffff;
   border: none;
   box-shadow: 0 4px 16px rgba(124, 58, 237, 0.28);
 }
 
-.mk-btn-primary:hover {
+.tp-btn-primary:hover {
   background: linear-gradient(135deg, #6d28d9 0%, #4f46e5 100%);
   box-shadow: 0 6px 20px rgba(124, 58, 237, 0.38);
   transform: translateY(-1px);
 }
 
-.mk-kbd {
+.tp-kbd {
   font-size: 11px;
-  padding: 2px 5px;
+  padding: 1px 5px;
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.25);
   color: #ffffff;
@@ -289,14 +315,15 @@
   line-height: 1;
 }
 
-.mk-btn-secondary {
+/* Secondary White Glass Button */
+.tp-btn-secondary {
   background: #ffffff;
   color: #334155;
   border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
-.mk-btn-secondary:hover {
+.tp-btn-secondary:hover {
   background: #f8fafc;
   border-color: #cbd5e1;
   color: #0f172a;
@@ -304,7 +331,7 @@
 }
 
 /* Toast */
-.mk-toast {
+.tp-hud-toast {
   position: absolute;
   top: -46px;
   left: 50%;
@@ -327,59 +354,65 @@
   white-space: nowrap;
 }
 
-.mk-toast svg {
+.tp-hud-toast svg {
   color: #34d399;
 }
 
-.mk-toast-show {
+.tp-toast-show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
 
 /* --------------------------------------------------------------------------
-   Responsive Layout
+   Responsive
    -------------------------------------------------------------------------- */
 
-@media (max-width: 860px) {
-  .mk-hud-row {
+@media (max-width: 900px) {
+  .tp-hud-theme-card {
+    padding: 24px 20px;
+  }
+  .tp-hud-main {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  .mk-hero-block {
+  .tp-hero-side {
     flex-direction: row;
-    gap: 32px;
+    gap: 36px;
   }
-  .mk-metrics-bar {
+  .tp-telemetry-row {
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
   }
 }
 
 @media (max-width: 600px) {
-  .mk-results-card {
-    padding: 24px 18px;
+  .tp-val-display {
+    font-size: 46px;
   }
-  .mk-metrics-bar {
+  .tp-label-tag {
+    font-size: 16px;
+  }
+  .tp-telemetry-row {
     grid-template-columns: repeat(2, 1fr);
     gap: 14px;
   }
-  .mk-actions-row {
+  .tp-actions-strip {
     flex-direction: column;
     width: 100%;
   }
-  .mk-btn {
+  .tp-btn {
     width: 100%;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mk-results-card,
-  .mk-toast,
-  .mk-btn {
+  .tp-hud-theme-card,
+  .tp-hud-toast,
+  .tp-btn {
     transition: none !important;
     animation: none !important;
   }
-  .mk-results-card {
+  .tp-hud-theme-card {
     opacity: 1;
     transform: none;
   }
