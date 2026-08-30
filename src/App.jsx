@@ -12,6 +12,7 @@ import { supabase, supabaseConfigured } from "./lib/supabase";
 import FAQ from "./FAQ";
 import SocialFooter from "./SocialFooter";
 import PublisherContent from "./PublisherContent";
+import TypingResults from "./TypingResults";
 import "./App.css";
 
 const AuthModal = lazy(() => import("./AuthModal"));
@@ -86,7 +87,6 @@ const LANGUAGE_POOLS = {
   code_javascript: "const let var function return import export default async await if else for while switch case break try catch throw new class extends element".split(" "),
 };
 
-// In-memory JSON cache to reduce network bandwidth
 const jsonCache = new Map();
 
 const randomItem = (items) => items[Math.floor(Math.random() * items.length)];
@@ -98,6 +98,7 @@ function extractWords(data) {
   if (Array.isArray(data.default)) return data.default;
   return null;
 }
+
 function cleanCustomWords(value) {
   return value
     .normalize("NFKC")
@@ -106,6 +107,7 @@ function cleanCustomWords(value) {
     .split(/\s+/)
     .filter(Boolean);
 }
+
 function makeText(mode, selectedLang, customWords = null) {
   if (customWords && customWords.length > 0) {
     return Array.from({ length: 36 }, () => randomItem(customWords)).join(" ");
@@ -174,17 +176,16 @@ export default function App() {
   const activeCharRef = useRef(null);
 
   const [caretPos, setCaretPos] = useState({
-  x: 0,
-  y: 0,
-  height: 0,
-  ready: false,
-});
+    x: 0,
+    y: 0,
+    height: 0,
+    ready: false,
+  });
   const savedRef = useRef(false);
   const cloudSavedRef = useRef(false);
   const startedAtRef = useRef(0);
   const [elapsedMs, setElapsedMs] = useState(0);
 
-  // Audio Pool inside Ref to prevent scope leaks
   const audioPoolRef = useRef([]);
   const audioIndexRef = useRef(0);
 
@@ -210,54 +211,54 @@ export default function App() {
   }, [soundOn]);
 
   const resetSession = useCallback(
-  (
-    nextMode = mode,
-    nextDuration = duration,
-    nextWords = langWords,
-    nextLang = selectedLang,
-    options = {}
-  ) => {
-    const { keepCustomActive = false } = options;
+    (
+      nextMode = mode,
+      nextDuration = duration,
+      nextWords = langWords,
+      nextLang = selectedLang,
+      options = {}
+    ) => {
+      const { keepCustomActive = false } = options;
 
-    setMode(nextMode);
-    setDuration(nextDuration);
-    setText(makeText(nextMode, nextLang, nextWords));
-    setInput("");
-    setRunning(false);
-    setFinished(false);
-    setTimeLeft(nextDuration);
-    setElapsedMs(0);
-    setMobileFocused(false);
+      setMode(nextMode);
+      setDuration(nextDuration);
+      setText(makeText(nextMode, nextLang, nextWords));
+      setInput("");
+      setRunning(false);
+      setFinished(false);
+      setTimeLeft(nextDuration);
+      setElapsedMs(0);
+      setMobileFocused(false);
 
-    setIsCustomActive(
-      nextMode === "custom" && keepCustomActive
-    );
+      setIsCustomActive(
+        nextMode === "custom" && keepCustomActive
+      );
 
-    if (nextMode !== "custom" || !keepCustomActive) {
-      setCustomError("");
-    }
+      if (nextMode !== "custom" || !keepCustomActive) {
+        setCustomError("");
+      }
 
-    startedAtRef.current = 0;
-    savedRef.current = false;
-    cloudSavedRef.current = false;
-    mobileBufferRef.current = "";
-    lastMobileLineRef.current = -1;
+      startedAtRef.current = 0;
+      savedRef.current = false;
+      cloudSavedRef.current = false;
+      mobileBufferRef.current = "";
+      lastMobileLineRef.current = -1;
 
-    setCloudSaveStatus("idle");
+      setCloudSaveStatus("idle");
 
-    if (mobileInputRef.current) {
-      mobileInputRef.current.value = "";
-      mobileInputRef.current.blur();
-    }
+      if (mobileInputRef.current) {
+        mobileInputRef.current.value = "";
+        mobileInputRef.current.blur();
+      }
 
-    requestAnimationFrame(() => {
-      appRef.current?.focus({
-        preventScroll: true,
+      requestAnimationFrame(() => {
+        appRef.current?.focus({
+          preventScroll: true,
+        });
       });
-    });
-  },
-  [duration, mode, langWords, selectedLang]
-);
+    },
+    [duration, mode, langWords, selectedLang]
+  );
 
   const startCustomPractice = useCallback(() => {
     const words = cleanCustomWords(customInput);
@@ -343,7 +344,6 @@ export default function App() {
     resetSession,
   ]);
 
-  // Fetch JSON with in-memory cache
   useEffect(() => {
     if (selectedLang === "english") {
       setLangWords(null);
@@ -402,6 +402,18 @@ export default function App() {
     return correct;
   }, [input, text]);
 
+  // Compute matched whole words
+  const correctWordsCount = useMemo(() => {
+    if (!input.trim()) return 0;
+    const inputWords = input.trim().split(/\s+/);
+    const textWords = text.trim().split(/\s+/);
+    let count = 0;
+    for (let i = 0; i < inputWords.length; i++) {
+      if (inputWords[i] && inputWords[i] === textWords[i]) count++;
+    }
+    return count;
+  }, [input, text]);
+
   const accuracy = accuracyOf(correctChars, input.length);
   const elapsedMinutes = Math.max(elapsedMs, 1) / 60000;
   const wpm = input.length && elapsedMs >= 250
@@ -409,16 +421,18 @@ export default function App() {
     : 0;
   const score = correctChars * 10 + wpm * 2;
   const sessionActive = mobileFocused || running;
-  useEffect(() => {
-  if (!sessionActive) return;
 
-  requestAnimationFrame(() => {
-    document.querySelector(".practice-layout")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
+  useEffect(() => {
+    if (!sessionActive) return;
+
+    requestAnimationFrame(() => {
+      document.querySelector(".practice-layout")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     });
-  });
-}, [sessionActive]);
+  }, [sessionActive]);
+
   const isRTL = selectedLang === "arabic";
 
   const finishSession = useCallback(() => {
@@ -434,7 +448,6 @@ export default function App() {
     mobileInputRef.current?.blur();
   }, [duration]);
 
-  // Pure Keystroke Handlers
   const processCharacter = useCallback((character) => {
     if (!character || character.length !== 1 || finished) return;
 
@@ -456,7 +469,6 @@ export default function App() {
     }
   }, [finished, noBackspace]);
 
-  // Clean Declarative Trigger for Session Completion (Fixes state updater side-effect)
   useEffect(() => {
     if (text.length > 0 && input.length >= text.length && running && !finished) {
       finishSession();
@@ -465,7 +477,6 @@ export default function App() {
 
   useEffect(() => { appRef.current?.focus({ preventScroll: true }); }, []);
 
-  // Supabase Auth Listener
   useEffect(() => {
     if (!supabaseConfigured || !supabase) return undefined;
     let active = true;
@@ -489,7 +500,6 @@ export default function App() {
     };
   }, []);
 
-  // High-precision Timer
   useEffect(() => {
     if (!running || finished) return undefined;
 
@@ -518,7 +528,6 @@ export default function App() {
     return () => cancelAnimationFrame(frameId);
   }, [duration, finishSession, finished, running]);
 
-  // Local Storage Saver
   useEffect(() => {
     if (!finished || savedRef.current) return;
     savedRef.current = true;
@@ -533,7 +542,6 @@ export default function App() {
     });
   }, [accuracy, bestWpm, duration, finished, mode, score, wpm]);
 
-  // Supabase Cloud Saver
   useEffect(() => {
     if (!finished || !user || !supabase || cloudSavedRef.current) return;
 
@@ -645,73 +653,76 @@ export default function App() {
       mobileBufferRef.current = "";
     }
   }, [noBackspace, processCharacter, removeCharacter]);
- useEffect(() => {
-  if (!mobileLike()) return undefined;
 
-  const frame = requestAnimationFrame(() => {
-    const typingBox = document.querySelector(".typing-text");
-    const currentCharacter = typingBox?.querySelector(".char.current");
+  useEffect(() => {
+    if (!mobileLike()) return undefined;
 
-    if (!typingBox) return;
+    const frame = requestAnimationFrame(() => {
+      const typingBox = document.querySelector(".typing-text");
+      const currentCharacter = typingBox?.querySelector(".char.current");
 
-    if (input.length === 0) {
-      lastMobileLineRef.current = -1;
-      typingBox.scrollTop = 0;
+      if (!typingBox) return;
+
+      if (input.length === 0) {
+        lastMobileLineRef.current = -1;
+        typingBox.scrollTop = 0;
+        return;
+      }
+
+      if (!currentCharacter) return;
+
+      const typingRect = typingBox.getBoundingClientRect();
+      const currentRect = currentCharacter.getBoundingClientRect();
+
+      const currentLine =
+        currentRect.top -
+        typingRect.top +
+        typingBox.scrollTop;
+
+      if (currentLine === lastMobileLineRef.current) return;
+
+      lastMobileLineRef.current = currentLine;
+
+      typingBox.scrollTo({
+        top: Math.max(0, currentLine - typingBox.clientHeight * 0.32),
+        behavior: "smooth",
+      });
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [input.length]);
+
+  useLayoutEffect(() => {
+    const container = textContainerRef.current;
+    const activeCharacter = activeCharRef.current;
+
+    if (!container || !activeCharacter || finished) {
+      setCaretPos((previous) => ({
+        ...previous,
+        ready: false,
+      }));
       return;
     }
 
-    if (!currentCharacter) return;
+    const containerRect = container.getBoundingClientRect();
+    const characterRect = activeCharacter.getBoundingClientRect();
 
-    const typingRect = typingBox.getBoundingClientRect();
-const currentRect = currentCharacter.getBoundingClientRect();
+    setCaretPos({
+      x:
+        characterRect.left -
+        containerRect.left +
+        container.scrollLeft,
 
-const currentLine =
-  currentRect.top -
-  typingRect.top +
-  typingBox.scrollTop;
+      y:
+        characterRect.top -
+        containerRect.top +
+        container.scrollTop,
 
-    if (currentLine === lastMobileLineRef.current) return;
-
-    lastMobileLineRef.current = currentLine;
-
-    typingBox.scrollTo({
-      top: Math.max(0, currentLine - typingBox.clientHeight * 0.32),
-      behavior: "smooth",
+      height: characterRect.height,
+      ready: true,
     });
-  });
+  }, [input.length, text, finished, isRTL]);
 
-  return () => cancelAnimationFrame(frame);
-}, [input.length]);
-  useLayoutEffect(() => {
-  const container = textContainerRef.current;
-  const activeCharacter = activeCharRef.current;
-
-  if (!container || !activeCharacter || finished) {
-    setCaretPos((previous) => ({
-      ...previous,
-      ready: false,
-    }));
-    return;
-  }
-
-  const containerRect = container.getBoundingClientRect();
-  const characterRect = activeCharacter.getBoundingClientRect();
-
-  setCaretPos({
-    x:
-      characterRect.left -
-      containerRect.left +
-      container.scrollLeft,
-
-    y:
-      characterRect.top -
-      containerRect.top +
-      container.scrollTop,
-
-    height: characterRect.height,
-    ready: true,
-  });
-}, [input.length, text, finished, isRTL]);
   const logout = useCallback(async () => {
     if (!supabase) return;
     const { error } = await supabase.auth.signOut();
@@ -719,6 +730,7 @@ const currentLine =
   }, []);
 
   const durationLabel = duration === 300 ? "5 MIN" : `${duration}S`;
+  const currentLangName = LANGUAGES.find((lang) => lang.id === selectedLang)?.name || selectedLang;
 
   return (
     <main
@@ -833,246 +845,207 @@ const currentLine =
       </section>
 
       <section className="practice-layout">
-        <article className="typing-card">
-          <input
-            ref={mobileInputRef}
-            className="mobile-capture"
-            type="text"
-            aria-label="Typing input"
-            inputMode="text"
-            autoCapitalize="off"
-            autoCorrect="off"
-            autoComplete="off"
-            spellCheck={false}
-            onFocus={() => setMobileFocused(true)}
-            onBlur={() => setMobileFocused(false)}
-            onInput={handleMobileInput}
-            onKeyDown={(event) => {
-              event.stopPropagation();
-              if (event.key === "Backspace" && noBackspace) event.preventDefault();
+        {finished ? (
+          <TypingResults
+            wpm={wpm}
+            accuracy={accuracy}
+            characters={input.length}
+            correctWords={correctWordsCount}
+            errors={Math.max(0, input.length - correctChars)}
+            time={duration}
+            language={currentLangName}
+            onTryAgain={restartCurrentSession}
+            onChangeTest={() => {
+              resetSession();
+              document.querySelector(".controls")?.scrollIntoView({ behavior: "smooth" });
             }}
           />
-
-          <div className="typing-card-header">
-            <div>
-              <span>{durationLabel}</span>
-              <span>{selectedLang.toUpperCase()} / {mode.toUpperCase()}</span>
-            </div>
-            {!finished && !(mode === "custom" && !isCustomActive) && (
-              <button type="button" className="primary-button" onClick={focusTyping}>
-                START TYPING
-              </button>
-            )}
-          </div>
-
-          {mode === "custom" && !isCustomActive ? (
-            <div className="custom-practice-setup">
-              <textarea
-                className="custom-practice-textarea"
-                value={customInput}
-                rows={8}
-                placeholder="Paste your custom vocabulary or text here..."
-                onChange={(event) => {
-                  setCustomInput(event.target.value);
-                  if (customError) setCustomError("");
+        ) : (
+          <>
+            <article className="typing-card">
+              <input
+                ref={mobileInputRef}
+                className="mobile-capture"
+                type="text"
+                aria-label="Typing input"
+                inputMode="text"
+                autoCapitalize="off"
+                autoCorrect="off"
+                autoComplete="off"
+                spellCheck={false}
+                onFocus={() => setMobileFocused(true)}
+                onBlur={() => setMobileFocused(false)}
+                onInput={handleMobileInput}
+                onKeyDown={(event) => {
+                  event.stopPropagation();
+                  if (event.key === "Backspace" && noBackspace) event.preventDefault();
                 }}
               />
 
-              {customError && (
-                <p className="custom-practice-error" role="alert">
-                  {customError}
-                </p>
-              )}
+              <div className="typing-card-header">
+                <div>
+                  <span>{durationLabel}</span>
+                  <span>{selectedLang.toUpperCase()} / {mode.toUpperCase()}</span>
+                </div>
+                {!(mode === "custom" && !isCustomActive) && (
+                  <button type="button" className="primary-button" onClick={focusTyping}>
+                    START TYPING
+                  </button>
+                )}
+              </div>
 
-              <button
-                type="button"
-                className="primary-button custom-start-button"
-                onClick={startCustomPractice}
-              >
-                START PRACTICE
-              </button>
-            </div>
-          ) : (
-            <>
-          <div
-            ref={textContainerRef}
-            className={`typing-text ${isRTL ? "rtl" : ""}`}
-            dir={isRTL ? "rtl" : "ltr"}
-            role="textbox"
-            aria-label="Typing practice text."
-            tabIndex={0}
-            onPointerDown={focusTyping}
-          >
-           {!finished && caretPos.ready && (
-  <span
-    className="floating-caret"
-    aria-hidden="true"
-    style={{
-     height: `${caretPos.height * 0.82}px`,
-transform: `translate3d(
-  ${caretPos.x}px,
-  ${caretPos.y + caretPos.height * 0.09}px,
-  0
-)`,
-    }}
-  />
-)} 
-            {Array.from(text.matchAll(/\S+|\s+/g)).map((match) => {
-              const chunk = match[0];
-              const wordStartIndex = match.index ?? 0;
-              const isWhitespace = /^\s+$/.test(chunk);
+              {mode === "custom" && !isCustomActive ? (
+                <div className="custom-practice-setup">
+                  <textarea
+                    className="custom-practice-textarea"
+                    value={customInput}
+                    rows={8}
+                    placeholder="Paste your custom vocabulary or text here..."
+                    onChange={(event) => {
+                      setCustomInput(event.target.value);
+                      if (customError) setCustomError("");
+                    }}
+                  />
 
-              const characters = typeof Intl !== "undefined" && Intl.Segmenter
-                ? Array.from(new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(chunk), (s) => s.segment)
-                : Array.from(chunk);
+                  {customError && (
+                    <p className="custom-practice-error" role="alert">
+                      {customError}
+                    </p>
+                  )}
 
-              let currentOffset = 0;
-
-              return (
-                <span
-                  key={`${wordStartIndex}-${chunk}`}
-                  className={isWhitespace ? "space-group" : "word-group"}
-                >
-                  {characters.map((character) => {
-                    const index = wordStartIndex + currentOffset;
-                    const charLength = character.length;
-                    currentOffset += charLength;
-
-                    let className = "char upcoming";
-
-                    if (index < input.length) {
-                      className =
-                        input.slice(index, index + charLength) === character
-                          ? "char correct"
-                          : "char wrong";
-                    } else if (index <= input.length && input.length < index + charLength && !finished) {
-                      className = "char current";
-                    }
-
-                   const isActive =
-  index <= input.length &&
-  input.length < index + charLength &&
-  !finished;
-
-return (
-  <span
-    key={index}
-    ref={isActive ? activeCharRef : null}
-    className={className}
-  >
-    {character}
-  </span>
-);
-                  })}
-                </span>
-              );
-            })}
-          </div>
-
-          <div className="legend-row">
-            <span><i className="dot correct-dot" />Correct</span>
-            <span><i className="dot wrong-dot" />Wrong</span>
-            <span><i className="dot upcoming-dot" />Upcoming</span>
-          </div>
-
-          {!finished && (
-            <div className="typing-actions">
-              <button type="button" className="restart-button" onClick={restartCurrentSession}>
-                RESTART SESSION
-              </button>
-            </div>
-          )}
-            </>
-          )}
-        </article>
-
-        <aside className="stats-card">
-          <div className="stats-title">Live Stats</div>
-          <div className="stats-grid">
-            <div>
-              <span>Time</span>
-              <strong>{finished ? durationLabel : `${timeLeft}s`}</strong>
-            </div>
-            <div>
-              <span>WPM</span>
-              <strong>{wpm}</strong>
-            </div>
-            <div>
-              <span>Accuracy</span>
-              <strong>{accuracy}%</strong>
-            </div>
-          </div>
-
-          {finished && (
-            <div className="finished-box">
-              <strong>Great job!</strong>
-              <span>{wpm} WPM · {accuracy}% Accuracy</span>
-              <span>Score: {score}</span>
-
-              <button type="button" onClick={restartCurrentSession}>
-                TRY AGAIN
-              </button>
-
-              {!user ? (
-                <button type="button" className="save-progress-button" onClick={() => { setAuthMode("signup"); setAuthOpen(true); }}>
-                  CREATE FREE ACCOUNT TO SAVE THIS SCORE
-                </button>
+                  <button
+                    type="button"
+                    className="primary-button custom-start-button"
+                    onClick={startCustomPractice}
+                  >
+                    START PRACTICE
+                  </button>
+                </div>
               ) : (
-                <small className={`cloud-save-status ${cloudSaveStatus}`} role="status">
-                  {cloudSaveStatus === "saving" && "Saving to your account..."}
-                  {cloudSaveStatus === "saved" && "Saved to your account"}
-                  {cloudSaveStatus === "error" && "Cloud save failed. Try again later."}
-                  {cloudSaveStatus === "idle" && "Your result will be saved automatically."}
-                </small>
+                <>
+                  <div
+                    ref={textContainerRef}
+                    className={`typing-text ${isRTL ? "rtl" : ""}`}
+                    dir={isRTL ? "rtl" : "ltr"}
+                    role="textbox"
+                    aria-label="Typing practice text."
+                    tabIndex={0}
+                    onPointerDown={focusTyping}
+                  >
+                    {caretPos.ready && (
+                      <span
+                        className="floating-caret"
+                        aria-hidden="true"
+                        style={{
+                          height: `${caretPos.height * 0.82}px`,
+                          transform: `translate3d(
+                            ${caretPos.x}px,
+                            ${caretPos.y + caretPos.height * 0.09}px,
+                            0
+                          )`,
+                        }}
+                      />
+                    )} 
+                    {Array.from(text.matchAll(/\S+|\s+/g)).map((match) => {
+                      const chunk = match[0];
+                      const wordStartIndex = match.index ?? 0;
+                      const isWhitespace = /^\s+$/.test(chunk);
+
+                      const characters = typeof Intl !== "undefined" && Intl.Segmenter
+                        ? Array.from(new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(chunk), (s) => s.segment)
+                        : Array.from(chunk);
+
+                      let currentOffset = 0;
+
+                      return (
+                        <span
+                          key={`${wordStartIndex}-${chunk}`}
+                          className={isWhitespace ? "space-group" : "word-group"}
+                        >
+                          {characters.map((character) => {
+                            const index = wordStartIndex + currentOffset;
+                            const charLength = character.length;
+                            currentOffset += charLength;
+
+                            let className = "char upcoming";
+
+                            if (index < input.length) {
+                              className =
+                                input.slice(index, index + charLength) === character
+                                  ? "char correct"
+                                  : "char wrong";
+                            } else if (index <= input.length && input.length < index + charLength) {
+                              className = "char current";
+                            }
+
+                            const isActive =
+                              index <= input.length &&
+                              input.length < index + charLength;
+
+                            return (
+                              <span
+                                key={index}
+                                ref={isActive ? activeCharRef : null}
+                                className={className}
+                              >
+                                {character}
+                              </span>
+                            );
+                          })}
+                        </span>
+                      );
+                    })}
+                  </div>
+
+                  <div className="legend-row">
+                    <span><i className="dot correct-dot" />Correct</span>
+                    <span><i className="dot wrong-dot" />Wrong</span>
+                    <span><i className="dot upcoming-dot" />Upcoming</span>
+                  </div>
+
+                  <div className="typing-actions">
+                    <button type="button" className="restart-button" onClick={restartCurrentSession}>
+                      RESTART SESSION
+                    </button>
+                  </div>
+                </>
               )}
-            </div>
-          )}
-        </aside>
+            </article>
+
+            <aside className="stats-card">
+              <div className="stats-title">Live Stats</div>
+              <div className="stats-grid">
+                <div>
+                  <span>Time</span>
+                  <strong>{`${timeLeft}s`}</strong>
+                </div>
+                <div>
+                  <span>WPM</span>
+                  <strong>{wpm}</strong>
+                </div>
+                <div>
+                  <span>Accuracy</span>
+                  <strong>{accuracy}%</strong>
+                </div>
+              </div>
+            </aside>
+          </>
+        )}
       </section>
 
-      {finished && (
-        <section className="result-dashboard" role="dialog" aria-modal="true" aria-labelledby="result-dashboard-title">
-          <div className="result-dashboard-card">
-            <p className="result-dashboard-label">TEST COMPLETE</p>
-            <h2 id="result-dashboard-title">Your Typing Result</h2>
-            <p className="result-dashboard-subtitle">
-              {selectedLang.toUpperCase()} · {mode.toUpperCase()} · {durationLabel}
-            </p>
+      <PublisherContent />
+      <FAQ />
+      <SocialFooter wpm={finished ? wpm : null} />
 
-            <div className="result-dashboard-stats">
-              <div><span>WPM</span><strong>{wpm}</strong></div>
-              <div><span>Accuracy</span><strong>{accuracy}%</strong></div>
-              <div><span>Score</span><strong>{score}</strong></div>
-            </div>
-
-            <div className="result-dashboard-actions">
-              <button type="button" onClick={restartCurrentSession}>
-                TRY AGAIN
-              </button>
-              {!user && (
-                <button type="button" className="result-save-button" onClick={() => { setAuthMode("signup"); setAuthOpen(true); }}>
-                  CREATE FREE ACCOUNT
-                </button>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
-<PublisherContent />
-
-<FAQ />
-
-<SocialFooter wpm={finished ? wpm : null} />
-{authOpen ? (
-  <Suspense fallback={null}>
-    <AuthModal
-      isOpen={authOpen}
-      onClose={() => setAuthOpen(false)}
-      initialMode={authMode}
-    />
-  </Suspense>
-) : null}
-
+      {authOpen ? (
+        <Suspense fallback={null}>
+          <AuthModal
+            isOpen={authOpen}
+            onClose={() => setAuthOpen(false)}
+            initialMode={authMode}
+          />
+        </Suspense>
+      ) : null}
     </main>
   );
 }
