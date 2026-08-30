@@ -1985,3 +1985,11 @@ html {
   display: block !important;
   width: 100% !important;
 }
+/* Unlocks 100% full-width container on test completion */
+.app.result-active .practice-layout {
+  display: block !important;
+  grid-template-columns: 1fr !important;
+  width: 100% !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+}
