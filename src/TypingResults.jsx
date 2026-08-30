@@ -21,9 +21,7 @@ const useCountUp = (endValue, duration = 800, enabled = true) => {
     const step = (timestamp) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
-      const easedProgress = easeOutCubic(progress);
-
-      setCount(Math.round(easedProgress * endValue));
+      setCount(Math.round(easeOutCubic(progress) * endValue));
 
       if (progress < 1) {
         frameId = requestAnimationFrame(step);
@@ -54,58 +52,61 @@ export default function TypingResults({
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 30);
+    const timer = setTimeout(() => setMounted(true), 25);
     return () => clearTimeout(timer);
   }, []);
 
-  const animatedWpm = useCountUp(wpm, 900, mounted);
-  const animatedAccuracy = useCountUp(accuracy, 850, mounted);
+  const animatedWpm = useCountUp(wpm, 850, mounted);
+  const animatedAccuracy = useCountUp(accuracy, 800, mounted);
 
   // Derived telemetry metrics
   const correctChars = Math.max(0, characters - errors);
   const calculatedRaw = Math.round(wpm * (100 / Math.max(accuracy, 1)));
-  const calculatedConsistency = consistency ?? Math.max(35, Math.min(98, Math.round(100 - (errors * 8) - (100 - accuracy) * 0.5)));
+  const calculatedConsistency =
+    consistency ?? Math.max(30, Math.min(99, Math.round(100 - errors * 8 - (100 - accuracy) * 0.5)));
 
-  // SVG Chart Dimensions & Curves
+  // SVG Dual-Axis Chart Setup matching TypePerfectly aesthetic
   const chart = useMemo(() => {
-    const width = 640;
-    const height = 150;
-    const padX = 20;
-    const padY = 22;
+    const width = 820;
+    const height = 160;
+    const padX = 24;
+    const padY = 20;
 
     const intervals = Math.min(Math.max(time, 5), 15);
-    const maxY = Math.max(wpm * 1.35, 60);
+    const maxY = Math.max(wpm * 1.35, 45);
 
     const pointsWpm = [];
     const pointsRaw = [];
     const errorMarkers = [];
 
-    const baseSpeed = Math.max(wpm, 10);
-    const startSpeed = Math.max(8, Math.round(baseSpeed * 0.65));
+    const baseSpeed = Math.max(wpm, 15);
 
     for (let i = 0; i < intervals; i++) {
       const t = i / (intervals - 1);
       const x = padX + t * (width - 2 * padX);
-      
-      // Smooth dynamic curve trajectory
-      const fluctuation = Math.sin(t * Math.PI * 2.2) * (errors > 0 ? 3.8 : 2.0);
-      const curWpm = Math.max(5, startSpeed + (baseSpeed - startSpeed) * Math.pow(t, 0.8) + fluctuation);
-      const curRaw = curWpm + (errors > 0 ? (i % 3 === 0 ? 4 : 1.5) : 1);
 
-      const yWpm = height - padY - ((curWpm / maxY) * (height - 2 * padY));
-      const yRaw = height - padY - ((curRaw / maxY) * (height - 2 * padY));
-
-      pointsWpm.push({ x, y: yWpm, sec: i + 1 });
+      // Smooth Raw Speed Curve (Lavender Dashed Line)
+      const rawWpm = Math.max(10, baseSpeed * 1.08 - t * (baseSpeed * 0.25) + Math.sin(t * Math.PI * 1.6) * 2);
+      const yRaw = height - padY - ((rawWpm / maxY) * (height - 2 * padY));
       pointsRaw.push({ x, y: yRaw, sec: i + 1 });
 
-      // Place error marker at error intervals
-      if (errors > 0 && (i === Math.floor(intervals * 0.35) || i === Math.floor(intervals * 0.75))) {
+      // Dynamic Active Speed Curve (Vibrant Purple Solid Line)
+      let waveOffset = 0;
+      if (i === Math.floor(intervals * 0.3)) waveOffset = -baseSpeed * 0.35;
+      else if (i === Math.floor(intervals * 0.5)) waveOffset = baseSpeed * 0.45;
+      else if (i === Math.floor(intervals * 0.75)) waveOffset = -baseSpeed * 0.5;
+
+      const activeWpm = Math.max(0, baseSpeed * 0.95 + waveOffset + Math.sin(t * Math.PI * 3) * 2.5);
+      const yActive = height - padY - ((activeWpm / maxY) * (height - 2 * padY));
+      pointsWpm.push({ x, y: yActive, sec: i + 1 });
+
+      // Error marker cross
+      if (errors > 0 && i === Math.floor(intervals * 0.5)) {
         errorMarkers.push({ x, y: yRaw - 14, sec: i + 1 });
       }
     }
 
-    // Bezier path generator
-    const makeBezierPath = (pts) => {
+    const makeBezier = (pts) => {
       let d = `M ${pts[0].x} ${pts[0].y}`;
       for (let i = 0; i < pts.length - 1; i++) {
         const p0 = pts[i === 0 ? 0 : i - 1];
@@ -124,19 +125,19 @@ export default function TypingResults({
     };
 
     return {
-      wpmPath: makeBezierPath(pointsWpm),
-      rawPath: makeBezierPath(pointsRaw),
-      pointsWpm,
+      rawPath: makeBezier(pointsRaw),
+      wpmPath: makeBezier(pointsWpm),
       pointsRaw,
+      pointsWpm,
       errorMarkers,
-      yTicks: [
+      yTicksLeft: [
         { label: Math.round(maxY), y: padY },
         { label: Math.round(maxY * 0.66), y: padY + (height - 2 * padY) * 0.33 },
         { label: Math.round(maxY * 0.33), y: padY + (height - 2 * padY) * 0.66 },
-        { label: 0, y: height - padY }
+        { label: 0, y: height - padY },
       ],
       width,
-      height
+      height,
     };
   }, [wpm, time, errors]);
 
@@ -153,21 +154,15 @@ export default function TypingResults({
   }, [onTryAgain]);
 
   const handleShare = useCallback(async () => {
-    const shareText = `I just scored ${wpm} WPM with ${accuracy}% accuracy on TypePerfectly!`;
+    const shareText = `I scored ${wpm} WPM with ${accuracy}% accuracy on TypePerfectly!`;
     const shareUrl = 'https://www.typeperfectly.com/';
 
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: 'TypePerfectly Speed Result',
-          text: shareText,
-          url: shareUrl,
-        });
+        await navigator.share({ title: 'TypePerfectly Telemetry Result', text: shareText, url: shareUrl });
         return;
       } catch (err) {
-        if (err.name !== 'AbortError') {
-          copyToClipboard(`${shareText} ${shareUrl}`);
-        }
+        if (err.name !== 'AbortError') copyToClipboard(`${shareText} ${shareUrl}`);
       }
     } else {
       copyToClipboard(`${shareText} ${shareUrl}`);
@@ -190,90 +185,87 @@ export default function TypingResults({
 
   const showToast = () => {
     setCopiedToast(true);
-    setTimeout(() => setCopiedToast(false), 2400);
+    setTimeout(() => setCopiedToast(false), 2200);
   };
 
   return (
-    <section className={`mk-results-card ${mounted ? 'mk-mounted' : ''}`} role="region" aria-label="Typing test telemetry results">
-      {/* Toast */}
-      <div className={`mk-toast ${copiedToast ? 'mk-toast-show' : ''}`} aria-live="polite">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+    <section className={`tp-hud-theme-card ${mounted ? 'tp-mounted' : ''}`} role="region" aria-label="Typing telemetry result">
+      {/* Toast Alert */}
+      <div className={`tp-hud-toast ${copiedToast ? 'tp-toast-show' : ''}`} aria-live="polite">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
           <polyline points="20 6 9 17 4 12" />
         </svg>
         Result copied to clipboard!
       </div>
 
-      {/* Main HUD Row: Left Hero Score + Right Live Chart */}
-      <div className="mk-hud-row">
+      {/* Main HUD Row */}
+      <div className="tp-hud-main">
         {/* Left Hero Block */}
-        <div className="mk-hero-block">
-          <div className="mk-hero-stat">
-            <span className="mk-hero-label">wpm</span>
-            <span className="mk-hero-value mk-accent-violet">{animatedWpm}</span>
+        <div className="tp-hero-side">
+          <div className="tp-hero-unit">
+            <span className="tp-label-tag">wpm</span>
+            <span className="tp-val-display tp-purple-display">{animatedWpm}</span>
           </div>
 
-          <div className="mk-hero-stat">
-            <span className="mk-hero-label">acc</span>
-            <span className="mk-hero-value mk-accent-cyan">{animatedAccuracy}%</span>
+          <div className="tp-hero-unit">
+            <span className="tp-label-tag">acc</span>
+            <span className="tp-val-display tp-cyan-display">{animatedAccuracy}%</span>
           </div>
         </div>
 
-        {/* Right Telemetry Chart */}
-        <div className="mk-chart-container">
-          <svg
-            className="mk-chart-svg"
-            viewBox={`0 0 ${chart.width} ${chart.height}`}
-            preserveAspectRatio="none"
-          >
-            {/* Horizontal Gridlines */}
-            {chart.yTicks.map((tick, idx) => (
-              <line
-                key={idx}
-                x1="0"
-                y1={tick.y}
-                x2={chart.width}
-                y2={tick.y}
-                className="mk-grid-line"
-              />
-            ))}
+        {/* Center / Right Full Telemetry Chart */}
+        <div className="tp-chart-stage">
+          <span className="tp-y-label-left">Words per Minute</span>
 
-            {/* Raw WPM Dashed Curve */}
-            <path d={chart.rawPath} className="mk-curve-raw" />
-
-            {/* Active WPM Solid Curve */}
-            <path d={chart.wpmPath} className="mk-curve-wpm" />
-
-            {/* WPM Data Points */}
-            {chart.pointsWpm.map((pt, idx) => (
-              <circle key={idx} cx={pt.x} cy={pt.y} r="2.5" className="mk-dot-wpm" />
-            ))}
-
-            {/* Error Markers */}
-            {chart.errorMarkers.map((err, idx) => (
-              <text key={idx} x={err.x} y={err.y} className="mk-err-cross" textAnchor="middle">
-                ×
-              </text>
-            ))}
-          </svg>
-
-          {/* Left Y-Axis Labels (WPM) */}
-          <div className="mk-axis-wpm">
-            {chart.yTicks.map((tick, idx) => (
+          {/* Left Y Axis Values */}
+          <div className="tp-axis-ticks-left">
+            {chart.yTicksLeft.map((tick, idx) => (
               <span key={idx} style={{ top: `${(tick.y / chart.height) * 100}%` }}>
                 {tick.label}
               </span>
             ))}
           </div>
 
-          {/* Right Y-Axis Labels (Errors) */}
-          <div className="mk-axis-errors">
-            <span style={{ top: '15%' }}>{errors > 0 ? errors : 2}</span>
-            <span style={{ top: '50%' }}>{errors > 0 ? Math.ceil(errors / 2) : 1}</span>
-            <span style={{ top: '85%' }}>0</span>
+          {/* SVG Canvas */}
+          <svg className="tp-svg-canvas" viewBox={`0 0 ${chart.width} ${chart.height}`} preserveAspectRatio="none">
+            {/* Horizontal Gridlines */}
+            {chart.yTicksLeft.map((tick, idx) => (
+              <line key={idx} x1="0" y1={tick.y} x2={chart.width} y2={tick.y} className="tp-chart-grid" />
+            ))}
+
+            {/* Lavender Dashed Raw Curve */}
+            <path d={chart.rawPath} className="tp-line-raw" />
+
+            {/* Raw Dots */}
+            {chart.pointsRaw.map((pt, idx) => (
+              <circle key={`raw-${idx}`} cx={pt.x} cy={pt.y} r="2" className="tp-dot-raw" />
+            ))}
+
+            {/* Vibrant Purple Active Curve */}
+            <path d={chart.wpmPath} className="tp-line-wpm" />
+
+            {/* Active Dots */}
+            {chart.pointsWpm.map((pt, idx) => (
+              <circle key={`wpm-${idx}`} cx={pt.x} cy={pt.y} r="2.4" className="tp-dot-wpm" />
+            ))}
+
+            {/* Error Marker Cross */}
+            {chart.errorMarkers.map((err, idx) => (
+              <text key={idx} x={err.x} y={err.y} className="tp-err-x" textAnchor="middle">
+                ×
+              </text>
+            ))}
+          </svg>
+
+          {/* Right Y Axis Label & Values */}
+          <span className="tp-y-label-right">Errors</span>
+          <div className="tp-axis-ticks-right">
+            <span style={{ top: '12%' }}>{errors > 0 ? errors : 1}</span>
+            <span style={{ top: '88%' }}>0</span>
           </div>
 
-          {/* X-Axis Timestamps */}
-          <div className="mk-axis-time">
+          {/* Bottom X Axis Numbers */}
+          <div className="tp-axis-ticks-bottom">
             {chart.pointsWpm.map((pt, idx) => (
               <span key={idx} style={{ left: `${(pt.x / chart.width) * 100}%` }}>
                 {pt.sec}
@@ -283,62 +275,51 @@ export default function TypingResults({
         </div>
       </div>
 
-      {/* Bottom Telemetry Metrics Bar */}
-      <div className="mk-metrics-bar">
-        <div className="mk-metric-col">
-          <span className="mk-sub-label">test type</span>
-          <span className="mk-sub-text">time {time}</span>
-          <span className="mk-sub-text mk-text-dim">{language} / {mode}</span>
+      {/* Bottom Telemetry Monospace Numbers Bar */}
+      <div className="tp-telemetry-row">
+        <div className="tp-tele-col">
+          <span className="tp-tele-lbl">test type</span>
+          <span className="tp-tele-val-dark">time {time}</span>
+          <span className="tp-tele-val-muted">{language.toLowerCase()} / {mode}</span>
         </div>
 
-        <div className="mk-metric-col">
-          <span className="mk-sub-label">raw</span>
-          <strong className="mk-sub-value">{calculatedRaw}</strong>
+        <div className="tp-tele-col">
+          <span className="tp-tele-lbl">raw</span>
+          <strong className="tp-tele-num">{calculatedRaw}</strong>
         </div>
 
-        <div className="mk-metric-col">
-          <span className="mk-sub-label">characters</span>
-          <strong className="mk-sub-value">
+        <div className="tp-tele-col">
+          <span className="tp-tele-lbl">characters</span>
+          <strong className="tp-tele-num">
             {correctChars}/{errors}/0/0
           </strong>
         </div>
 
-        <div className="mk-metric-col">
-          <span className="mk-sub-label">consistency</span>
-          <strong className="mk-sub-value">{calculatedConsistency}%</strong>
+        <div className="tp-tele-col">
+          <span className="tp-tele-lbl">consistency</span>
+          <strong className="tp-tele-num">{calculatedConsistency}%</strong>
         </div>
 
-        <div className="mk-metric-col">
-          <span className="mk-sub-label">time</span>
-          <strong className="mk-sub-value">{time}s</strong>
-          <span className="mk-sub-small">00:00:{time < 10 ? `0${time}` : time} session</span>
+        <div className="tp-tele-col">
+          <span className="tp-tele-lbl">time</span>
+          <strong className="tp-tele-num">{time}s</strong>
+          <span className="tp-tele-sub">00:00:{time < 10 ? `0${time}` : time} session</span>
         </div>
       </div>
 
-      {/* Action Controls */}
-      <div className="mk-actions-row">
-        <button
-          type="button"
-          className="mk-btn mk-btn-primary"
-          onClick={onTryAgain}
-          aria-label="Try test again"
-          autoFocus
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+      {/* Sleek Action Buttons Strip */}
+      <div className="tp-actions-strip">
+        <button type="button" className="tp-btn tp-btn-primary" onClick={onTryAgain} autoFocus>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <path d="M1 4v6h6M23 20v-6h-6" />
             <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" />
           </svg>
           <span>Try Again</span>
-          <kbd className="mk-kbd">↵</kbd>
+          <kbd className="tp-kbd">↵</kbd>
         </button>
 
         {onChangeTest && (
-          <button
-            type="button"
-            className="mk-btn mk-btn-secondary"
-            onClick={onChangeTest}
-            aria-label="Change typing mode"
-          >
+          <button type="button" className="tp-btn tp-btn-secondary" onClick={onChangeTest}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <circle cx="12" cy="12" r="3" />
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
@@ -347,12 +328,7 @@ export default function TypingResults({
           </button>
         )}
 
-        <button
-          type="button"
-          className="mk-btn mk-btn-secondary"
-          onClick={handleShare}
-          aria-label="Share result"
-        >
+        <button type="button" className="tp-btn tp-btn-secondary" onClick={handleShare}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
             <polyline points="16 6 12 2 8 6" />
