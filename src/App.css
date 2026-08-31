@@ -1238,10 +1238,6 @@ input {
   text-shadow: 0 0 10px rgba(124, 77, 255, 0.22);
 }
 
-.char.current::before {
-  animation: caret-blink 1.4s ease-in-out infinite;
-}
-
 /* Clean typing screen while test is running */
 .app.session-active .seo-content,
 .app.session-active .faq-section {
@@ -1415,31 +1411,6 @@ input {
   transition: none;
 }
 
-.char.current::before {
-  display: none !important;
-}
-
-.smooth-caret {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 3px;
-  height: 1.3em;
-  border-radius: 999px;
-  background: var(--purple-500);
-  box-shadow: 0 0 10px rgba(124, 77, 255, 0.28);
-  pointer-events: none;
-  z-index: 5;
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-  transition: transform 70ms ease-out;
-  will-change: transform;
-}
-
-.app.result-active .smooth-caret {
-  opacity: 0;
-}
-
 .seo-content,
 .faq-section,
 .footer,
@@ -1496,10 +1467,6 @@ input {
     display: flex;
     flex-direction: column;
   }
-
-  .smooth-caret {
-    transition-duration: 50ms;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1512,22 +1479,6 @@ input {
   position: relative;
   display: inline-block;
   white-space: pre;
-}
-
-.char.current .smooth-caret {
-  position: absolute;
-  left: 0;
-  top: 10%;
-  width: 2px;
-  height: 80%;
-  background-color: var(--caret-color, #a78bfa);
-  animation: caretBlink 1.4s infinite;
-  pointer-events: none;
-}
-
-.rtl .char.current .smooth-caret {
-  left: auto;
-  right: 0;
 }
 
 .select-wrapper {
@@ -1571,11 +1522,6 @@ input {
   color: var(--purple-600);
   font-size: 10px;
   pointer-events: none;
-}
-
-@keyframes caretBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
 }
 
 .custom-practice-setup {
@@ -1630,23 +1576,6 @@ input {
 
 .typing-text {
   position: relative;
-}
-
-.floating-caret {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 3px;
-  border-radius: 999px;
-  background: var(--purple-500);
-  box-shadow: 0 0 8px rgba(124, 77, 255, 0.3);
-  pointer-events: none;
-  z-index: 10;
-  will-change: transform;
-  transition:
-    transform 85ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    height 85ms ease-out;
-  animation: caretBlink 1s step-end infinite;
 }
 
 .social-footer {
@@ -1788,7 +1717,6 @@ input {
 
   .social-brand img {
     width: 38px;
-    width: 38px;
     height: 38px;
   }
 
@@ -1915,7 +1843,7 @@ html {
 }
 
 /* ==========================================================================
-   FINAL TARGETED FIXES OVERRIDES (Added at the bottom, nothing removed)
+   MONKEYTYPE-GRADE STABLE CARET & PERFECT VIEWPORT OVERRIDES (Added at bottom)
    ========================================================================== */
 
 /* 1. Ultra-clean 3-line Viewport with zero scrollbar and larger readable font size */
@@ -1945,7 +1873,7 @@ html {
   border: none !important;
 }
 
-/* 3. Buttery-Smooth Non-Jumping Caret (Gun ki goli jaisa smooth pulse) */
+/* 3. Monkeytype Style Solid Non-Blinking Stable Caret (No jumping, no heavy blinking) */
 .char.current {
   position: relative !important;
   color: #6538ed !important;
@@ -1962,7 +1890,7 @@ html {
   width: 3px !important;
   background-color: #7c3aed !important;
   border-radius: 9999px !important;
-  animation: tpButteryPulse 1.4s ease-in-out infinite !important;
+  animation: none !important; /* Completely stops jittery blinking/jumping, making it rock solid like Monkeytype */
   z-index: 20 !important;
   pointer-events: none !important;
 }
@@ -1970,15 +1898,6 @@ html {
 .typing-text.rtl .char.current::before {
   left: auto !important;
   right: -2px !important;
-}
-
-@keyframes tpButteryPulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.3; /* Gentle breathing fade instead of harsh jumping/blinking */
-  }
 }
 
 /* 4. Complete Zen Focus Mode (Hides everything when typing begins) */
