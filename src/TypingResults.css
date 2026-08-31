@@ -1,7 +1,3 @@
-/* ==========================================================================
-   TypePerfectly Full 1200px Telemetry Dashboard Theme
-   ========================================================================== */
-
 .tp-hud-theme-card {
   width: 100% !important;
   max-width: 1200px !important;
@@ -28,7 +24,6 @@
   transform: translateY(0);
 }
 
-/* Main HUD Layout (Left Numbers + Ultra-wide Chart) */
 .tp-hud-main {
   display: grid;
   grid-template-columns: 160px 1fr;
@@ -38,7 +33,6 @@
   width: 100%;
 }
 
-/* Left Hero Scores */
 .tp-hero-side {
   display: flex;
   flex-direction: column;
@@ -74,7 +68,6 @@
   color: #06b6d4;
 }
 
-/* Center / Right Wide Chart Area */
 .tp-chart-stage {
   position: relative;
   width: 100%;
@@ -196,7 +189,6 @@
   color: #94a3b8;
 }
 
-/* Bottom Telemetry Row */
 .tp-telemetry-row {
   display: grid;
   grid-template-columns: 1.5fr 1fr 1.6fr 1.2fr 1.1fr;
@@ -248,7 +240,6 @@
   margin-top: 4px;
 }
 
-/* Action Controls */
 .tp-actions-strip {
   display: flex;
   align-items: center;
@@ -386,18 +377,5 @@
   }
   .tp-btn {
     width: 100%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tp-hud-theme-card,
-  .tp-hud-toast,
-  .tp-btn {
-    transition: none !important;
-    animation: none !important;
-  }
-  .tp-hud-theme-card {
-    opacity: 1;
-    transform: none;
   }
 }
