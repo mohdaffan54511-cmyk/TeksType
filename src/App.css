@@ -1993,3 +1993,14 @@ html {
   max-width: 1200px !important;
   margin: 0 auto !important;
 }
+/* Unlocks exact 1200px full width container on test completion */
+.app.result-active .practice-layout,
+.practice-layout:has(.tp-hud-theme-card) {
+  display: block !important;
+  grid-template-columns: 1fr !important;
+  width: 100% !important;
+  max-width: 1200px !important;
+  margin: 0 auto 36px !important;
+  padding: 0 16px !important;
+  box-sizing: border-box !important;
+}
