@@ -380,28 +380,6 @@ kbd {
   color: var(--purple-600);
 }
 
-.char.current::before {
-  content: "";
-  position: absolute;
-  left: -2px;
-  top: 0.08em;
-  bottom: 0.08em;
-  width: 3px;
-  border-radius: 999px;
-  background: var(--purple-500);
-  animation: caret-blink 0.85s infinite;
-}
-
-@keyframes caret-blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.2;
-  }
-}
-
 .legend-row {
   display: flex;
   flex-wrap: wrap;
@@ -1810,6 +1788,7 @@ input {
 
   .social-brand img {
     width: 38px;
+    width: 38px;
     height: 38px;
   }
 
@@ -1936,10 +1915,10 @@ html {
 }
 
 /* ==========================================================================
-   FINAL ENHANCED TEXT SIZE + VIEWPORT & ERROR FIXES (Added at bottom)
+   FINAL TARGETED FIXES OVERRIDES (Added at the bottom, nothing removed)
    ========================================================================== */
 
-/* 1. Perfect Prominent Font Size (34px Desktop, 29px Tablet, 23px Mobile) with zero scrollbar */
+/* 1. Ultra-clean 3-line Viewport with zero scrollbar and larger readable font size */
 .typing-text {
   height: 168px !important;
   min-height: 168px !important;
@@ -1958,7 +1937,7 @@ html {
   height: 0 !important;
 }
 
-/* 2. Zero Pink Background Box on Wrong Characters */
+/* 2. Zero Pink Box on Wrong Characters */
 .char.wrong {
   color: #ef4444 !important;
   background: transparent !important;
@@ -1966,7 +1945,7 @@ html {
   border: none !important;
 }
 
-/* 3. Solid Sharp High-Visibility Purple `|` Caret */
+/* 3. Buttery-Smooth Non-Jumping Caret (Gun ki goli jaisa smooth pulse) */
 .char.current {
   position: relative !important;
   color: #6538ed !important;
@@ -1978,12 +1957,12 @@ html {
   content: "" !important;
   position: absolute !important;
   left: -2px !important;
-  top: 10% !important;
-  height: 80% !important;
-  width: 3.2px !important;
+  top: 12% !important;
+  height: 76% !important;
+  width: 3px !important;
   background-color: #7c3aed !important;
-  border-radius: 3px !important;
-  animation: tpSharpCaretBlink 0.85s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
+  border-radius: 9999px !important;
+  animation: tpButteryPulse 1.4s ease-in-out infinite !important;
   z-index: 20 !important;
   pointer-events: none !important;
 }
@@ -1993,12 +1972,12 @@ html {
   right: -2px !important;
 }
 
-@keyframes tpSharpCaretBlink {
+@keyframes tpButteryPulse {
   0%, 100% {
     opacity: 1;
   }
   50% {
-    opacity: 0;
+    opacity: 0.3; /* Gentle breathing fade instead of harsh jumping/blinking */
   }
 }
 
@@ -2033,7 +2012,7 @@ html {
   box-sizing: border-box !important;
 }
 
-/* 6. Responsive Font Sizes for Smaller Devices */
+/* 6. Responsive Font Size Adjustments */
 @media (max-width: 1024px) {
   .typing-text {
     font-size: 29px !important;
