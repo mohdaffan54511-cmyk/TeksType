@@ -403,21 +403,28 @@ kbd {
 }
 
 /* ==========================================================================
-   ORIGINAL BOLD SANS-SERIF TYPOGRAPHY & SMOOTH 3px CARET
+   CLEAN 3-LINE VIEWPORT (NO SCROLLBAR, NO BOTTOM CLIPPING, 2.5px CARET)
    ========================================================================== */
 
 .typing-text {
-  min-height: 220px;
-  max-height: 360px;
-  padding: 6px 2px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  /* Exactly 3 full lines visible */
+  height: 146px !important;
+  min-height: 146px !important;
+  max-height: 146px !important;
+  padding: 4px 6px !important;
+  
+  /* Bold Modern Sans-Serif */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
-  font-size: clamp(26px, 2.7vw, 38px) !important;
-  line-height: 1.62 !important;
+  font-size: 29px !important;
+  line-height: 1.55 !important;
   font-weight: 700 !important;
-  letter-spacing: -0.01em !important;
-  color: rgba(23, 17, 44, 0.35) !important;
+  letter-spacing: -0.015em !important;
+  
+  /* Hide scrollbars across all browsers */
+  overflow: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  
   user-select: none;
   cursor: text;
   outline: none;
@@ -427,6 +434,12 @@ kbd {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+.typing-text::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 /* Word & Space Tokens */
@@ -440,7 +453,7 @@ kbd {
   white-space: pre-wrap;
 }
 
-/* Pure Character States */
+/* Character States */
 .char {
   position: relative;
   display: inline-block;
@@ -452,28 +465,28 @@ kbd {
   transition: color 40ms linear;
 }
 
-/* 1. Upcoming Untyped Characters (Soft Gray) */
+/* 1. Upcoming Untyped Characters */
 .char.upcoming {
   color: #94a3b8 !important;
   font-weight: 700 !important;
 }
 
-/* 2. Correctly Typed Characters (Deep Dark Navy) */
+/* 2. Correctly Typed Characters */
 .char.correct {
-  color: #17112c !important;
+  color: #0f172a !important;
   font-weight: 800 !important;
 }
 
-/* 3. Mistakes / Errors (Crisp Red Text with Zero Pink Box) */
+/* 3. Mistakes / Errors (Crisp Red Text, Zero Background Box) */
 .char.wrong {
   color: #ef4444 !important;
   font-weight: 800 !important;
   background: transparent !important;
 }
 
-/* 4. Active Character + Smooth 3px Rounded Caret */
+/* 4. Active Character + Smooth Calibrated 2.5px Caret */
 .char.current {
-  color: #6538ed !important;
+  color: #6366f1 !important;
   background: transparent !important;
 }
 
@@ -481,12 +494,12 @@ kbd {
   content: "";
   position: absolute;
   left: -2px;
-  top: 12%;
-  height: 76%;
-  width: 3px;
+  top: 14%;
+  height: 72%;
+  width: 2.5px;
   background: linear-gradient(180deg, #7c4dff, #6538ed);
   border-radius: 9999px;
-  animation: tpCaretPulse 1s ease-in-out infinite;
+  animation: tpCaretPulse 0.9s ease-in-out infinite;
   pointer-events: none;
 }
 
@@ -496,8 +509,12 @@ kbd {
 }
 
 @keyframes tpCaretPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.15; }
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.15;
+  }
 }
 
 /* Legend Row */
@@ -684,7 +701,9 @@ kbd {
   }
   .typing-text {
     font-size: 22px !important;
-    min-height: 200px;
+    height: 110px !important;
+    min-height: 110px !important;
+    max-height: 110px !important;
   }
   .topbar {
     min-height: 68px;
