@@ -7,6 +7,7 @@ import {
   useMemo,
   useRef,
   useState,
+  memo
 } from "react";
 import { supabase, supabaseConfigured } from "./lib/supabase";
 import FAQ from "./FAQ";
@@ -16,6 +17,11 @@ import TypingResults from "./TypingResults";
 import "./App.css";
 
 const AuthModal = lazy(() => import("./AuthModal"));
+
+// Memoize heavy static sections to prevent re-rendering during active typing
+const MemoizedPublisherContent = memo(PublisherContent);
+const MemoizedFAQ = memo(FAQ);
+const MemoizedSocialFooter = memo(SocialFooter);
 
 const LANGUAGES = [
   { id: "english", name: "English" },
@@ -88,6 +94,7 @@ const LANGUAGE_POOLS = {
 };
 
 const jsonCache = new Map();
+const staticSegmenter = typeof Intl !== "undefined" && Intl.Segmenter ? new Intl.Segmenter(undefined, { granularity: "grapheme" }) : null;
 
 const randomItem = (items) => items[Math.floor(Math.random() * items.length)];
 
@@ -113,9 +120,7 @@ function makeText(mode, selectedLang, customWords = null) {
     return Array.from({ length: 36 }, () => randomItem(customWords)).join(" ");
   }
 
-  if (mode === "custom") {
-    return "";
-  }
+  if (mode === "custom") return "";
 
   if (["quotes", "hinglish", "motivation", "conversation"].includes(mode)) {
     return randomItem(POOLS[mode] || POOLS.quotes);
@@ -205,9 +210,7 @@ export default function App() {
       audioIndexRef.current = (audioIndexRef.current + 1) % audioPoolRef.current.length;
       sound.currentTime = 0;
       sound.play().catch(() => {});
-    } catch {
-      // Audio playback catch
-    }
+    } catch {}
   }, [soundOn]);
 
   const resetSession = useCallback(
@@ -230,9 +233,7 @@ export default function App() {
       setElapsedMs(0);
       setMobileFocused(false);
 
-      setIsCustomActive(
-        nextMode === "custom" && keepCustomActive
-      );
+      setIsCustomActive(nextMode === "custom" && keepCustomActive);
 
       if (nextMode !== "custom" || !keepCustomActive) {
         setCustomError("");
@@ -243,7 +244,6 @@ export default function App() {
       cloudSavedRef.current = false;
       mobileBufferRef.current = "";
       lastMobileLineRef.current = -1;
-
       setCloudSaveStatus("idle");
 
       if (mobileInputRef.current) {
@@ -252,9 +252,7 @@ export default function App() {
       }
 
       requestAnimationFrame(() => {
-        appRef.current?.focus({
-          preventScroll: true,
-        });
+        appRef.current?.focus({ preventScroll: true });
       });
     },
     [duration, mode, langWords, selectedLang]
@@ -262,87 +260,39 @@ export default function App() {
 
   const startCustomPractice = useCallback(() => {
     const words = cleanCustomWords(customInput);
-
     if (words.length === 0) {
       setCustomError("Please paste at least one valid word.");
       return;
     }
-
     setCustomError("");
     setLangWords(null);
-
-    resetSession(
-      "custom",
-      duration,
-      words,
-      selectedLang,
-      { keepCustomActive: true }
-    );
+    resetSession("custom", duration, words, selectedLang, { keepCustomActive: true });
   }, [customInput, duration, selectedLang, resetSession]);
 
   const restartCurrentSession = useCallback(() => {
     if (mode === "custom" && isCustomActive) {
       const words = cleanCustomWords(customInput);
-
       if (words.length === 0) {
         setIsCustomActive(false);
         setCustomError("Please paste at least one valid word.");
         return;
       }
-
-      resetSession(
-        "custom",
-        duration,
-        words,
-        selectedLang,
-        { keepCustomActive: true }
-      );
+      resetSession("custom", duration, words, selectedLang, { keepCustomActive: true });
       return;
     }
-
     resetSession();
-  }, [
-    mode,
-    isCustomActive,
-    customInput,
-    duration,
-    selectedLang,
-    resetSession,
-  ]);
+  }, [mode, isCustomActive, customInput, duration, selectedLang, resetSession]);
 
   const changeDuration = useCallback((nextDuration) => {
     if (mode === "custom") {
-      const words = isCustomActive
-        ? cleanCustomWords(customInput)
-        : null;
-
-      resetSession(
-        "custom",
-        nextDuration,
-        words,
-        selectedLang,
-        {
-          keepCustomActive:
-            isCustomActive && Boolean(words?.length),
-        }
-      );
+      const words = isCustomActive ? cleanCustomWords(customInput) : null;
+      resetSession("custom", nextDuration, words, selectedLang, {
+        keepCustomActive: isCustomActive && Boolean(words?.length),
+      });
       return;
     }
-
-    resetSession(
-      mode,
-      nextDuration,
-      langWords,
-      selectedLang
-    );
-  }, [
-    mode,
-    isCustomActive,
-    customInput,
-    langWords,
-    selectedLang,
-    resetSession,
-  ]);
+    resetSession(mode, nextDuration, langWords, selectedLang);
+  }, [mode, isCustomActive, customInput, langWords, selectedLang, resetSession]);
 
   useEffect(() => {
     if (selectedLang === "english") {
@@ -394,15 +344,42 @@ export default function App() {
     setMode("words");
   };
 
+  // HIGH-PERFORMANCE PRE-COMPUTED TOKEN PARSER (Zero lag during typing)
+  const parsedChunks = useMemo(() => {
+    return Array.from(text.matchAll(/\S+|\s+/g)).map((match) => {
+      const chunk = match[0];
+      const wordStartIndex = match.index ?? 0;
+      const isWhitespace = /^\s+$/.test(chunk);
+      
+      const characters = staticSegmenter
+        ? Array.from(staticSegmenter.segment(chunk), (s) => s.segment)
+        : Array.from(chunk);
+
+      let currentOffset = 0;
+      const charTokens = characters.map((character) => {
+        const index = wordStartIndex + currentOffset;
+        const charLength = character.length;
+        currentOffset += charLength;
+        return { index, character, charLength };
+      });
+
+      return {
+        key: `${wordStartIndex}-${chunk}`,
+        isWhitespace,
+        charTokens
+      };
+    });
+  }, [text]);
+
   const correctChars = useMemo(() => {
     let correct = 0;
-    for (let i = 0; i < input.length; i += 1) {
-      if (input[i] === text[i]) correct += 1;
+    const len = input.length;
+    for (let i = 0; i < len; i++) {
+      if (input[i] === text[i]) correct++;
     }
     return correct;
   }, [input, text]);
 
-  // Compute matched whole words
   const correctWordsCount = useMemo(() => {
     if (!input.trim()) return 0;
     const inputWords = input.trim().split(/\s+/);
@@ -424,7 +401,6 @@ export default function App() {
 
   useEffect(() => {
     if (!sessionActive) return;
-
     requestAnimationFrame(() => {
       document.querySelector(".practice-layout")?.scrollIntoView({
         behavior: "smooth",
@@ -508,7 +484,6 @@ export default function App() {
 
     const updateTimer = (now) => {
       const elapsed = now - startedAtRef.current;
-
       if (now - lastUpdate >= 250) {
         setElapsedMs(elapsed);
         const remainingMs = Math.max(0, duration * 1000 - elapsed);
@@ -564,7 +539,6 @@ export default function App() {
         setCloudSaveStatus("error");
         return;
       }
-
       setCloudSaveStatus("saved");
     };
 
@@ -576,11 +550,7 @@ export default function App() {
       setMobileFocused(true);
       const target = mobileInputRef.current;
       if (!target) return;
-      try {
-        target.focus({ preventScroll: true });
-      } catch {
-        target.focus();
-      }
+      try { target.focus({ preventScroll: true }); } catch { target.focus(); }
     } else {
       appRef.current?.focus({ preventScroll: true });
     }
@@ -588,7 +558,6 @@ export default function App() {
 
   const handleDesktopKeyDown = useCallback((event) => {
     const target = event.target;
-
     if (
       target instanceof HTMLInputElement ||
       target instanceof HTMLTextAreaElement ||
@@ -640,67 +609,26 @@ export default function App() {
       if (noBackspace) {
         event.currentTarget.value = previous;
       } else {
-        for (let i = 0; i < previous.length - value.length; i += 1) {
+        for (let i = 0; i < previous.length - value.length; i++) {
           removeCharacter();
         }
       }
     }
 
     mobileBufferRef.current = event.currentTarget.value;
-
     if (mobileBufferRef.current.length > 40) {
       event.currentTarget.value = "";
       mobileBufferRef.current = "";
     }
   }, [noBackspace, processCharacter, removeCharacter]);
 
-  useEffect(() => {
-    if (!mobileLike()) return undefined;
-
-    const frame = requestAnimationFrame(() => {
-      const typingBox = document.querySelector(".typing-text");
-      const currentCharacter = typingBox?.querySelector(".char.current");
-
-      if (!typingBox) return;
-
-      if (input.length === 0) {
-        lastMobileLineRef.current = -1;
-        typingBox.scrollTop = 0;
-        return;
-      }
-
-      if (!currentCharacter) return;
-
-      const typingRect = typingBox.getBoundingClientRect();
-      const currentRect = currentCharacter.getBoundingClientRect();
-
-      const currentLine =
-        currentRect.top -
-        typingRect.top +
-        typingBox.scrollTop;
-
-      if (currentLine === lastMobileLineRef.current) return;
-
-      lastMobileLineRef.current = currentLine;
-
-      typingBox.scrollTo({
-        top: Math.max(0, currentLine - typingBox.clientHeight * 0.32),
-        behavior: "smooth",
-      });
-    });
-
-    return () => cancelAnimationFrame(frame);
-  }, [input.length]);
-
+  // Fast Smooth Caret Position Calculation
   useLayoutEffect(() => {
     const container = textContainerRef.current;
     const activeCharacter = activeCharRef.current;
 
     if (!container || !activeCharacter || finished) {
-      setCaretPos((previous) => ({
-        ...previous,
-        ready: false,
-      }));
+      setCaretPos((previous) => (previous.ready ? { ...previous, ready: false } : previous));
       return;
     }
 
@@ -708,20 +636,12 @@ export default function App() {
     const characterRect = activeCharacter.getBoundingClientRect();
 
     setCaretPos({
-      x:
-        characterRect.left -
-        containerRect.left +
-        container.scrollLeft,
-
-      y:
-        characterRect.top -
-        containerRect.top +
-        container.scrollTop,
-
+      x: characterRect.left - containerRect.left + container.scrollLeft,
+      y: characterRect.top - containerRect.top + container.scrollTop,
       height: characterRect.height,
       ready: true,
     });
-  }, [input.length, text, finished, isRTL]);
+  }, [input.length, finished, isRTL]);
 
   const logout = useCallback(async () => {
     if (!supabase) return;
@@ -812,13 +732,7 @@ export default function App() {
                 className={mode === item ? "selected" : ""}
                 onClick={() => {
                   setLangWords(null);
-                  resetSession(
-                    item,
-                    duration,
-                    null,
-                    selectedLang,
-                    { keepCustomActive: false }
-                  );
+                  resetSession(item, duration, null, selectedLang, { keepCustomActive: false });
                 }}
               >
                 {item.toUpperCase()}
@@ -854,6 +768,7 @@ export default function App() {
             errors={Math.max(0, input.length - correctChars)}
             time={duration}
             language={currentLangName}
+            mode={mode}
             onTryAgain={restartCurrentSession}
             onChangeTest={() => {
               resetSession();
@@ -938,63 +853,34 @@ export default function App() {
                         aria-hidden="true"
                         style={{
                           height: `${caretPos.height * 0.82}px`,
-                          transform: `translate3d(
-                            ${caretPos.x}px,
-                            ${caretPos.y + caretPos.height * 0.09}px,
-                            0
-                          )`,
+                          transform: `translate3d(${caretPos.x}px, ${caretPos.y + caretPos.height * 0.09}px, 0)`,
                         }}
                       />
                     )} 
-                    {Array.from(text.matchAll(/\S+|\s+/g)).map((match) => {
-                      const chunk = match[0];
-                      const wordStartIndex = match.index ?? 0;
-                      const isWhitespace = /^\s+$/.test(chunk);
+                    {parsedChunks.map(({ key, isWhitespace, charTokens }) => (
+                      <span key={key} className={isWhitespace ? "space-group" : "word-group"}>
+                        {charTokens.map(({ index, character, charLength }) => {
+                          let className = "char upcoming";
+                          if (index < input.length) {
+                            className = input.slice(index, index + charLength) === character ? "char correct" : "char wrong";
+                          } else if (index <= input.length && input.length < index + charLength) {
+                            className = "char current";
+                          }
 
-                      const characters = typeof Intl !== "undefined" && Intl.Segmenter
-                        ? Array.from(new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(chunk), (s) => s.segment)
-                        : Array.from(chunk);
+                          const isActive = index <= input.length && input.length < index + charLength;
 
-                      let currentOffset = 0;
-
-                      return (
-                        <span
-                          key={`${wordStartIndex}-${chunk}`}
-                          className={isWhitespace ? "space-group" : "word-group"}
-                        >
-                          {characters.map((character) => {
-                            const index = wordStartIndex + currentOffset;
-                            const charLength = character.length;
-                            currentOffset += charLength;
-
-                            let className = "char upcoming";
-
-                            if (index < input.length) {
-                              className =
-                                input.slice(index, index + charLength) === character
-                                  ? "char correct"
-                                  : "char wrong";
-                            } else if (index <= input.length && input.length < index + charLength) {
-                              className = "char current";
-                            }
-
-                            const isActive =
-                              index <= input.length &&
-                              input.length < index + charLength;
-
-                            return (
-                              <span
-                                key={index}
-                                ref={isActive ? activeCharRef : null}
-                                className={className}
-                              >
-                                {character}
-                              </span>
-                            );
-                          })}
-                        </span>
-                      );
-                    })}
+                          return (
+                            <span
+                              key={index}
+                              ref={isActive ? activeCharRef : null}
+                              className={className}
+                            >
+                              {character}
+                            </span>
+                          );
+                        })}
+                      </span>
+                    ))}
                   </div>
 
                   <div className="legend-row">
@@ -1033,11 +919,11 @@ export default function App() {
         )}
       </section>
 
-      <PublisherContent />
-      <FAQ />
-      <SocialFooter wpm={finished ? wpm : null} />
+      <MemoizedPublisherContent />
+      <MemoizedFAQ />
+      <MemoizedSocialFooter wpm={finished ? wpm : null} />
 
-      {authOpen ? (
+      {authOpen && (
         <Suspense fallback={null}>
           <AuthModal
             isOpen={authOpen}
@@ -1045,7 +931,7 @@ export default function App() {
             initialMode={authMode}
           />
         </Suspense>
-      ) : null}
+      )}
     </main>
   );
 }
