@@ -1980,19 +1980,7 @@ html {
   opacity: 1 !important;
   visibility: visible !important;
 }
-/* Ensure result dashboard takes 100% full width of the container */
-.practice-layout:has(.tp-results-wrapper) {
-  display: block !important;
-  width: 100% !important;
-}
-/* Unlocks 100% full-width container on test completion */
-.app.result-active .practice-layout {
-  display: block !important;
-  grid-template-columns: 1fr !important;
-  width: 100% !important;
-  max-width: 1200px !important;
-  margin: 0 auto !important;
-}
+
 /* Unlocks exact 1200px full width container on test completion */
 .app.result-active .practice-layout,
 .practice-layout:has(.tp-hud-theme-card) {
@@ -2004,7 +1992,46 @@ html {
   padding: 0 16px !important;
   box-sizing: border-box !important;
 }
-/* Unlocks exact 1200px full width container on test completion */
+/* ==========================================================================
+   Zero-Lag Hardware-Accelerated Caret & Text Rendering
+   ========================================================================== */
+
+.typing-text {
+  position: relative;
+  will-change: transform;
+  contain: content;
+}
+
+/* Native GPU Smooth Caret (Zero JavaScript reflow calculations) */
+.char.current {
+  position: relative;
+  color: #1e1b4b !important;
+}
+
+.char.current::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 10%;
+  height: 80%;
+  width: 2.5px;
+  background-color: #7c3aed;
+  border-radius: 2px;
+  animation: tpCaretPulse 1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.typing-text.rtl .char.current::before {
+  left: auto;
+  right: -1px;
+}
+
+@keyframes tpCaretPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+
+/* 1200px Full-Width container on test finish */
 .app.result-active .practice-layout,
 .practice-layout:has(.tp-hud-theme-card) {
   display: block !important;
