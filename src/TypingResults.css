@@ -1,10 +1,11 @@
 /* ==========================================================================
-   TypePerfectly Full-Open Width Telemetry Theme
+   TypePerfectly Full 1200px Telemetry Dashboard Theme
    ========================================================================== */
 
 .tp-hud-theme-card {
   width: 100% !important;
-  max-width: 100% !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
   display: block !important;
   background-color: #ffffff !important;
   border: 1px solid rgba(139, 92, 246, 0.2);
@@ -31,7 +32,7 @@
 .tp-hud-main {
   display: grid;
   grid-template-columns: 160px 1fr;
-  gap: 36px;
+  gap: 40px;
   align-items: center;
   padding-bottom: 24px;
   width: 100%;
