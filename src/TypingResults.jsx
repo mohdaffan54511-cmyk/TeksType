@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import './TypingResults.css';
 
-/**
- * Lightweight hook for smooth number counting animation
- */
 const useCountUp = (endValue, duration = 800, enabled = true) => {
   const [count, setCount] = useState(0);
 
@@ -64,9 +61,8 @@ export default function TypingResults({
   const calculatedConsistency =
     consistency ?? Math.max(30, Math.min(99, Math.round(100 - errors * 8 - (100 - accuracy) * 0.5)));
 
-  // SVG Dual-Axis Chart Setup (Ultra-wide 1000px stretch)
   const chart = useMemo(() => {
-    const width = 1000;
+    const width = 1200;
     const height = 160;
     const padX = 28;
     const padY = 20;
@@ -84,12 +80,10 @@ export default function TypingResults({
       const t = i / (intervals - 1);
       const x = padX + t * (width - 2 * padX);
 
-      // Lavender Dashed Raw Line
       const rawWpm = Math.max(10, baseSpeed * 1.08 - t * (baseSpeed * 0.25) + Math.sin(t * Math.PI * 1.6) * 2);
       const yRaw = height - padY - ((rawWpm / maxY) * (height - 2 * padY));
       pointsRaw.push({ x, y: yRaw, sec: i + 1 });
 
-      // Vibrant Purple Wavy Speed Line
       let waveOffset = 0;
       if (i === Math.floor(intervals * 0.3)) waveOffset = -baseSpeed * 0.35;
       else if (i === Math.floor(intervals * 0.5)) waveOffset = baseSpeed * 0.45;
@@ -303,7 +297,7 @@ export default function TypingResults({
           <button type="button" className="tp-btn tp-btn-secondary" onClick={onChangeTest}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <circle cx="12" cy="12" r="3" />
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
             </svg>
             <span>Change Test</span>
           </button>
