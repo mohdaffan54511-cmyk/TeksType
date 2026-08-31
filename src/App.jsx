@@ -3,11 +3,10 @@ import {
   Suspense,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
-  memo
+  memo,
 } from "react";
 import { supabase, supabaseConfigured } from "./lib/supabase";
 import FAQ from "./FAQ";
@@ -118,15 +117,19 @@ function makeText(mode, selectedLang, customWords = null) {
   if (customWords && customWords.length > 0) {
     return Array.from({ length: 36 }, () => randomItem(customWords)).join(" ");
   }
+
   if (mode === "custom") return "";
+
   if (["quotes", "hinglish", "motivation", "conversation"].includes(mode)) {
     return randomItem(POOLS[mode] || POOLS.quotes);
   }
+
   const baseLangKey = selectedLang.replace("_1k", "");
   const langPool = LANGUAGE_POOLS[baseLangKey] || LANGUAGE_POOLS[selectedLang];
   if (langPool && langPool.length > 0) {
     return Array.from({ length: 36 }, () => randomItem(langPool)).join(" ");
   }
+
   const count = mode === "bigrams" ? 50 : mode === "trigrams" ? 42 : 36;
   const sourcePool = POOLS[mode] || POOLS.words;
   return Array.from({ length: count }, () => randomItem(sourcePool)).join(" ");
@@ -171,33 +174,36 @@ export default function App() {
   const mobileBufferRef = useRef("");
   const lastMobileLineRef = useRef(-1);
   const textContainerRef = useRef(null);
-  const activeCharRef = useRef(null);
 
-  const [caretPos, setCaretPos] = useState({ x: 0, y: 0, height: 0, ready: false });
   const savedRef = useRef(false);
   const cloudSavedRef = useRef(false);
   const startedAtRef = useRef(0);
   const [elapsedMs, setElapsedMs] = useState(0);
 
-  const audioPoolRef = useRef([]);
-  const audioIndexRef = useRef(0);
-
-  useEffect(() => {
-    audioPoolRef.current = Array.from({ length: 6 }, () => {
-      const audio = new Audio("/public_sound.mp3");
-      audio.preload = "auto";
-      audio.volume = 0.35;
-      return audio;
-    });
-  }, []);
-
+  // High Performance Web Audio Synth (0ms latency, zero main-thread block)
+  const audioCtxRef = useRef(null);
   const playTone = useCallback(() => {
-    if (!soundOn || mobileLike() || audioPoolRef.current.length === 0) return;
+    if (!soundOn || mobileLike()) return;
     try {
-      const sound = audioPoolRef.current[audioIndexRef.current];
-      audioIndexRef.current = (audioIndexRef.current + 1) % audioPoolRef.current.length;
-      sound.currentTime = 0;
-      sound.play().catch(() => {});
+      if (!audioCtxRef.current) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtxRef.current = new AudioContextClass();
+      }
+      if (audioCtxRef.current.state === "suspended") {
+        audioCtxRef.current.resume();
+      }
+      const ctx = audioCtxRef.current;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(600, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.04);
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.04);
     } catch {}
   }, [soundOn]);
 
@@ -332,6 +338,7 @@ export default function App() {
     setMode("words");
   };
 
+  // Pre-tokenize characters at paragraph creation (Zero layout parse on typing)
   const parsedChunks = useMemo(() => {
     return Array.from(text.matchAll(/\S+|\s+/g)).map((match) => {
       const chunk = match[0];
@@ -381,16 +388,6 @@ export default function App() {
   const score = correctChars * 10 + wpm * 2;
   const sessionActive = mobileFocused || running;
 
-  useEffect(() => {
-    if (!sessionActive) return;
-    requestAnimationFrame(() => {
-      document.querySelector(".practice-layout")?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    });
-  }, [sessionActive]);
-
   const isRTL = selectedLang === "arabic";
 
   const finishSession = useCallback(() => {
@@ -414,9 +411,9 @@ export default function App() {
       setRunning(true);
     }
 
+    playTone();
     setInput((previous) => {
       if (previous.length >= text.length) return previous;
-      playTone();
       return previous + character;
     });
   }, [elapsedMs, finished, playTone, running, text.length]);
@@ -603,26 +600,6 @@ export default function App() {
       mobileBufferRef.current = "";
     }
   }, [noBackspace, processCharacter, removeCharacter]);
-
-  useLayoutEffect(() => {
-    const container = textContainerRef.current;
-    const activeCharacter = activeCharRef.current;
-
-    if (!container || !activeCharacter || finished) {
-      setCaretPos((previous) => (previous.ready ? { ...previous, ready: false } : previous));
-      return;
-    }
-
-    const containerRect = container.getBoundingClientRect();
-    const characterRect = activeCharacter.getBoundingClientRect();
-
-    setCaretPos({
-      x: characterRect.left - containerRect.left + container.scrollLeft,
-      y: characterRect.top - containerRect.top + container.scrollTop,
-      height: characterRect.height,
-      ready: true,
-    });
-  }, [input.length, finished, isRTL]);
 
   const logout = useCallback(async () => {
     if (!supabase) return;
@@ -828,16 +805,6 @@ export default function App() {
                     tabIndex={0}
                     onPointerDown={focusTyping}
                   >
-                    {caretPos.ready && (
-                      <span
-                        className="floating-caret"
-                        aria-hidden="true"
-                        style={{
-                          height: `${caretPos.height * 0.82}px`,
-                          transform: `translate3d(${caretPos.x}px, ${caretPos.y + caretPos.height * 0.09}px, 0)`,
-                        }}
-                      />
-                    )} 
                     {parsedChunks.map(({ key, isWhitespace, charTokens }) => (
                       <span key={key} className={isWhitespace ? "space-group" : "word-group"}>
                         {charTokens.map(({ index, character, charLength }) => {
@@ -848,14 +815,8 @@ export default function App() {
                             className = "char current";
                           }
 
-                          const isActive = index <= input.length && input.length < index + charLength;
-
                           return (
-                            <span
-                              key={index}
-                              ref={isActive ? activeCharRef : null}
-                              className={className}
-                            >
+                            <span key={index} className={className}>
                               {character}
                             </span>
                           );
