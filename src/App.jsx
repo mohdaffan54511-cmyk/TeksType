@@ -18,7 +18,6 @@ import "./App.css";
 
 const AuthModal = lazy(() => import("./AuthModal"));
 
-// Memoize heavy static sections to prevent re-rendering during active typing
 const MemoizedPublisherContent = memo(PublisherContent);
 const MemoizedFAQ = memo(FAQ);
 const MemoizedSocialFooter = memo(SocialFooter);
@@ -119,19 +118,15 @@ function makeText(mode, selectedLang, customWords = null) {
   if (customWords && customWords.length > 0) {
     return Array.from({ length: 36 }, () => randomItem(customWords)).join(" ");
   }
-
   if (mode === "custom") return "";
-
   if (["quotes", "hinglish", "motivation", "conversation"].includes(mode)) {
     return randomItem(POOLS[mode] || POOLS.quotes);
   }
-
   const baseLangKey = selectedLang.replace("_1k", "");
   const langPool = LANGUAGE_POOLS[baseLangKey] || LANGUAGE_POOLS[selectedLang];
   if (langPool && langPool.length > 0) {
     return Array.from({ length: 36 }, () => randomItem(langPool)).join(" ");
   }
-
   const count = mode === "bigrams" ? 50 : mode === "trigrams" ? 42 : 36;
   const sourcePool = POOLS[mode] || POOLS.words;
   return Array.from({ length: count }, () => randomItem(sourcePool)).join(" ");
@@ -149,11 +144,9 @@ export default function App() {
   const [selectedLang, setSelectedLang] = useState("english");
   const [langWords, setLangWords] = useState(null);
   const [mode, setMode] = useState("words");
-  
   const [customInput, setCustomInput] = useState("");
   const [isCustomActive, setIsCustomActive] = useState(false);
   const [customError, setCustomError] = useState("");
-  
   const [duration, setDuration] = useState(15);
   const [text, setText] = useState(() => makeText("words", "english"));
   const [input, setInput] = useState("");
@@ -180,12 +173,7 @@ export default function App() {
   const textContainerRef = useRef(null);
   const activeCharRef = useRef(null);
 
-  const [caretPos, setCaretPos] = useState({
-    x: 0,
-    y: 0,
-    height: 0,
-    ready: false,
-  });
+  const [caretPos, setCaretPos] = useState({ x: 0, y: 0, height: 0, ready: false });
   const savedRef = useRef(false);
   const cloudSavedRef = useRef(false);
   const startedAtRef = useRef(0);
@@ -344,13 +332,11 @@ export default function App() {
     setMode("words");
   };
 
-  // HIGH-PERFORMANCE PRE-COMPUTED TOKEN PARSER (Zero lag during typing)
   const parsedChunks = useMemo(() => {
     return Array.from(text.matchAll(/\S+|\s+/g)).map((match) => {
       const chunk = match[0];
       const wordStartIndex = match.index ?? 0;
       const isWhitespace = /^\s+$/.test(chunk);
-      
       const characters = staticSegmenter
         ? Array.from(staticSegmenter.segment(chunk), (s) => s.segment)
         : Array.from(chunk);
@@ -363,11 +349,7 @@ export default function App() {
         return { index, character, charLength };
       });
 
-      return {
-        key: `${wordStartIndex}-${chunk}`,
-        isWhitespace,
-        charTokens
-      };
+      return { key: `${wordStartIndex}-${chunk}`, isWhitespace, charTokens };
     });
   }, [text]);
 
@@ -622,7 +604,6 @@ export default function App() {
     }
   }, [noBackspace, processCharacter, removeCharacter]);
 
-  // Fast Smooth Caret Position Calculation
   useLayoutEffect(() => {
     const container = textContainerRef.current;
     const activeCharacter = activeCharRef.current;
