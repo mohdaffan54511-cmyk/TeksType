@@ -2031,14 +2031,95 @@ html {
   50% { opacity: 0.15; }
 }
 
-/* 1200px Full-Width container on test finish */
-.app.result-active .practice-layout,
-.practice-layout:has(.tp-hud-theme-card) {
-  display: block !important;
-  grid-template-columns: 1fr !important;
-  width: 100% !important;
-  max-width: 1200px !important;
-  margin: 0 auto 36px !important;
-  padding: 0 16px !important;
-  box-sizing: border-box !important;
+/* ==========================================================================
+   Clean & Modern Typography + Sleek 2px Caret (No Ugly Pink Box)
+   ========================================================================== */
+
+/* Main Text Container */
+.typing-text {
+  font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+  font-size: 28px;
+  line-height: 1.6;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  user-select: none;
+  cursor: text;
+  outline: none;
+  position: relative;
+  word-break: break-word;
+}
+
+/* Remove any background boxes or borders from characters */
+.char {
+  position: relative;
+  display: inline-block;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  transition: color 80ms ease;
+}
+
+/* 1. Upcoming untyped characters (Light Gray) */
+.char.upcoming {
+  color: #94a3b8 !important;
+}
+
+/* 2. Correctly typed characters (Deep Dark Navy) */
+.char.correct {
+  color: #1e1b4b !important;
+  font-weight: 600;
+}
+
+/* 3. Wrong typed characters (Clean Red Text with Zero Pink Box) */
+.char.wrong {
+  color: #ef4444 !important;
+  font-weight: 600;
+  background: transparent !important;
+}
+
+/* 4. Active Current Character + Sleek Smooth Caret Line */
+.char.current {
+  color: #64748b !important;
+  background: transparent !important;
+}
+
+/* Sleek 2px Vertical Blinking Caret (Matches exact font height) */
+.char.current::before {
+  content: "";
+  position: absolute;
+  left: -1.5px;
+  top: 15%;
+  height: 70%;
+  width: 2px;
+  background-color: #7c3aed;
+  border-radius: 1px;
+  animation: tpCleanBlink 1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* RTL Support for Arabic */
+.typing-text.rtl .char.current::before {
+  left: auto;
+  right: -1.5px;
+}
+
+/* Smooth Caret Animation */
+@keyframes tpCleanBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Group spacing */
+.space-group {
+  display: inline;
+}
+
+.word-group {
+  display: inline-block;
 }
