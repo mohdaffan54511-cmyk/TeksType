@@ -1,490 +1,203 @@
 /* ==========================================================================
-   TypePerfectly Full-Width SaaS Telemetry Dashboard Theme
+   TypePerfectly Learning Center — 3-Column Glass Cards Grid
    ========================================================================== */
 
-.tp-results-wrapper {
+.tp-learning-section {
   width: 100% !important;
   max-width: 1200px !important;
-  grid-column: 1 / -1;
-  margin: 0 auto;
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 320ms cubic-bezier(0.16, 1, 0.3, 1),
-              transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  margin: 64px auto 36px !important;
+  padding: 0 16px;
   box-sizing: border-box;
-  font-family: inherit;
-  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-.tp-results-wrapper.tp-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Full Open White Glassmorphism Card */
-.tp-dashboard-card {
-  background: #ffffff;
-  border: 1px solid rgba(139, 92, 246, 0.18);
-  border-radius: 24px;
-  padding: 30px 40px 28px;
-  box-shadow: 0 16px 36px -10px rgba(109, 40, 217, 0.08),
-              0 2px 6px rgba(0, 0, 0, 0.02);
-  box-sizing: border-box;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-/* --------------------------------------------------------------------------
-   Header Telemetry Bar
-   -------------------------------------------------------------------------- */
-
-.tp-header-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 18px;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.tp-badge-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.tp-status-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #10b981;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
-}
-
-.tp-badge-text {
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: #6366f1;
-  text-transform: uppercase;
-  font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace;
-}
-
-.tp-meta-tags {
-  display: flex;
-  gap: 8px;
-}
-
-.tp-tag {
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 8px;
-  background: #f5f3ff;
-  border: 1px solid rgba(139, 92, 246, 0.18);
-  color: #6d28d9;
-  font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace;
-}
-
-/* --------------------------------------------------------------------------
-   Dashboard Body: 2-Column (Hero Gauge + Velocity Chart)
-   -------------------------------------------------------------------------- */
-
-.tp-dashboard-body {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 36px;
-  align-items: center;
-  padding: 24px 0 20px;
-  width: 100%;
-}
-
-/* Hero WPM Section */
-.tp-hero-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.tp-gauge-container {
-  position: relative;
-  width: 155px;
-  height: 155px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.tp-gauge-svg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: rotate(-90deg);
-}
-
-.tp-gauge-track {
-  fill: none;
-  stroke: #f1f5f9;
-}
-
-.tp-gauge-value {
-  fill: none;
-  stroke-linecap: round;
-  transition: stroke-dashoffset 900ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.tp-hero-wpm-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 1;
-}
-
-.tp-hero-value {
-  font-size: 52px;
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: -0.04em;
-  color: #1e1b4b;
-  font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace;
-}
-
-.tp-hero-label {
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  color: #7c3aed;
-  margin-top: 3px;
-}
-
-.tp-feedback-pill {
-  margin: 14px 0 0 0;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: #475569;
+/* Header Section */
+.tp-learning-header {
   text-align: center;
-  background: #f8fafc;
-  padding: 6px 14px;
-  border-radius: 9999px;
-  border: 1px solid #f1f5f9;
-  white-space: nowrap;
+  max-width: 760px;
+  margin: 0 auto 36px;
 }
 
-/* Telemetry Velocity Chart */
-.tp-chart-col {
+.tp-learning-pill {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #7c3aed;
+  background: #f5f3ff;
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  padding: 5px 16px;
+  border-radius: 9999px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.tp-learning-title {
+  font-size: 32px;
+  font-weight: 900;
+  color: #1e1b4b;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  margin: 0 0 10px 0;
+}
+
+.tp-learning-title span {
+  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.tp-learning-subtitle {
+  font-size: 15px;
+  font-weight: 500;
+  color: #64748b;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* 3-Column Grid Layout */
+.tp-learning-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+/* Topic Card */
+.tp-guide-card {
+  background: #ffffff;
+  border: 1px solid rgba(139, 92, 246, 0.16);
+  border-radius: 20px;
+  padding: 24px 26px;
+  box-shadow: 0 10px 28px -6px rgba(109, 40, 217, 0.05),
+              0 1px 3px rgba(0, 0, 0, 0.02);
   display: flex;
   flex-direction: column;
-  background: #fafafa;
-  border: 1px solid #f1f5f9;
-  border-radius: 18px;
-  padding: 16px 22px;
-  width: 100%;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
   box-sizing: border-box;
 }
 
-.tp-chart-header {
+.tp-guide-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(124, 58, 237, 0.38);
+  box-shadow: 0 16px 36px -8px rgba(109, 40, 217, 0.12);
+}
+
+/* Card Header Meta */
+.tp-guide-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 14px;
 }
 
-.tp-chart-title {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  color: #64748b;
+.tp-guide-badge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #6366f1;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 3px 8px;
+  border-radius: 6px;
   text-transform: uppercase;
+  font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace;
 }
 
-.tp-chart-legend {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.tp-guide-num {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 800;
+  color: #cbd5e1;
+  font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace;
+}
+
+/* Card Title */
+.tp-guide-title {
+  font-size: 17.5px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+  margin: 0 0 12px 0;
+}
+
+/* Card Body Content */
+.tp-guide-body {
+  font-size: 13.5px;
+  font-weight: 450;
+  color: #475569;
+  line-height: 1.62;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tp-guide-body p {
+  margin: 0;
+}
+
+.tp-guide-body strong {
+  color: #1e1b4b;
+  font-weight: 700;
+}
+
+/* Lists inside Cards */
+.tp-guide-list,
+.tp-guide-steps {
+  margin: 4px 0 0 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tp-guide-list li,
+.tp-guide-steps li {
+  line-height: 1.5;
+}
+
+.tp-guide-list li::marker {
   color: #7c3aed;
 }
 
-.tp-chart-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #7c3aed;
-  display: inline-block;
-}
-
-.tp-svg-chart-wrap {
-  width: 100%;
-  position: relative;
-}
-
-.tp-chart-svg {
-  width: 100%;
-  height: 105px;
-  overflow: visible;
-  display: block;
-}
-
-.tp-chart-grid-line {
-  stroke: #e2e8f0;
-  stroke-width: 1;
-  stroke-dasharray: 4 4;
-}
-
-.tp-chart-line {
-  fill: none;
-  stroke: #7c3aed;
-  stroke-width: 2.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.tp-chart-endpoint {
-  fill: #6366f1;
-  stroke: #ffffff;
-  stroke-width: 2;
-}
-
-.tp-chart-x-axis {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  color: #94a3b8;
-  font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace;
-}
-
-/* --------------------------------------------------------------------------
-   5-Column Compact Metrics Grid
-   -------------------------------------------------------------------------- */
-
-.tp-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 14px;
-  margin: 18px 0 28px;
-  width: 100%;
-}
-
-.tp-stat-item {
-  display: flex;
-  flex-direction: column;
-  padding: 14px 16px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
-}
-
-.tp-stat-item:hover {
-  background: #ffffff;
-  border-color: rgba(139, 92, 246, 0.35);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(109, 40, 217, 0.05);
-}
-
-.tp-stat-label {
-  font-size: 11.5px;
+.tp-guide-steps li::marker {
   font-weight: 700;
-  color: #64748b;
-  margin-bottom: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  color: #6366f1;
 }
 
-.tp-stat-value {
-  font-size: 22px;
-  font-weight: 800;
-  color: #0f172a;
-  font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace;
-}
-
-.tp-accent-green {
-  color: #059669;
-}
-
-.tp-accent-red {
-  color: #e11d48;
-}
-
-/* --------------------------------------------------------------------------
-   Action Buttons Strip
-   -------------------------------------------------------------------------- */
-
-.tp-actions-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding-top: 4px;
-}
-
-.tp-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 44px;
-  padding: 0 24px;
-  font-size: 13.5px;
-  font-weight: 700;
-  border-radius: 9999px;
-  cursor: pointer;
-  outline: none;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
-  user-select: none;
-}
-
-.tp-btn:active {
-  transform: scale(0.97);
-}
-
-.tp-btn:focus-visible {
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.35);
-}
-
-/* Primary Violet Button */
-.tp-btn-primary {
-  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
-  color: #ffffff;
-  border: none;
-  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.28);
-}
-
-.tp-btn-primary:hover {
-  background: linear-gradient(135deg, #6d28d9 0%, #4f46e5 100%);
-  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.38);
-  transform: translateY(-1px);
-}
-
-.tp-kbd {
-  font-size: 11px;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.25);
-  color: #ffffff;
-  font-family: inherit;
-  line-height: 1;
-}
-
-/* Secondary Button */
-.tp-btn-secondary {
-  background: #ffffff;
-  color: #334155;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-}
-
-.tp-btn-secondary:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
-  color: #0f172a;
-  transform: translateY(-1px);
-}
-
-/* --------------------------------------------------------------------------
-   Copied Toast Notification
-   -------------------------------------------------------------------------- */
-
-.tp-toast {
-  position: absolute;
-  top: -46px;
-  left: 50%;
-  transform: translateX(-50%) translateY(8px);
-  background: #1e1b4b;
-  border: 1px solid #312e81;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 8px 18px;
-  border-radius: 9999px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 200ms ease, transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 10px 25px rgba(30, 27, 75, 0.2);
-  z-index: 50;
-  white-space: nowrap;
-}
-
-.tp-toast svg {
-  color: #34d399;
-}
-
-.tp-toast-show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-/* ==========================================================================
-   Responsive Breakpoints
-   ========================================================================== */
-
-@media (max-width: 960px) {
-  .tp-dashboard-body {
-    grid-template-columns: 1fr;
-    gap: 22px;
+/* Responsive */
+@media (max-width: 1024px) {
+  .tp-learning-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
-
-  .tp-stats-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+  .tp-learning-title {
+    font-size: 28px;
   }
 }
 
 @media (max-width: 640px) {
-  .tp-dashboard-card {
-    padding: 22px 18px;
-    border-radius: 20px;
+  .tp-learning-section {
+    margin: 40px auto 20px !important;
+    padding: 0 12px;
   }
-
-  .tp-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+  .tp-learning-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
   }
-
-  .tp-actions-row {
-    flex-direction: column;
-    width: 100%;
+  .tp-guide-card {
+    padding: 20px 18px;
   }
-
-  .tp-btn {
-    width: 100%;
+  .tp-learning-title {
+    font-size: 23px;
   }
-
-  .tp-hero-value {
-    font-size: 44px;
-  }
-
-  .tp-gauge-container {
-    width: 140px;
-    height: 140px;
-  }
-
-  .tp-gauge-svg {
-    width: 140px;
-    height: 140px;
+  .tp-learning-subtitle {
+    font-size: 14px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tp-results-wrapper,
-  .tp-gauge-value,
-  .tp-toast,
-  .tp-btn,
-  .tp-stat-item {
+  .tp-guide-card {
     transition: none !important;
-    animation: none !important;
-  }
-  .tp-results-wrapper {
-    opacity: 1;
-    transform: none;
   }
 }
