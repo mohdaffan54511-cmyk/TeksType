@@ -379,3 +379,23 @@
     width: 100%;
   }
 }
+/* Telemetry stats labels styling enhancement */
+.tp-tele-lbl {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8a819c !important;
+  margin-bottom: 6px;
+  display: block;
+}
+.tp-tele-num, .tp-tele-val-dark {
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  color: #2d2640 !important;
+}
+.tp-tele-val-muted, .tp-tele-sub {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #9e95b0 !important;
+}
