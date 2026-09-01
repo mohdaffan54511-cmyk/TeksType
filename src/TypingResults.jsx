@@ -205,7 +205,6 @@ export default function TypingResults({
           </div>
         </div>
 
-        {/* Clean Chart Container without overlapping old SVG labels */}
         <div className="tp-chart-stage" style={{ height: '170px', position: 'relative', width: '100%' }}>
           <ChartJs type="line" data={chartData} options={chartOptions} />
         </div>
@@ -262,7 +261,7 @@ export default function TypingResults({
           </button>
         )}
 
-        <button type="button" className="tp-btn tp-btn-secondary" onClick={cloneAndShare || handleShare}>
+        <button type="button" className="tp-btn tp-btn-secondary" onClick={handleShare}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
             <polyline points="16 6 12 2 8 6" />
