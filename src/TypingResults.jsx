@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { ChartJs } from './ChartJs';
 import './TypingResults.css';
 
 const useCountUp = (endValue, duration = 800, enabled = true) => {
@@ -61,77 +62,80 @@ export default function TypingResults({
   const calculatedConsistency =
     consistency ?? Math.max(30, Math.min(99, Math.round(100 - errors * 8 - (100 - accuracy) * 0.5)));
 
-  const chart = useMemo(() => {
-    const width = 1200;
-    const height = 160;
-    const padX = 28;
-    const padY = 20;
-
+  // Clean Chart.js data configuration
+  const chartData = useMemo(() => {
     const intervals = Math.min(Math.max(time, 5), 15);
-    const maxY = Math.max(wpm * 1.35, 45);
-
-    const pointsWpm = [];
-    const pointsRaw = [];
-    const errorMarkers = [];
-
+    const labels = Array.from({ length: intervals }, (_, i) => i + 1);
     const baseSpeed = Math.max(wpm, 15);
 
-    for (let i = 0; i < intervals; i++) {
+    const wpmValues = labels.map((_, i) => {
       const t = i / (intervals - 1);
-      const x = padX + t * (width - 2 * padX);
-
-      const rawWpm = Math.max(10, baseSpeed * 1.08 - t * (baseSpeed * 0.25) + Math.sin(t * Math.PI * 1.6) * 2);
-      const yRaw = height - padY - ((rawWpm / maxY) * (height - 2 * padY));
-      pointsRaw.push({ x, y: yRaw, sec: i + 1 });
-
       let waveOffset = 0;
       if (i === Math.floor(intervals * 0.3)) waveOffset = -baseSpeed * 0.35;
       else if (i === Math.floor(intervals * 0.5)) waveOffset = baseSpeed * 0.45;
       else if (i === Math.floor(intervals * 0.75)) waveOffset = -baseSpeed * 0.5;
+      return Math.max(0, Math.round(baseSpeed * 0.95 + waveOffset + Math.sin(t * Math.PI * 3) * 2.5));
+    });
 
-      const activeWpm = Math.max(0, baseSpeed * 0.95 + waveOffset + Math.sin(t * Math.PI * 3) * 2.5);
-      const yActive = height - padY - ((activeWpm / maxY) * (height - 2 * padY));
-      pointsWpm.push({ x, y: yActive, sec: i + 1 });
-
-      if (errors > 0 && i === Math.floor(intervals * 0.5)) {
-        errorMarkers.push({ x, y: yRaw - 14, sec: i + 1 });
-      }
-    }
-
-    const makeBezier = (pts) => {
-      let d = `M ${pts[0].x} ${pts[0].y}`;
-      for (let i = 0; i < pts.length - 1; i++) {
-        const p0 = pts[i === 0 ? 0 : i - 1];
-        const p1 = pts[i];
-        const p2 = pts[i + 1];
-        const p3 = pts[i + 2] || p2;
-
-        const cp1x = p1.x + (p2.x - p0.x) / 6;
-        const cp1y = p1.y + (p2.y - p0.y) / 6;
-        const cp2x = p2.x - (p3.x - p1.x) / 6;
-        const cp2y = p2.y - (p3.y - p1.y) / 6;
-
-        d += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
-      }
-      return d;
-    };
+    const rawValues = labels.map((_, i) => {
+      const t = i / (intervals - 1);
+      return Math.max(10, Math.round(baseSpeed * 1.08 - t * (baseSpeed * 0.25) + Math.sin(t * Math.PI * 1.6) * 2));
+    });
 
     return {
-      rawPath: makeBezier(pointsRaw),
-      wpmPath: makeBezier(pointsWpm),
-      pointsRaw,
-      pointsWpm,
-      errorMarkers,
-      yTicksLeft: [
-        { label: Math.round(maxY), y: padY },
-        { label: Math.round(maxY * 0.66), y: padY + (height - 2 * padY) * 0.33 },
-        { label: Math.round(maxY * 0.33), y: padY + (height - 2 * padY) * 0.66 },
-        { label: 0, y: height - padY },
-      ],
-      width,
-      height,
+      labels,
+      datasets: [
+        {
+          label: 'WPM',
+          data: wpmValues,
+          borderColor: '#7c4dff',
+          backgroundColor: 'rgba(124, 77, 255, 0.08)',
+          fill: true,
+          tension: 0.35,
+          borderWidth: 2.5,
+          pointRadius: 3,
+          pointBackgroundColor: '#7c4dff',
+        },
+        {
+          label: 'Raw',
+          data: rawValues,
+          borderColor: '#9e95b0',
+          borderDash: [4, 4],
+          fill: false,
+          tension: 0.35,
+          borderWidth: 1.5,
+          pointRadius: 2,
+        }
+      ]
     };
-  }, [wpm, time, errors]);
+  }, [wpm, time]);
+
+  const chartOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: 'rgba(20, 18, 30, 0.9)',
+        titleFont: { family: 'inherit', size: 13, weight: 'bold' },
+        bodyFont: { family: 'inherit', size: 12 },
+        padding: 10,
+        cornerRadius: 6,
+      }
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { color: '#8a819c', font: { family: 'inherit', size: 11, weight: '600' } },
+        border: { display: false }
+      },
+      y: {
+        grid: { color: 'rgba(124, 77, 255, 0.06)', drawBorder: false },
+        ticks: { color: '#8a819c', font: { family: 'inherit', size: 11, weight: '600' }, maxTicksLimit: 5 },
+        border: { display: false }
+      },
+    },
+  }), []);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -201,54 +205,9 @@ export default function TypingResults({
           </div>
         </div>
 
-        <div className="tp-chart-stage">
-          <span className="tp-y-label-left">Words per Minute</span>
-
-          <div className="tp-axis-ticks-left">
-            {chart.yTicksLeft.map((tick, idx) => (
-              <span key={idx} style={{ top: `${(tick.y / chart.height) * 100}%` }}>
-                {tick.label}
-              </span>
-            ))}
-          </div>
-
-          <svg className="tp-svg-canvas" viewBox={`0 0 ${chart.width} ${chart.height}`} preserveAspectRatio="none">
-            {chart.yTicksLeft.map((tick, idx) => (
-              <line key={idx} x1="0" y1={tick.y} x2={chart.width} y2={tick.y} className="tp-chart-grid" />
-            ))}
-
-            <path d={chart.rawPath} className="tp-line-raw" />
-
-            {chart.pointsRaw.map((pt, idx) => (
-              <circle key={`raw-${idx}`} cx={pt.x} cy={pt.y} r="2.2" className="tp-dot-raw" />
-            ))}
-
-            <path d={chart.wpmPath} className="tp-line-wpm" />
-
-            {chart.pointsWpm.map((pt, idx) => (
-              <circle key={`wpm-${idx}`} cx={pt.x} cy={pt.y} r="2.6" className="tp-dot-wpm" />
-            ))}
-
-            {chart.errorMarkers.map((err, idx) => (
-              <text key={idx} x={err.x} y={err.y} className="tp-err-x" textAnchor="middle">
-                ×
-              </text>
-            ))}
-          </svg>
-
-          <span className="tp-y-label-right">Errors</span>
-          <div className="tp-axis-ticks-right">
-            <span style={{ top: '12%' }}>{errors > 0 ? errors : 1}</span>
-            <span style={{ top: '88%' }}>0</span>
-          </div>
-
-          <div className="tp-axis-ticks-bottom">
-            {chart.pointsWpm.map((pt, idx) => (
-              <span key={idx} style={{ left: `${(pt.x / chart.width) * 100}%` }}>
-                {pt.sec}
-              </span>
-            ))}
-          </div>
+        {/* Clean Chart Container without overlapping old SVG labels */}
+        <div className="tp-chart-stage" style={{ height: '170px', position: 'relative', width: '100%' }}>
+          <ChartJs type="line" data={chartData} options={chartOptions} />
         </div>
       </div>
 
@@ -303,13 +262,13 @@ export default function TypingResults({
           </button>
         )}
 
-        <button type="button" className="tp-btn tp-btn-secondary" onClick={handleShare}>
+        <button type="button" className="tp-btn tp-btn-secondary" onClick={cloneAndShare || handleShare}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
             <polyline points="16 6 12 2 8 6" />
             <line x1="12" y1="2" x2="12" y2="15" />
           </svg>
-          <span>Share Result</span>
+          <span>Share Result Screen</span>
         </button>
       </div>
     </section>
