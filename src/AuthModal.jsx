@@ -295,16 +295,34 @@ export default function AuthModal({
             width="18" 
             height="18" 
             viewBox="0 0 24 24" 
-           {/* Google Sign In Button */}
+        {/* Google Sign In Button */}
         <button
           type="button"
           onClick={handleGoogleLogin}
           disabled={loading}
-          className="auth-google"
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "12px",
+            minHeight: "60px",
+            marginTop: "12px",
+            marginBottom: "4px",
+            padding: "0 19px",
+            borderRadius: "17px",
+            border: "1px solid rgba(104, 81, 179, 0.22)",
+            backgroundColor: "#ffffff",
+            color: "#21193f",
+            fontWeight: "900",
+            fontSize: "16px",
+            cursor: "pointer",
+            boxShadow: "0 8px 20px rgba(75, 52, 150, 0.08)",
+          }}
         >
           <svg 
-            width="18" 
-            height="18" 
+            width="20" 
+            height="20" 
             viewBox="0 0 24 24" 
             style={{ flexShrink: 0, display: "block" }}
           >
