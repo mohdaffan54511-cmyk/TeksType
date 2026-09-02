@@ -87,7 +87,6 @@ export default function AuthModal({
     }
   };
 
-  // Google Login Handler function
   const handleGoogleLogin = async () => {
     if (!supabaseConfigured || !supabase) {
       setStatus("error");
@@ -191,7 +190,6 @@ export default function AuthModal({
         )}
 
         <form className="auth-form" onSubmit={submit}>
-          {/* Name field (Only shown during Sign Up) */}
           {!isLogin && (
             <label className="auth-field">
               <span>Full name</span>
@@ -278,22 +276,23 @@ export default function AuthModal({
             alignItems: "center",
             justifyContent: "center",
             gap: "12px",
-            padding: "10px 16px",
-            marginTop: "10px",
-            marginBottom: "2px",
-            borderRadius: "12px",
-            border: "1px solid rgba(0, 0, 0, 0.1)",
+            minHeight: "60px",
+            marginTop: "12px",
+            marginBottom: "4px",
+            padding: "0 19px",
+            borderRadius: "17px",
+            border: "1px solid rgba(104, 81, 179, 0.22)",
             backgroundColor: "#ffffff",
-            color: "#1f2937",
-            fontWeight: "600",
-            fontSize: "14px",
+            color: "#21193f",
+            fontWeight: "900",
+            fontSize: "16px",
             cursor: "pointer",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
+            boxShadow: "0 8px 20px rgba(75, 52, 150, 0.08)",
           }}
         >
           <svg 
-            width="18" 
-            height="18" 
+            width="20" 
+            height="20" 
             viewBox="0 0 24 24" 
             style={{ flexShrink: 0, display: "block" }}
           >
