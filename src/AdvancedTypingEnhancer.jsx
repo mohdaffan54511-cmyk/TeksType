@@ -1,7 +1,5 @@
-import "./advanced-typing.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import "./advanced-typing.css";
 
 const KEYBOARD_ROWS = [
   ["q","w","e","r","t","y","u","i","o","p"],
