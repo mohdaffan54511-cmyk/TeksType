@@ -259,7 +259,8 @@
 }
 
 .auth-submit,
-.auth-guest {
+.auth-guest,
+.auth-google {
   width: 100%;
   border-radius: 17px;
   font: inherit;
@@ -286,6 +287,37 @@
   letter-spacing: 0.03em;
 }
 
+/* Google Sign In Button Styles */
+.auth-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 58px;
+  margin-top: 10px;
+  margin-bottom: 2px;
+  padding: 0 19px;
+  border: 1px solid rgba(104, 81, 179, 0.22);
+  color: #21193f;
+  background: linear-gradient(145deg, #ffffff, #f7f5ff);
+  box-shadow:
+    0 8px 20px rgba(75, 52, 150, 0.08),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.96),
+    inset -2px -2px 5px rgba(114, 80, 207, 0.05);
+  font-size: 16px;
+}
+
+.auth-google:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 24px rgba(75, 52, 150, 0.14),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.98);
+}
+
+.auth-google:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
 .auth-submit:hover:not(:disabled),
 .auth-guest:hover {
   transform: translateY(-3px);
@@ -303,9 +335,10 @@
   transform: translateY(1px);
 }
 
-.auth-submit:disabled {
+.auth-submit:disabled,
+.auth-google:disabled {
   opacity: 0.64;
-  cursor: wait;
+  cursor: not-allowed;
 }
 
 .auth-message {
@@ -409,6 +442,7 @@
 .auth-close:focus-visible,
 .auth-field input:focus-visible,
 .auth-submit:focus-visible,
+.auth-google:focus-visible,
 .auth-switch:focus-visible,
 .auth-guest:focus-visible,
 .auth-legal a:focus-visible {
@@ -475,7 +509,8 @@
     font-size: 16px;
   }
 
-  .auth-submit {
+  .auth-submit,
+  .auth-google {
     min-height: 56px;
     font-size: 16px;
   }
@@ -527,6 +562,7 @@
   .auth-close,
   .auth-field input,
   .auth-submit,
+  .auth-google,
   .auth-guest {
     transition: none;
   }
