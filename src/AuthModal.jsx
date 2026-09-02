@@ -7,6 +7,7 @@ export default function AuthModal({
   initialMode = "login",
 }) {
   const [mode, setMode] = useState(initialMode);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -49,6 +50,9 @@ export default function AuthModal({
           email: email.trim(),
           password,
           options: {
+            data: {
+              full_name: name.trim(),
+            },
             emailRedirectTo: window.location.origin,
           },
         });
@@ -119,6 +123,7 @@ export default function AuthModal({
       currentMode === "login" ? "signup" : "login"
     );
 
+    setName("");
     setPassword("");
     setMessage("");
     setStatus("idle");
@@ -186,6 +191,23 @@ export default function AuthModal({
         )}
 
         <form className="auth-form" onSubmit={submit}>
+          {/* Name field (Only shown during Sign Up) */}
+          {!isLogin && (
+            <label className="auth-field">
+              <span>Full name</span>
+              <input
+                type="text"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                autoComplete="name"
+                placeholder="Enter your name"
+                required={!isLogin}
+                autoFocus
+                disabled={loading}
+              />
+            </label>
+          )}
+
           <label className="auth-field">
             <span>Email address</span>
 
@@ -196,7 +218,7 @@ export default function AuthModal({
               autoComplete="email"
               placeholder="Enter your email"
               required
-              autoFocus
+              autoFocus={isLogin}
               disabled={loading}
             />
           </label>
@@ -294,7 +316,7 @@ export default function AuthModal({
         <button
           type="button"
           className="auth-guest"
-          onClick={onCourt || onClose}
+          onClick={onClose}
         >
           CONTINUE AS GUEST
         </button>
