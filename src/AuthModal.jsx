@@ -87,7 +87,6 @@ export default function AuthModal({
     }
   };
 
-  // Google Login Handler function
   const handleGoogleLogin = async () => {
     if (!supabaseConfigured || !supabase) {
       setStatus("error");
@@ -191,7 +190,6 @@ export default function AuthModal({
         )}
 
         <form className="auth-form" onSubmit={submit}>
-          {/* Name field (Only shown during Sign Up) */}
           {!isLogin && (
             <label className="auth-field">
               <span>Full name</span>
@@ -267,34 +265,6 @@ export default function AuthModal({
           <span>OR</span>
         </div>
 
-        {/* Google Sign In Button */}
-        <button
-          type="button"
-          onClick={handleGoogleLogin}
-          disabled={loading}
-          style={{
-            width: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "12px",
-            padding: "10px 16px",
-            marginTop: "10px",
-            marginBottom: "2px",
-            borderRadius: "12px",
-            border: "1px solid rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#ffffff",
-            color: "#1f2937",
-            fontWeight: "600",
-            fontSize: "14px",
-            cursor: "pointer",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
-          }}
-        >
-          <svg 
-            width="18" 
-            height="18" 
-            viewBox="0 0 24 24" 
         {/* Google Sign In Button */}
         <button
           type="button"
