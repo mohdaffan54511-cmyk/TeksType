@@ -653,181 +653,6 @@ kbd {
   }
 }
 
-@media (max-width: 700px) {
-  .app {
-    width: 100%;
-    min-height: 100dvh;
-    margin: 0;
-    padding: 0 12px calc(18px + env(safe-area-inset-bottom));
-    border: 0;
-    border-radius: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: visible;
-  }
-
-  .topbar {
-    min-height: 74px;
-    padding: 10px 2px;
-    order: 0;
-  }
-
-  .hero {
-    min-height: 0;
-    padding: 20px 8px 14px;
-    gap: 14px;
-    order: 1;
-  }
-
-  .practice-layout {
-    margin: 0;
-    order: 2;
-  }
-
-  .controls {
-    margin: 14px 0 0;
-    padding: 15px;
-    border-radius: 20px;
-    order: 3;
-  }
-
-  .insights-grid {
-    grid-template-columns: 1fr;
-    margin: 14px 0 0;
-    order: 4;
-  }
-
-  .footer {
-    margin: 14px 0 0;
-    flex-direction: column;
-    order: 5;
-  }
-
-  .logo-mark {
-    width: 52px;
-    height: 52px;
-    flex: 0 0 52px;
-    border-radius: 15px;
-  }
-
-  .brand-title {
-    font-size: 21px;
-  }
-
-  .brand-subtitle,
-  .key-hint {
-    display: none;
-  }
-
-  .top-actions {
-    gap: 6px;
-  }
-
-  .ghost-button {
-    padding: 9px 10px;
-    font-size: 10px;
-  }
-
-  .hero h1 {
-    margin-top: 14px;
-    font-size: clamp(42px, 12vw, 56px);
-    line-height: 0.95;
-  }
-
-  .hero-picture,
-  .hero-seo-title,
-  .hero p {
-    display: none;
-  }
-
-  .content-control .button-strip {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: 5px;
-    scrollbar-width: none;
-  }
-
-  .content-control .button-strip::-webkit-scrollbar {
-    display: none;
-  }
-
-  .content-control .button-strip button {
-    flex: 0 0 auto;
-  }
-
-  .time-buttons button {
-    flex: 1;
-  }
-
-  .typing-card,
-  .stats-card,
-  .insight-card {
-    border-radius: 20px;
-    background: var(--surface-solid);
-    backdrop-filter: none;
-  }
-
-  .typing-card {
-    padding: 16px;
-  }
-
-  .typing-card-header {
-    align-items: flex-start;
-  }
-
-  .typing-text {
-    min-height: 280px;
-    max-height: 48dvh;
-    font-size: clamp(28px, 8vw, 38px);
-    line-height: 1.58;
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .stats-grid > div {
-    padding: 12px 8px;
-    text-align: center;
-  }
-
-  .stats-grid strong {
-    font-size: 20px;
-  }
-
-  .history-card {
-    grid-column: auto;
-  }
-
-  .app.session-active .hero,
-  .app.session-active .controls,
-  .app.session-active .insights-grid,
-  .app.session-active .footer {
-    display: none;
-  }
-
-  .app.session-active .topbar {
-    min-height: 66px;
-  }
-
-  .app.session-active .brand-subtitle,
-  .app.session-active .top-actions {
-    display: none;
-  }
-
-  .app.session-active .practice-layout {
-    margin-top: 10px;
-    order: 1;
-  }
-
-  .app.session-active .typing-text {
-    min-height: 240px;
-    max-height: 46dvh;
-    padding-bottom: 24px;
-    scroll-padding-bottom: 24px;
-  }
-}
-
 @media (max-width: 430px) {
   .brand-title {
     font-size: 19px;
@@ -1173,42 +998,6 @@ input {
 
 .char {
   transition: none;
-}
-
-@media (max-width: 700px) {
-  .seo-content {
-    order: 5;
-    margin: 18px 0 0;
-    gap: 14px;
-  }
-
-  .seo-content article {
-    padding: 18px;
-    border-radius: 18px;
-  }
-
-  .seo-content h2,
-  .faq-section h2 {
-    font-size: 20px;
-    line-height: 1.25;
-  }
-
-  .seo-content p,
-  .faq-section p {
-    font-size: 14px;
-    line-height: 1.6;
-  }
-
-  .faq-section {
-    order: 6;
-    margin: 18px 0 0;
-    padding: 18px;
-    border-radius: 18px;
-  }
-
-  .footer {
-    order: 7;
-  }
 }
 
 /* Smooth and clean typing feedback */
@@ -1775,7 +1564,7 @@ input {
 @media (max-width: 700px) {
   .social-footer {
     margin: 18px 0 0;
-    order: 7;
+    order: 8 !important;
   }
 
   .social-footer-top {
@@ -1813,7 +1602,7 @@ input {
 }
 
 /* ==================================================
-   FINAL MOBILE ORDER + SMOOTH SCROLL FIX
+   FINAL MOBILE ORDER FIX (Top to Bottom Natural Sequence)
 ================================================== */
 
 html {
@@ -1829,61 +1618,99 @@ html {
 
 @media (max-width: 700px) {
   .app {
-    display: flex;
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100%;
+    min-height: 100dvh;
+    margin: 0;
+    padding: 0 12px calc(18px + env(safe-area-inset-bottom));
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
   }
 
+  /* Kisi bhi section ko order: 0 milkar top par aane se roke ga */
+  .app > * {
+    order: 10;
+  }
+
+  /* 1. Header */
   .topbar {
-    order: 0;
-  }
-
-  .hero {
-    order: 1;
-  }
-
-  .controls {
-    order: 2;
-    margin-top: 8px;
-  }
-
-  .practice-layout {
-    order: 3;
-    margin-top: 14px;
-  }
-
-  .publisher-content {
-    order: 4;
-  }
-
-  .faq {
-    order: 5;
-  }
-
-  .social-footer {
-    order: 6;
-  }
-
-  .content-control .button-strip {
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scroll-snap-type: x proximity;
-  }
-
-  .content-control .button-strip button {
-    scroll-snap-align: start;
-  }
-
-  .typing-text {
-    overscroll-behavior: contain;
-  }
-
-  .topbar {
+    order: 1 !important;
+    min-height: 74px;
+    padding: 10px 2px;
     gap: 8px;
   }
 
-  .brand {
-    flex: 1;
-    min-width: 0;
+  /* 2. Hero Section */
+  .hero {
+    order: 2 !important;
+    min-height: 0;
+    padding: 20px 8px 14px;
+    gap: 14px;
+  }
+
+  /* 3. Controls (Language / Content / Time) */
+  .controls {
+    order: 3 !important;
+    margin: 14px 0 0;
+    padding: 15px;
+    border-radius: 20px;
+  }
+
+  /* 4. Typing Test Layout (Card) */
+  .practice-layout {
+    order: 4 !important;
+    margin: 14px 0 0;
+  }
+
+  /* 5. Insights / Stats Grid */
+  .insights-grid {
+    order: 5 !important;
+    grid-template-columns: 1fr;
+    margin: 14px 0 0;
+  }
+
+  /* 6. Learning Center & SEO Articles */
+  .tp-learning-section,
+  .publisher-content,
+  .seo-content {
+    order: 6 !important;
+    margin: 18px 0 0;
+    gap: 14px;
+  }
+
+  /* 7. FAQ Section */
+  .faq,
+  .faq-section {
+    order: 7 !important;
+    margin: 18px 0 0;
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  /* 8. Social Footer & Main Footer */
+  .social-footer,
+  .footer {
+    order: 8 !important;
+    margin: 14px 0 0;
+    flex-direction: column;
+  }
+
+  .logo-mark {
+    width: 52px;
+    height: 52px;
+    flex: 0 0 52px;
+    border-radius: 15px;
+  }
+
+  .brand-title {
+    font-size: 21px;
+  }
+
+  .brand-subtitle,
+  .key-hint {
+    display: none;
   }
 
   .top-actions {
@@ -1896,12 +1723,95 @@ html {
     padding: 0 9px;
     font-size: 9px;
   }
+
+  .hero h1 {
+    margin-top: 14px;
+    font-size: clamp(42px, 12vw, 56px);
+    line-height: 0.95;
+  }
+
+  .hero-picture,
+  .hero-seo-title,
+  .hero p {
+    display: none;
+  }
+
+  .content-control .button-strip {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+  }
+
+  .content-control .button-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .content-control .button-strip button {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  .time-buttons button {
+    flex: 1;
+  }
+
+  .typing-card,
+  .stats-card,
+  .insight-card {
+    border-radius: 20px;
+    background: var(--surface-solid);
+    backdrop-filter: none;
+  }
+
+  .typing-card {
+    padding: 16px;
+  }
+
+  .typing-card-header {
+    align-items: flex-start;
+  }
+
+  .typing-text {
+    min-height: 280px;
+    max-height: 48dvh;
+    font-size: clamp(28px, 8vw, 38px);
+    line-height: 1.58;
+    overscroll-behavior: contain;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .stats-grid > div {
+    padding: 12px 8px;
+    text-align: center;
+  }
+
+  .stats-grid strong {
+    font-size: 20px;
+  }
+
+  .history-card {
+    grid-column: auto;
+  }
 }
 
+/* While typing is active on mobile: typing card remains directly below header */
 @media (max-width: 700px) {
   .app.session-active .practice-layout {
-    order: 1;
+    order: 1 !important;
     margin-top: 8px !important;
+  }
+
+  .app.session-active .typing-text {
+    min-height: 240px;
+    max-height: 46dvh;
+    padding-bottom: 24px;
+    scroll-padding-bottom: 24px;
   }
 }
 
@@ -1914,7 +1824,7 @@ html {
 }
 
 /* ==========================================================================
-   FINAL TARGETED FIXES OVERRIDES (Size increase applied here)
+   FINAL TARGETED FIXES OVERRIDES (Large font + smooth cursor)
    ========================================================================== */
 
 /* 1. Ultra-clean 3-line Viewport with zero scrollbar and larger readable font size */
