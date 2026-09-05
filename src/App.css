@@ -379,16 +379,16 @@ kbd {
   border-radius: 4px;
 }
 
-/* SOLID VERTICAL LINE CURSOR (NO BLINKING, MONKEYTYPE STYLE) */
+/* CORRECT MONKEYTYPE STYLE: SOLID VERTICAL LINE CURSOR ON THE RIGHT SIDE */
 .char.current {
   position: relative;
   color: var(--purple-600);
 }
 
-.char.current::before {
+.char.current::after {
   content: "|";
   position: absolute;
-  left: -4px;
+  right: -3px;
   top: 0;
   color: var(--purple-500);
   font-weight: 900;
@@ -997,7 +997,7 @@ kbd {
 @media (hover: hover) {
   .primary-button:hover,
   .restart-button:hover,
-  .finished-box button:hover,
+  .finished-box:hover,
   .button-strip button:hover,
   .ghost-button:hover {
     transform: translateY(-2px);
