@@ -50,7 +50,6 @@ input:focus-visible {
   box-shadow: 0 20px 70px rgba(66, 38, 136, 0.09);
   outline: none;
   overflow: clip;
-  transition: all 0.3s ease;
 }
 
 .topbar {
@@ -380,7 +379,7 @@ kbd {
   border-radius: 4px;
 }
 
-/* CLASSIC `|` LINE BLINKING CURSOR ON CURRENT CHARACTER */
+/* SOLID VERTICAL LINE CURSOR (NO BLINKING, MONKEYTYPE STYLE) */
 .char.current {
   position: relative;
   color: var(--purple-600);
@@ -393,18 +392,8 @@ kbd {
   top: 0;
   color: var(--purple-500);
   font-weight: 900;
-  animation: caret-blink 0.8s infinite;
   z-index: 10;
   pointer-events: none;
-}
-
-@keyframes caret-blink {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
 }
 
 .legend-row {
