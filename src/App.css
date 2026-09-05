@@ -347,10 +347,18 @@ kbd {
   font-weight: 700;
   text-align: left;
   white-space: pre-wrap;
-  overflow-wrap: break-word;
+overflow-wrap: normal;
+word-break: normal;
   cursor: text;
 }
+.word-group {
+  display: inline-block;
+  white-space: nowrap;
+}
 
+.space-group {
+  white-space: pre-wrap;
+}
 .char {
   transition: color 0.05s linear, background 0.05s linear;
 }
@@ -838,8 +846,8 @@ kbd {
   .app.session-active .typing-text {
     min-height: 240px;
     max-height: 46dvh;
-    padding-bottom: 160px;
-    scroll-padding-bottom: 160px;
+    padding-bottom: 24px;
+    scroll-padding-bottom: 24px;
   }
 }
 
@@ -1249,7 +1257,7 @@ input {
 }
 
 .char.current::before {
-  animation: caret-blink 0.9s ease-in-out infinite;
+  animation: caret-blink 1.4s ease-in-out infinite;
 }
 /* Clean typing screen while test is running */
 .app.session-active .seo-content,
@@ -1540,7 +1548,7 @@ input {
   width: 2px;
   height: 80%;
   background-color: var(--caret-color, #a78bfa);
-  animation: caretBlink 1s infinite;
+  animation: caretBlink 1.4s infinite;
   pointer-events: none;
 }
 
@@ -1548,8 +1556,422 @@ input {
   left: auto;
   right: 0;
 }
+/* Language dropdown same style as content buttons */
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+  min-width: 150px;
+}
 
+.lang-select {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 38px 10px 14px;
+
+  border: 1px solid var(--line);
+  border-radius: 13px;
+
+  color: var(--purple-900);
+  background: rgba(255, 255, 255, 0.88);
+
+  box-shadow: 0 8px 20px rgba(74, 36, 199, 0.08);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+}
+
+.lang-select:hover {
+  transform: translateY(-2px);
+}
+
+.lang-select:focus {
+  border-color: var(--purple-500);
+  box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.16);
+}
+
+.select-wrapper::after {
+  content: "▼";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  color: var(--purple-600);
+  font-size: 10px;
+
+  pointer-events: none;
+}
 @keyframes caretBlink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
+}
+.custom-practice-setup {
+  display: grid;
+  gap: 16px;
+  padding: 12px 4px 8px;
+}
+
+.custom-practice-textarea {
+  width: 100%;
+  min-height: 220px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  outline: none;
+  resize: vertical;
+  color: var(--ink);
+  background: #ffffff;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.custom-practice-textarea:focus {
+  border-color: var(--purple-500);
+  box-shadow: 0 0 0 4px rgba(124, 77, 255, 0.12);
+}
+
+.custom-practice-error {
+  margin: 0;
+  color: var(--wrong);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.custom-start-button {
+  width: fit-content;
+  min-height: 48px;
+  padding: 0 24px;
+}
+
+@media (max-width: 700px) {
+  .custom-practice-textarea {
+    min-height: 260px;
+    font-size: 16px;
+  }
+
+  .custom-start-button {
+    width: 100%;
+  }
+}
+.typing-text {
+  position: relative;
+}
+
+.floating-caret {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--purple-500);
+  box-shadow: 0 0 8px rgba(124, 77, 255, 0.3);
+  pointer-events: none;
+  z-index: 10;
+  will-change: transform;
+
+  transition:
+    transform 85ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    height 85ms ease-out;
+
+  animation: caretBlink 1s step-end infinite;
+}
+.social-footer {
+  margin: 28px 8px 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.96),
+    rgba(242, 236, 255, 0.92)
+  );
+  box-shadow: 0 14px 34px rgba(74, 36, 199, 0.1);
+}
+
+.social-footer-top {
+  min-height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 28px;
+}
+
+.social-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  color: var(--purple-700);
+  font-size: 22px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.social-brand img {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 8px 20px rgba(74, 36, 199, 0.16);
+}
+
+.social-share {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.social-share a,
+.social-share button {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  color: var(--purple-900);
+  background: rgba(255, 255, 255, 0.62);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.social-share a:hover,
+.social-share button:hover {
+  color: white;
+  background: linear-gradient(
+    135deg,
+    var(--purple-500),
+    var(--purple-700)
+  );
+  box-shadow: 0 8px 18px rgba(74, 36, 199, 0.22);
+  transform: translateY(-2px);
+}
+
+.social-footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 15px 28px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.social-footer-bottom nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.social-footer-bottom a {
+  color: var(--purple-900);
+  text-decoration: none;
+}
+
+.social-footer-bottom a:hover {
+  color: var(--purple-600);
+  text-decoration: underline;
+}
+
+.social-share svg {
+  width: 21px;
+  height: 21px;
+  display: block;
+}
+
+.social-share a svg {
+  fill: currentColor;
+}
+
+.social-share a:nth-child(3) svg {
+  fill: none;
+}
+
+.app.session-active .social-footer {
+  display: none !important;
+}
+
+@media (max-width: 700px) {
+  .social-footer {
+    margin: 18px 0 0;
+    order: 7;
+  }
+
+  .social-footer-top {
+    padding: 16px;
+  }
+
+  .social-brand {
+    font-size: 17px;
+  }
+
+  .social-brand img {
+    width: 38px;
+    height: 38px;
+  }
+
+  .social-share {
+    gap: 3px;
+  }
+
+  .social-share a,
+  .social-share button {
+    width: 37px;
+    height: 37px;
+  }
+
+  .social-footer-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 14px 16px;
+  }
+
+  .social-footer-bottom nav {
+    gap: 12px;
+  }
+}
+/* ==================================================
+   FINAL MOBILE ORDER + SMOOTH SCROLL FIX
+================================================== */
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 16px;
+}
+
+/* Smooth scrolling inside scrollable areas */
+.typing-text,
+.content-control .button-strip {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+
+/* =========================
+   MOBILE FINAL PAGE ORDER
+========================= */
+
+@media (max-width: 700px) {
+
+  .app {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 1. Header */
+  .topbar {
+    order: 0;
+  }
+
+  /* 2. Hero */
+  .hero {
+    order: 1;
+  }
+
+  /* 3. Language / Content / Time */
+  .controls {
+    order: 2;
+    margin-top: 8px;
+  }
+
+  /* 4. Typing test */
+  .practice-layout {
+    order: 3;
+    margin-top: 14px;
+  }
+
+  /* 5. Learning content */
+  .publisher-content {
+    order: 4;
+  }
+
+  /* 6. FAQ */
+  .faq {
+    order: 5;
+  }
+
+  /* 7. Footer */
+  .social-footer {
+    order: 6;
+  }
+
+
+  /* smoother horizontal content buttons */
+
+  .content-control .button-strip {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+  }
+
+  .content-control .button-strip button {
+    scroll-snap-align: start;
+  }
+
+
+  /* cleaner mobile typing area */
+
+  .typing-text {
+    overscroll-behavior: contain;
+  }
+
+
+  /* compact mobile header */
+
+  .topbar {
+    gap: 8px;
+  }
+
+  .brand {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .top-actions {
+    flex-wrap: nowrap;
+    gap: 5px;
+  }
+
+  .ghost-button {
+    min-height: 36px;
+    padding: 0 9px;
+    font-size: 9px;
+  }
+}
+
+
+/* While typing: keep typing area directly below header */
+
+@media (max-width: 700px) {
+
+  .app.session-active .practice-layout {
+    order: 1;
+    margin-top: 8px !important;
+  }
+
+}
+
+
+/* Respect users who disable motion */
+
+@media (prefers-reduced-motion: reduce) {
+
+  html,
+  .typing-text,
+  .content-control .button-strip {
+    scroll-behavior: auto;
+  }
 }
