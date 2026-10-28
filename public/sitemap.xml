@@ -1,53 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
   <url>
     <loc>https://www.typeperfectly.com/</loc>
-    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-
   <url>
-    <loc>https://www.typeperfectly.com/about.html</loc>
-    <lastmod>2026-07-17</lastmod>
-    <priority>0.6</priority>
+    <loc>https://www.typeperfectly.com/blog/how-to-improve-typing-speed/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
-
   <url>
-    <loc>https://www.typeperfectly.com/contact.html</loc>
-    <lastmod>2026-07-25</lastmod>
-    <priority>0.5</priority>
+    <loc>https://www.typeperfectly.com/blog/what-is-wpm/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
-
+  <url>
+    <loc>https://www.typeperfectly.com/blog/how-to-improve-typing-accuracy/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.typeperfectly.com/blog/touch-typing-for-beginners/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.typeperfectly.com/blog/typing-practice-routine/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.typeperfectly.com/blog/typing-test-for-students/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.typeperfectly.com/blog/typing-practice-in-hindi/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.typeperfectly.com/blog/typing-practice-in-english/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
   <url>
     <loc>https://www.typeperfectly.com/privacy.html</loc>
-    <lastmod>2026-07-22</lastmod>
-    <priority>0.3</priority>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
   </url>
-
-  <url>
-    <loc>https://www.typeperfectly.com/terms.html</loc>
-    <lastmod>2026-07-22</lastmod>
-    <priority>0.3</priority>
-  </url>
-
-  <url>
-    <loc>https://www.typeperfectly.com/disclaimer.html</loc>
-    <lastmod>2026-07-12</lastmod>
-    <priority>0.3</priority>
-  </url>
-
-  <url>
-    <loc>https://www.typeperfectly.com/cookies.html</loc>
-    <lastmod>2026-07-25</lastmod>
-    <priority>0.3</priority>
-  </url>
-<url>
-  <loc>https://www.typeperfectly.com/free-typing-test/</loc>
-  <lastmod>2026-07-27</lastmod>
-  <changefreq>weekly</changefreq>
-  <priority>0.9</priority>
-</url>
 </urlset>
