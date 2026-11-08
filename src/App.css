@@ -1092,3 +1092,74 @@ body {
     opacity: 1;
   }
 }
+
+
+/* =========================================================
+   FINAL CARET + WORD WRAPPING FIX
+   The old floating .smooth-caret overlay was stuck at the
+   left edge. Put the caret on the actual current character.
+   ========================================================= */
+
+/* Disable the separately-positioned caret overlay */
+.typing-text .smooth-caret {
+  display: none !important;
+}
+
+/* The active character owns its own caret position */
+.typing-text .char.current {
+  position: relative !important;
+  display: inline-block;
+  color: var(--purple-600, #6538ed);
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Thin, solid black editor-style cursor */
+.typing-text .char.current::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  left: -2px !important;
+  top: 0.08em !important;
+  width: 3px !important;
+  height: 0.95em !important;
+  border-radius: 1px !important;
+  background: #171717 !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+  pointer-events: none !important;
+  z-index: 20 !important;
+  animation: none !important;
+}
+
+/* Allow the typing text to wrap inside its card */
+.typing-text {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  white-space: pre-wrap !important;
+  overflow-x: hidden !important;
+  overflow-y: auto;
+  overflow-wrap: anywhere !important;
+  word-break: normal;
+}
+
+.typing-text .word-group {
+  display: inline !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+}
+
+.typing-text .char {
+  white-space: pre-wrap !important;
+}
+
+/* Keep the card and its children inside the viewport */
+.practice-layout,
+.practice-layout > *,
+.typing-card,
+.typing-card .typing-text {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
