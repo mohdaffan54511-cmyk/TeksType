@@ -1059,3 +1059,36 @@ body {
     letter-spacing: 0.06em;
   }
 }
+
+
+/* =========================================================
+   TYPING CARET: simple editor-style vertical cursor
+   ========================================================= */
+
+.smooth-caret {
+  width: 3px !important;
+  height: 1.12em !important;
+  top: 0 !important;
+  border-radius: 1px !important;
+  background: #171717 !important;
+  box-shadow: none !important;
+  animation: none !important;
+  opacity: 1 !important;
+  transition:
+    transform 60ms linear,
+    left 60ms linear,
+    top 60ms linear !important;
+}
+
+/* Keep the current character clean; the caret is shown separately. */
+.char.current {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Avoid the old blinking animation on the caret. */
+@keyframes caretBlink {
+  0%, 100%, 50% {
+    opacity: 1;
+  }
+}
