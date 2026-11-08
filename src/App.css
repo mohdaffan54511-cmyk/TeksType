@@ -347,7 +347,7 @@ kbd {
 }
 
 /* =========================================================
-   CLEAN TYPING TEXT & PROPER THIN VERTICAL CURSOR
+   TYPING TEXT & MONKEYTYPE STYLE SMOOTH GLIDING CARET
    ========================================================= */
 
 .typing-text {
@@ -405,27 +405,26 @@ kbd {
   background: transparent !important;
 }
 
-/* Disable old pseudo-element carets */
 .char.current::before {
   display: none !important;
 }
 
-/* Patli aur proper vertical cursor line (Monkeytype style) */
+/* Monkeytype style smooth gliding cursor line */
 .smooth-caret,
 .floating-caret {
   position: absolute;
   left: 0;
-  top: 15%;
-  width: 2.5px;
-  height: 70%;
+  top: 12%;
+  width: 2px;
+  height: 76%;
   border-radius: 999px;
   background: var(--purple-500, #7c4dff);
-  box-shadow: 0 0 8px rgba(124, 77, 255, 0.4);
+  box-shadow: 0 0 10px rgba(124, 77, 255, 0.45);
   pointer-events: none;
   z-index: 10;
-  will-change: transform;
-  transition: transform 70ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  animation: caretBlink 1.2s infinite;
+  will-change: transform, left, top;
+  transition: transform 65ms cubic-bezier(0.2, 0.8, 0.2, 1), left 65ms ease-out, top 65ms ease-out;
+  animation: caretBlink 1.1s infinite;
 }
 
 @keyframes caretBlink {
@@ -541,140 +540,6 @@ kbd {
   box-shadow: none;
 }
 
-.save-progress-button {
-  order: -1;
-  color: white !important;
-  background: linear-gradient(135deg, #9b70ff, #6b3df0) !important;
-  box-shadow: 0 10px 22px rgba(155, 112, 255, 0.26) !important;
-}
-
-.cloud-save-status {
-  display: block;
-  margin-top: 10px;
-  color: #eee8ff;
-  text-align: center;
-}
-
-.cloud-save-status.saved {
-  color: #bcffd6;
-}
-
-.cloud-save-status.error {
-  color: #ffd0d8;
-}
-
-.insights-grid {
-  display: grid;
-  grid-template-columns: 0.72fr 1.35fr 1fr;
-  gap: 18px;
-  margin: 18px 8px 0;
-  content-visibility: auto;
-  contain-intrinsic-size: 420px;
-}
-
-.insight-card {
-  min-width: 0;
-  padding: 20px;
-  border-radius: 24px;
-}
-
-.insight-card p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.big-number {
-  color: var(--purple-700);
-  font-size: 58px;
-  line-height: 1;
-  font-weight: 900;
-}
-
-.insight-card > span {
-  display: block;
-  margin-top: 7px;
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.history-row {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.history-row:last-child {
-  border-bottom: 0;
-}
-
-.history-row strong {
-  color: var(--ink);
-}
-
-.weak-row {
-  display: grid;
-  grid-template-columns: 42px 1fr 26px;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.weak-row strong {
-  color: var(--purple-700);
-}
-
-.weak-row > div {
-  height: 8px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: rgba(101, 56, 237, 0.12);
-}
-
-.weak-row > div span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--purple-300), var(--purple-700));
-}
-
-.footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 18px;
-  flex-wrap: wrap;
-  margin: 18px 8px 0;
-  padding: 18px 20px;
-  border-radius: 20px;
-  color: white;
-  background: linear-gradient(135deg, var(--purple-600), var(--purple-900));
-  font-size: 12px;
-  content-visibility: auto;
-  contain-intrinsic-size: 120px;
-}
-
-.footer nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-}
-
-.footer a {
-  color: white;
-  text-decoration: none;
-}
-
-.footer a:hover {
-  text-decoration: underline;
-}
-
-/* Language dropdown same style as content buttons */
 .select-wrapper {
   position: relative;
   display: inline-block;
@@ -1015,98 +880,4 @@ kbd {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-/* =========================================================
-   MONKEYTYPE STYLE SMOOTH GLIDING CARET (CURSOR)
-   ========================================================= */
-
-.typing-text {
-  position: relative;
-}
-
-.char {
-  position: relative;
-  display: inline-block;
-  white-space: pre;
-}
-
-/* Jab user type kare toh character ka background clean rahe */
-.char.current {
-  background: transparent !important;
-}
-
-.char.current::before {
-  display: none !important;
-}
-
-/* Monkeytype jaisa smooth animated aur glowing cursor line */
-.smooth-caret,
-.floating-caret {
-  position: absolute;
-  left: 0;
-  top: 12%;
-  width: 2px;
-  height: 76%;
-  border-radius: 999px;
-  background: var(--purple-500, #7c4dff);
-  box-shadow: 0 0 10px rgba(124, 77, 255, 0.45);
-  pointer-events: none;
-  z-index: 10;
-  will-change: transform, left, top;
-  
-  /* Yeh transition cursor ko ek letter se dusre letter par smoothly slide karwayegi */
-  transition: transform 65ms cubic-bezier(0.2, 0.8, 0.2, 1), left 65ms ease-out, top 65ms ease-out;
-  
-  animation: caretBlink 1.1s infinite;
-}
-
-@keyframes caretBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-/* Mobile ya low-end devices par bhi performance buttery smooth rakhne ke liye */
-@media (prefers-reduced-motion: reduce) {
-  .smooth-caret,
-  .floating-caret {
-    transition: none !important;
-  }
-}
-/* =========================================================
-   MONKEYTYPE STYLE SMOOTH GLIDING CARET (CURSOR)
-   ========================================================= */
-
-.typing-text {
-  position: relative;
-}
-
-/* Current character ka background clean rakhe */
-.char.current {
-  background: transparent !important;
-}
-
-.char.current::before {
-  display: none !important;
-}
-
-/* Patli aur smooth animated vertical cursor line */
-.smooth-caret {
-  position: absolute;
-  left: 0;
-  top: 12px;
-  width: 2px;
-  height: 1.3em;
-  border-radius: 999px;
-  background: var(--purple-500, #7c4dff);
-  box-shadow: 0 0 10px rgba(124, 77, 255, 0.45);
-  pointer-events: none;
-  z-index: 10;
-  will-change: transform, left, top;
-  transition: transform 70ms cubic-bezier(0.2, 0.8, 0.2, 1), left 70ms ease-out, top 70ms ease-out;
-  animation: caretBlink 1.1s infinite;
-}
-
-@keyframes caretBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
 }
