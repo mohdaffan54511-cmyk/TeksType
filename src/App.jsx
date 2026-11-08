@@ -81,7 +81,7 @@ const POOLS = {
 const LANGUAGE_POOLS = {
   hindi: "का के कि में है और से ने को इस पर यह भी कर दिए रहे हो गए हुआ अपने साथ तो या तक द्वारा बाद भारत लोग काम बात समय स्थान अधिकार जीवन नाम रूप प्रथम विषय कार्य समाज देश".split(" "),
   arabic: "من على إلى عن في كان هذا التي الذي مع ما لا الله كل بعد حتى بين ذلك عدم ليس حول إلا قبل قد جدا حيث هناك تكون وكان قال أكثر كما كان يعمل".split(" "),
-  spanish: "que de no a la el es por un para con una los del las se como mas pero sus le ya este si porque esta entre cuando muy sin sobre tambien hasta".split(" "),
+  spanish: "que de no a la el es por un para con una los del las se como mas pero sus le ya este si porque esta entre когда muy sin sobre tambien hasta".split(" "),
   french: "que de ne pas le la les un une du des et en pour etre il ce qui sur avec plus par se meme tout faire sa son".split(" "),
   german: "das ist du ich nicht die es und der sie fuer mit den dem ein eine sich auf auch als nach wie im um oder aus wenn nur noch bei mir vor".split(" "),
   russian: "что и в не на с он как я но все по его из за у так о от же сказать который один свой можно только чтобы еще был".split(" "),
@@ -805,6 +805,9 @@ export default function App() {
                     tabIndex={0}
                     onPointerDown={focusTyping}
                   >
+                    {/* Monkeytype style absolute gliding caret */}
+                    <span className="smooth-caret" />
+
                     {parsedChunks.map(({ key, isWhitespace, charTokens }) => (
                       <span key={key} className={isWhitespace ? "space-group" : "word-group"}>
                         {charTokens.map(({ index, character, charLength }) => {
