@@ -1,5 +1,12 @@
-/* Character spans remain inline inside a non-wrapping word wrapper. Actual
-   spaces/newlines between wrappers provide the only word break opportunities. */
+/*
+ * Typing layout and caret rules are loaded after App.css, whose legacy
+ * responsive overrides included break-anywhere and floating-caret styles.
+ * These rules define the single active-character caret and word wrapping.
+ */
+.typing-text .smooth-caret {
+  display: none !important;
+}
+
 .typing-text {
   white-space: pre-wrap !important;
   overflow-wrap: normal !important;
@@ -9,6 +16,7 @@
 .typing-text .word-group {
   display: inline-block !important;
   white-space: nowrap !important;
+  overflow-wrap: normal !important;
   vertical-align: baseline;
 }
 
@@ -17,8 +25,8 @@
 }
 
 .typing-text .char {
-  position: relative;
-  display: inline !important;
+  position: relative !important;
+  display: inline-block !important;
   white-space: pre !important;
 }
 
@@ -27,7 +35,7 @@
   background: transparent;
 }
 
-/* Error highlighting belongs to the typed character, never to the caret. */
+/* Error styling is independent of the caret. */
 .typing-text .char.wrong {
   color: var(--wrong);
   background: rgba(217, 45, 87, 0.12);
@@ -41,28 +49,33 @@
 }
 
 .typing-text .char.current::before {
-  content: "";
-  position: absolute;
-  inset-inline-start: -2px;
-  top: 0.08em;
-  width: 2px;
-  height: 0.95em;
-  border-radius: 2px;
-  background: var(--purple-500, #7c4dff);
-  pointer-events: none;
-  z-index: 20;
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  inset-inline-start: -3px !important;
+  top: 0.05em !important;
+  width: 3px !important;
+  height: 0.95em !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #7c3aed !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+  pointer-events: none !important;
+  z-index: 20 !important;
+  animation: none !important;
 }
 
-/* Zero-width target positions the caret after the final typed character. */
+/* Zero-width marker keeps the cursor after the final character. */
 .typing-text .char.end-caret {
   display: inline-block !important;
-  position: relative;
-  width: 0;
+  position: relative !important;
+  width: 0 !important;
   height: 1em;
-  overflow: visible;
+  overflow: visible !important;
   vertical-align: baseline;
 }
 
 .typing-text .char.end-caret::before {
-  inset-inline-start: 0;
+  inset-inline-start: 0 !important;
 }
