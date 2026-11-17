@@ -1,25 +1,45 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BLOG_ARTICLES } from "./lib/blogArticles";
 
+const BLOG_PATH = /^\/blog\/([^/]+)\/?$/;
+const HOME_TITLE = "TypePerfectly | Free Online Typing Test (English, Hinglish & Business)";
+
+function getSlugFromPath() {
+  const match = window.location.pathname.match(BLOG_PATH);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 export default function BlogSection({ onStartTyping }) {
-  const [activeSlug, setActiveSlug] = useState(() => {
-    const path = window.location.pathname;
-    const match = path.match(/^\/blog\/([^/]+)\/?$/);
-    return match ? match[1] : null;
-  });
+  const [activeSlug, setActiveSlug] = useState(getSlugFromPath);
+  const activeArticle = BLOG_ARTICLES.find((article) => article.slug === activeSlug);
 
   useEffect(() => {
-    const handlePopState = () => {
-      const path = window.location.pathname;
-      const match = path.match(/^\/blog\/([^/]+)\/?$/);
-      setActiveSlug(match ? match[1] : null);
-    };
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
+    const syncRoute = () => setActiveSlug(getSlugFromPath());
+    window.addEventListener("popstate", syncRoute);
+    return () => window.removeEventListener("popstate", syncRoute);
   }, []);
 
+  useEffect(() => {
+    const description = document.querySelector('meta[name="description"]');
+    const originalDescription = description?.getAttribute("content");
+    const originalTitle = document.title;
+
+    if (activeArticle) {
+      document.title = `${activeArticle.title} | TypePerfectly`;
+      description?.setAttribute("content", activeArticle.metaDescription);
+    } else {
+      document.title = HOME_TITLE;
+      if (description && originalDescription) description.setAttribute("content", originalDescription);
+    }
+
+    return () => {
+      document.title = activeArticle ? originalTitle : HOME_TITLE;
+      if (description && originalDescription) description.setAttribute("content", originalDescription);
+    };
+  }, [activeArticle]);
+
   const openArticle = (slug) => {
-    window.history.pushState({}, "", `/blog/${slug}/`);
+    window.history.pushState({}, "", `/blog/${encodeURIComponent(slug)}/`);
     setActiveSlug(slug);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -27,29 +47,17 @@ export default function BlogSection({ onStartTyping }) {
   const closeArticle = () => {
     window.history.pushState({}, "", "/");
     setActiveSlug(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
-  const activeArticle = BLOG_ARTICLES.find((a) => a.slug === activeSlug);
-
-  // Dynamically update document title and meta description when viewing an article
-  useEffect(() => {
-    if (activeArticle) {
-      document.title = `${activeArticle.title} | TypePerfectly`;
-      const metaDesc = document.querySelector('meta[name="description"]');
-      if (metaDesc) metaDesc.setAttribute("content", activeArticle.metaDescription);
-    } else {
-      document.title = "TypePerfectly | Free Online Typing Test (English, Hinglish & Business)";
-    }
-  }, [activeArticle]);
 
   if (activeArticle) {
     return (
       <article className="blog-article-container" aria-labelledby="article-title">
         <nav className="blog-breadcrumbs" aria-label="Breadcrumb">
           <button type="button" onClick={closeArticle}>Home</button>
-          <span>/</span>
+          <span aria-hidden="true">/</span>
           <button type="button" onClick={closeArticle}>Blog</button>
-          <span>/</span>
+          <span aria-hidden="true">/</span>
           <span aria-current="page">{activeArticle.title}</span>
         </nav>
 
@@ -59,14 +67,12 @@ export default function BlogSection({ onStartTyping }) {
           <span>By TypePerfectly Editorial</span> · <span>{activeArticle.readTime}</span>
         </div>
 
-        {activeArticle.toc && activeArticle.toc.length > 0 && (
+        {activeArticle.toc?.length > 0 && (
           <nav className="blog-toc" aria-label="Table of Contents">
             <strong>Table of Contents</strong>
             <ul>
               {activeArticle.toc.map((item) => (
-                <li key={item.id}>
-                  <a href={`#${item.id}`}>{item.label}</a>
-                </li>
+                <li key={item.id}><a href={`#${item.id}`}>{item.label}</a></li>
               ))}
             </ul>
           </nav>
@@ -74,20 +80,17 @@ export default function BlogSection({ onStartTyping }) {
 
         <div className="blog-body">
           <p>{activeArticle.summary}</p>
-          {activeArticle.sections.map((sec) => (
-            <section key={sec.id} id={sec.id}>
-              <h2>{sec.heading}</h2>
-              {sec.body.map((paragraph, idx) => (
-                <p key={idx}>{paragraph}</p>
-              ))}
+          {activeArticle.sections.map((section) => (
+            <section key={section.id} id={section.id} aria-labelledby={`${section.id}-heading`}>
+              <h2 id={`${section.id}-heading`}>{section.heading}</h2>
+              {section.body.map((paragraph, index) => <p key={`${section.id}-${index}`}>{paragraph}</p>)}
             </section>
           ))}
-
-          {activeArticle.faqs && activeArticle.faqs.length > 0 && (
-            <section>
-              <h2>Frequently Asked Questions</h2>
-              {activeArticle.faqs.map((faq, idx) => (
-                <div key={idx} style={{ marginBottom: "16px" }}>
+          {activeArticle.faqs?.length > 0 && (
+            <section aria-labelledby="blog-faq-heading">
+              <h2 id="blog-faq-heading">Frequently Asked Questions</h2>
+              {activeArticle.faqs.map((faq, index) => (
+                <div key={`faq-${index}`} className="blog-faq-item">
                   <h3>{faq.q}</h3>
                   <p>{faq.a}</p>
                 </div>
@@ -97,18 +100,12 @@ export default function BlogSection({ onStartTyping }) {
         </div>
 
         <div className="blog-cta-box">
-          <h2 style={{ marginTop: 0 }}>Ready to Test Your Typing Speed?</h2>
-          <p style={{ marginBottom: "16px", color: "var(--muted)" }}>
-            Practice immediately in English, Hinglish, or Business mode—no account or login required.
-          </p>
-          <button
-            type="button"
-            className="primary-button"
-            onClick={() => {
-              closeArticle();
-              if (onStartTyping) onStartTyping();
-            }}
-          >
+          <h2>Ready to Test Your Typing Speed?</h2>
+          <p>Practice immediately in English, Hinglish, or Business mode—no account or login required.</p>
+          <button type="button" className="primary-button" onClick={() => {
+            closeArticle();
+            onStartTyping?.();
+          }}>
             Start Free Typing Test
           </button>
         </div>
@@ -120,26 +117,19 @@ export default function BlogSection({ onStartTyping }) {
     <section className="blog-section" id="blog" aria-labelledby="blog-heading">
       <div className="blog-header">
         <div>
-          <span className="eyebrow">Typing Guides & Tutorials</span>
-          <h2 id="blog-heading">Practical Guides to Type Faster & More Accurately</h2>
+          <span className="eyebrow">Typing Guides &amp; Tutorials</span>
+          <h2 id="blog-heading">Practical Guides to Type Faster &amp; More Accurately</h2>
         </div>
       </div>
-
       <div className="blog-grid">
         {BLOG_ARTICLES.map((article) => (
           <article key={article.slug} className="blog-card">
             <div>
-              <span className="blog-card-tag">
-                {article.category} · {article.readTime}
-              </span>
+              <span className="blog-card-tag">{article.category} · {article.readTime}</span>
               <h3>{article.title}</h3>
               <p>{article.summary}</p>
             </div>
-            <button
-              type="button"
-              className="blog-read-link"
-              onClick={() => openArticle(article.slug)}
-            >
+            <button type="button" className="blog-read-link" onClick={() => openArticle(article.slug)}>
               Read Full Guide →
             </button>
           </article>
