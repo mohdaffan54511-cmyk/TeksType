@@ -3,6 +3,8 @@ import FAQ from "./FAQ";
 import SocialFooter from "./SocialFooter";
 import PublisherContent from "./PublisherContent";
 import TypingResults from "./TypingResults";
+import BlogSection from "./BlogSection";
+import { getGuestHistory, getGuestStreak, saveGuestResult } from "./lib/guestStorage";
 import "./App.css";
 import "./typing-cursor.css";
 
@@ -14,8 +16,7 @@ const LANGUAGES = [
   ["german", "German"], ["german_1k", "German 1k"], ["russian", "Russian"],
   ["russian_1k", "Russian 1k"], ["portuguese", "Portuguese"],
   ["portuguese_1k", "Portuguese 1k"], ["bangla", "Bangla"],
-  ["code_python", "Python Code"], ["code_python_1k", "Python 1k"],
-  ["code_javascript", "JavaScript Code"],
+  ["code_python", "Python Code"], ["code_python_1k", "Python 1k"], ["code_javascript", "JavaScript Code"],
 ];
 const MODES = ["words", "hinglish", "business", "conversation", "quotes", "code", "bigrams", "trigrams", "custom"];
 const WORDS = "home now even used said government once any to and know world number another something until without when right less school both there almost people system place group around because through while every important possible between business support future strong learn focus better growth skill progress".split(" ");
@@ -46,12 +47,9 @@ const makeText = (mode, lang, customWords = null) => {
   if (customWords?.length) return Array.from({ length: 36 }, () => pick(customWords)).join(" ");
   if (mode === "custom") return "";
   if (["quotes", "hinglish", "conversation"].includes(mode)) return pick(POOLS[mode]);
-  const pool = LANGUAGE_WORDS[lang.replace(/_1k$/, "")];
-  return Array.from({ length: mode === "bigrams" ? 50 : mode === "trigrams" ? 42 : 36 }, () => pick(pool ? pool.split(" ") : (POOLS[mode] || WORDS))).join(" ");
-};
-const readHistory = () => {
-  try { return JSON.parse(localStorage.getItem("Type Perfectly-history") || "[]"); }
-  catch { return []; }
+  const langWords = LANGUAGE_WORDS[lang.replace(/_1k$/, "")];
+  const pool = langWords ? langWords.split(" ") : (POOLS[mode] || WORDS);
+  return Array.from({ length: mode === "bigrams" ? 50 : mode === "trigrams" ? 42 : 36 }, () => pick(pool)).join(" ");
 };
 
 export default function App() {
@@ -71,18 +69,37 @@ export default function App() {
   const [mobileFocused, setMobileFocused] = useState(false);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [bestWpm, setBestWpm] = useState(() => Number(localStorage.getItem("Type Perfectly-best") || 0));
-  const [history, setHistory] = useState(readHistory);
+  const [history, setHistory] = useState(getGuestHistory);
+  const [streak, setStreak] = useState(() => getGuestStreak().currentStreak);
   const appRef = useRef(null);
   const mobileInputRef = useRef(null);
   const mobileBufferRef = useRef("");
   const startedAtRef = useRef(0);
   const savedRef = useRef(false);
 
-  const reset = useCallback((nextMode = mode, nextDuration = duration, nextLanguage = language, customWords = null, keepCustom = false) => {
+  const customWords = useMemo(() => customDraft.normalize("NFKC").replace(/[^\p{L}\p{N}]+/gu, " ").trim().split(/\s+/).filter(Boolean), [customDraft]);
+  const textChars = useMemo(() => Array.from(text), [text]);
+  const inputChars = useMemo(() => Array.from(input), [input]);
+  const characterTokens = useMemo(() => Array.from(text.matchAll(/\s+|\S+/gu), (match) => ({
+    value: match[0],
+    start: Array.from(text.slice(0, match.index)).length,
+    whitespace: /^\s+$/u.test(match[0]),
+  })), [text]);
+  const correctChars = useMemo(() => inputChars.reduce((count, char, index) => count + (char === textChars[index] ? 1 : 0), 0), [inputChars, textChars]);
+  const accuracy = inputChars.length ? Math.round((correctChars / inputChars.length) * 100) : 100;
+  const wpm = inputChars.length && elapsedMs >= 250 ? Math.round((correctChars / 5) / (Math.max(elapsedMs, 1) / 60000)) : 0;
+  const score = correctChars * 10 + wpm * 2;
+  const sessionActive = running || mobileFocused;
+  const languageName = LANGUAGES.find(([id]) => id === language)?.[1] || language;
+  const typedWords = input.trim().split(/\s+/);
+  const targetWords = text.trim().split(/\s+/);
+  const correctWords = typedWords.filter((word, index) => word && word === targetWords[index]).length;
+
+  const reset = useCallback((nextMode = mode, nextDuration = duration, nextLanguage = language, nextCustomWords = null, keepCustom = false) => {
     setMode(nextMode);
     setDuration(nextDuration);
     setLanguage(nextLanguage);
-    setText(makeText(nextMode, nextLanguage, customWords));
+    setText(makeText(nextMode, nextLanguage, nextCustomWords));
     setInput("");
     setRunning(false);
     setFinished(false);
@@ -100,24 +117,6 @@ export default function App() {
     }
     requestAnimationFrame(() => appRef.current?.focus({ preventScroll: true }));
   }, [duration, language, mode]);
-
-  const customWords = useMemo(() => customDraft.normalize("NFKC").replace(/[^\p{L}\p{N}]+/gu, " ").trim().split(/\s+/).filter(Boolean), [customDraft]);
-  const textChars = useMemo(() => Array.from(text), [text]);
-  const inputChars = useMemo(() => Array.from(input), [input]);
-  const characterTokens = useMemo(() => Array.from(text.matchAll(/\s+|\S+/gu), (match) => ({
-    text: match[0],
-    start: Array.from(text.slice(0, match.index)).length,
-    whitespace: /^\s+$/u.test(match[0]),
-  })), [text]);
-  const correctChars = useMemo(() => inputChars.reduce((count, char, index) => count + (char === textChars[index] ? 1 : 0), 0), [inputChars, textChars]);
-  const accuracy = inputChars.length ? Math.round((correctChars / inputChars.length) * 100) : 100;
-  const wpm = inputChars.length && elapsedMs >= 250 ? Math.round((correctChars / 5) / (Math.max(elapsedMs, 1) / 60000)) : 0;
-  const score = correctChars * 10 + wpm * 2;
-  const sessionActive = running || mobileFocused;
-  const languageName = LANGUAGES.find(([id]) => id === language)?.[1] || language;
-  const typedWords = input.trim().split(/\s+/);
-  const targetWords = text.trim().split(/\s+/);
-  const correctWords = typedWords.filter((word, index) => word && word === targetWords[index]).length;
 
   const finish = useCallback(() => {
     setElapsedMs(startedAtRef.current ? Math.min(duration * 1000, performance.now() - startedAtRef.current) : 0);
@@ -178,10 +177,17 @@ export default function App() {
     const nextBest = Math.max(bestWpm, wpm);
     setBestWpm(nextBest);
     localStorage.setItem("Type Perfectly-best", String(nextBest));
-    const next = [{ mode, wpm, accuracy, duration, score, date: new Date().toLocaleString() }, ...history].slice(0, 6);
-    setHistory(next);
-    localStorage.setItem("Type Perfectly-history", JSON.stringify(next));
-  }, [accuracy, bestWpm, duration, finished, history, mode, score, wpm]);
+    const updatedHistory = saveGuestResult({
+      wpm,
+      accuracy,
+      errors: Math.max(0, inputChars.length - correctChars),
+      duration: duration === 300 ? "5 min" : `${duration}s`,
+      mode,
+      language,
+    });
+    setHistory(updatedHistory);
+    setStreak(getGuestStreak().currentStreak);
+  }, [accuracy, bestWpm, correctChars, duration, finished, inputChars.length, language, mode, wpm]);
 
   const focusTyping = useCallback(() => {
     if (window.matchMedia?.("(pointer: coarse)").matches || window.innerWidth <= 768) {
@@ -207,7 +213,7 @@ export default function App() {
     const value = Array.from(event.currentTarget.value);
     const previous = Array.from(mobileBufferRef.current);
     if (value.length > previous.length) {
-      for (const char of value.slice(previous.length)) typeCharacter(char);
+      for (const character of value.slice(previous.length)) typeCharacter(character);
     } else if (value.length < previous.length) {
       if (noBackspace) event.currentTarget.value = mobileBufferRef.current;
       else for (let index = 0; index < previous.length - value.length; index++) backspace();
@@ -228,6 +234,7 @@ export default function App() {
       <header className="topbar">
         <div className="brand"><div className="logo-mark"><img src="/TeksType.jpeg" alt="Type Perfectly logo" /></div><div><div className="brand-title">Type Perfectly</div><div className="brand-subtitle">Typing Performance Lab</div></div></div>
         <div className="top-actions">
+          <span className={`streak-badge ${streak > 1 ? "fire" : ""}`} aria-label={`${streak} day practice streak`}>🔥 {streak} day streak</span>
           <span className="key-hint"><kbd>Tab</kbd> Restart</span><span className="key-hint"><kbd>Esc</kbd> Pause</span>
           <button type="button" className={`ghost-button ${noBackspace ? "active" : ""}`} onClick={() => setNoBackspace((value) => !value)}>{noBackspace ? "BACKSPACE OFF" : "BACKSPACE ON"}</button>
           <button type="button" className={`ghost-button ${soundOn ? "active" : ""}`} onClick={() => setSoundOn((value) => !value)}>{soundOn ? "SOUND ON" : "SOUND OFF"}</button>
@@ -246,13 +253,11 @@ export default function App() {
             <div className="typing-card-header"><div><span>{duration === 300 ? "5 MIN" : `${duration}S`}</span><span>{language.toUpperCase()} / {mode.toUpperCase()}</span></div>{!(mode === "custom" && !customActive) && <button type="button" className="primary-button" onClick={focusTyping}>START TYPING</button>}</div>
             {mode === "custom" && !customActive ? <div className="custom-practice-setup"><textarea className="custom-practice-textarea" value={customDraft} rows={8} placeholder="Paste your custom vocabulary or text here..." onChange={(event) => { setCustomDraft(event.target.value); setCustomError(""); }} />{customError && <p className="custom-practice-error" role="alert">{customError}</p>}<button type="button" className="primary-button custom-start-button" onClick={startCustom}>START PRACTICE</button></div> : <>
               <div className={`typing-text ${language === "arabic" ? "rtl" : ""}`} dir={language === "arabic" ? "rtl" : "ltr"} role="textbox" aria-label="Typing practice text." tabIndex={0} onPointerDown={focusTyping}>
-                {characterTokens.map(({ text: token, start, whitespace }) => whitespace
-                  ? <span className="typing-whitespace" key={`space-${start}`}>{token}</span>
-                  : <span className="word-group" key={`word-${start}`}>{Array.from(token).map((character, offset) => {
+                {characterTokens.map(({ value, start, whitespace }) => whitespace
+                  ? <span className="typing-whitespace" key={`space-${start}`}>{value}</span>
+                  : <span className="word-group" key={`word-${start}`}>{Array.from(value).map((character, offset) => {
                     const index = start + offset;
-                    const className = index < inputChars.length
-                      ? (inputChars[index] === character ? "correct" : "wrong")
-                      : index === inputChars.length ? "current" : "upcoming";
+                    const className = index < inputChars.length ? (inputChars[index] === character ? "correct" : "wrong") : index === inputChars.length ? "current" : "upcoming";
                     return <span key={index} className={`char ${className}`}>{character}</span>;
                   })}</span>)}
                 {inputChars.length >= textChars.length && <span className="char current end-caret" aria-hidden="true">&#8203;</span>}
@@ -261,10 +266,13 @@ export default function App() {
               <div className="typing-actions"><button type="button" className="restart-button" onClick={() => reset()}>RESTART SESSION</button></div>
             </>}
           </article>
-          <aside className="stats-card"><div className="stats-title">Live Stats</div><div className="stats-grid"><div><span>Time</span><strong>{timeLeft}s</strong></div><div><span>WPM</span><strong>{wpm}</strong></div><div><span>Accuracy</span><strong>{accuracy}%</strong></div></div><div className="stats-title history-title">Best &amp; Recent</div><div className="history-list"><p>Personal best: <strong>{bestWpm} WPM</strong></p>{history.map((item, index) => <p key={`${item.date}-${index}`}>{item.wpm} WPM · {item.accuracy}% · {item.mode}</p>)}</div></aside>
+          <aside className="stats-card"><div className="stats-title">Live Stats</div><div className="stats-grid"><div><span>Time</span><strong>{timeLeft}s</strong></div><div><span>WPM</span><strong>{wpm}</strong></div><div><span>Accuracy</span><strong>{accuracy}%</strong></div></div><div className="stats-title history-title">Best &amp; Recent</div><div className="history-list"><p>Personal best: <strong>{bestWpm} WPM</strong></p>{history.slice(0, 5).map((item, index) => <p key={`${item.id}-${index}`}>{item.wpm} WPM · {item.accuracy}% · {item.mode}</p>)}</div></aside>
         </>}
       </section>
-      <PublisherContent /><FAQ /><SocialFooter wpm={finished ? wpm : null} />
+      <PublisherContent />
+      <BlogSection onStartTyping={focusTyping} />
+      <FAQ />
+      <SocialFooter wpm={finished ? wpm : null} />
     </main>
   );
 }

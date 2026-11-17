@@ -1,0 +1,26 @@
+.streak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid rgba(101, 56, 237, 0.2);
+  border-radius: 999px;
+  color: #6538ed;
+  background: rgba(101, 56, 237, 0.08);
+  font-size: 11px;
+  font-weight: 800;
+  transition: transform 0.2s ease;
+}
+
+.streak-badge.fire {
+  color: #fff;
+  background: linear-gradient(135deg, #7c4dff, #4a24c7);
+  box-shadow: 0 4px 14px rgba(124, 77, 255, 0.35);
+  transform: scale(1.05);
+}
+
+@media (max-width: 700px) {
+  .streak-badge {
+    display: none;
+  }
+}
