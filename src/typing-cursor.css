@@ -1,0 +1,30 @@
+.typing-text .char.current {
+  position: relative !important;
+  display: inline-block !important;
+  color: var(--purple-600, #6538ed) !important;
+  background: transparent !important;
+}
+
+.typing-text .char.current::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  left: -2px !important;
+  top: 0.08em !important;
+  width: 2px !important;
+  height: 0.95em !important;
+  border-radius: 1px !important;
+  background: #171717 !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+  z-index: 20 !important;
+}
+
+.typing-text .char.end-caret {
+  width: 0;
+  overflow: visible;
+}
+
+.typing-text .char.end-caret::before {
+  left: 0 !important;
+}

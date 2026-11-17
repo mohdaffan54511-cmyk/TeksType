@@ -1,0 +1,202 @@
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import FAQ from "./FAQ";
+import SocialFooter from "./SocialFooter";
+import PublisherContent from "./PublisherContent";
+import TypingResults from "./TypingResults";
+import "./App.css";
+import "./typing-cursor.css";
+
+const LANGUAGES = [
+  ["english", "English"], ["english_1k", "English 1k"],
+  ["english_commonly_misspelled", "Misspelled Words"], ["hindi", "Hindi"],
+  ["hindi_1k", "Hindi 1k"], ["spanish", "Spanish"], ["spanish_1k", "Spanish 1k"],
+  ["arabic", "Arabic"], ["french", "French"], ["french_1k", "French 1k"],
+  ["german", "German"], ["german_1k", "German 1k"], ["russian", "Russian"],
+  ["russian_1k", "Russian 1k"], ["portuguese", "Portuguese"],
+  ["portuguese_1k", "Portuguese 1k"], ["bangla", "Bangla"],
+  ["code_python", "Python Code"], ["code_python_1k", "Python 1k"],
+  ["code_javascript", "JavaScript Code"],
+];
+const MODES = ["words", "hinglish", "business", "conversation", "quotes", "code", "bigrams", "trigrams", "custom"];
+const WORDS = "home now even used said government once any to and know world number another something until without when right less school both there almost people system place group around because through while every important possible between business support future strong learn focus better growth skill progress".split(" ");
+const POOLS = {
+  words: WORDS,
+  bigrams: "th he in er an re on at en nd ti es or te of ed is it al ar st to nt ng se ha as ou io le".split(" "),
+  trigrams: "the ing and ion ent her tha nth was eth for hat his you ter ere all res ver not".split(" "),
+  code: "const return function import export async await array object string number boolean component state effect promise server client render props value index".split(" "),
+  business: "client report project meeting growth revenue profit budget invoice market sales target dashboard strategy analysis finance team planning success quality".split(" "),
+  quotes: ["The quick brown fox jumps over the lazy dog.", "Small steps every day build big results tomorrow.", "Focus on progress, not on perfection.", "Discipline today creates freedom tomorrow."],
+  hinglish: ["Subah alarm baja, lekin maine snooze kar diya. Paanch minute baad alarm phir baja. Maine socha, thodi aur neend le leta hoon. Aankh khuli to office ka time ho chuka tha.", "Main chai peene dukaan par gaya. Chai wale bhaiya ne poocha, strong ya normal? Maine bola, strong bana do."],
+  conversation: ["Aman: Did you study today? Ravi: Yes, I opened the book. Aman: Then what happened? Ravi: I fell asleep.", "Boss: Is the report complete? Employee: Almost, sir. Boss: What does almost mean? Employee: The data is still loading."],
+};
+const LANGUAGE_WORDS = {
+  hindi: "का के कि में है और से ने को इस पर यह भी कर दिए रहे हो गए हुआ अपने साथ तो या", arabic: "من على إلى عن في كان هذا التي الذي مع ما لا الله كل بعد حتى بين ذلك",
+  spanish: "que de no a la el es por un para con una los del las se como mas pero sus le ya este si", french: "que de ne pas le la les un une du des et en pour etre il ce qui sur avec plus",
+  german: "das ist du ich nicht die es und der sie fuer mit den dem ein eine sich auf auch", russian: "что и в не на с он как я но все по его из за у так о от же сказать",
+  portuguese: "que de nao a o e um uma para com por os as do da se em como mais mas sua", bangla: "না এবং এই কি তার সে করে তারা কে আমি বা জন্য সাথে থেকে হয় ছিল",
+  code_python: "def return import from class if else elif for while in try except with as lambda async await True False None print len range list dict set int str",
+  code_javascript: "const let var function return import export default async await if else for while switch case break try catch throw new class extends element",
+};
+const pick = (items) => items[Math.floor(Math.random() * items.length)];
+const makeText = (mode, lang, customWords = null) => {
+  if (customWords?.length) return Array.from({ length: 36 }, () => pick(customWords)).join(" ");
+  if (mode === "custom") return "";
+  if (POOLS[mode] && ["quotes", "hinglish", "conversation"].includes(mode)) return pick(POOLS[mode]);
+  const langWords = LANGUAGE_WORDS[lang.replace(/_1k$/, "")];
+  const pool = langWords ? langWords.split(" ") : (POOLS[mode] || WORDS);
+  return Array.from({ length: mode === "bigrams" ? 50 : mode === "trigrams" ? 42 : 36 }, () => pick(pool)).join(" ");
+};
+const readHistory = () => {
+  try { return JSON.parse(localStorage.getItem("Type Perfectly-history") || "[]"); }
+  catch { return []; }
+};
+
+export default function App() {
+  const [language, setLanguage] = useState("english");
+  const [mode, setMode] = useState("words");
+  const [duration, setDuration] = useState(15);
+  const [text, setText] = useState(() => makeText("words", "english"));
+  const [input, setInput] = useState("");
+  const [running, setRunning] = useState(false);
+  const [finished, setFinished] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(15);
+  const [soundOn, setSoundOn] = useState(false);
+  const [noBackspace, setNoBackspace] = useState(false);
+  const [customDraft, setCustomDraft] = useState("");
+  const [customActive, setCustomActive] = useState(false);
+  const [customError, setCustomError] = useState("");
+  const [mobileFocused, setMobileFocused] = useState(false);
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const [bestWpm, setBestWpm] = useState(() => Number(localStorage.getItem("Type Perfectly-best") || 0));
+  const [history, setHistory] = useState(readHistory);
+  const appRef = useRef(null);
+  const mobileInputRef = useRef(null);
+  const mobileBufferRef = useRef("");
+  const startedAtRef = useRef(0);
+  const savedRef = useRef(false);
+
+  const reset = useCallback((nextMode = mode, nextDuration = duration, nextLanguage = language, customWords = null, keepCustom = false) => {
+    setMode(nextMode); setDuration(nextDuration); setLanguage(nextLanguage);
+    setText(makeText(nextMode, nextLanguage, customWords)); setInput("");
+    setRunning(false); setFinished(false); setTimeLeft(nextDuration); setElapsedMs(0);
+    setMobileFocused(false); setCustomActive(nextMode === "custom" && keepCustom);
+    setCustomError(""); startedAtRef.current = 0; savedRef.current = false; mobileBufferRef.current = "";
+    if (mobileInputRef.current) { mobileInputRef.current.value = ""; mobileInputRef.current.blur(); }
+    requestAnimationFrame(() => appRef.current?.focus({ preventScroll: true }));
+  }, [duration, language, mode]);
+
+  const customWords = useMemo(() => customDraft.normalize("NFKC").replace(/[^\p{L}\p{N}]+/gu, " ").trim().split(/\s+/).filter(Boolean), [customDraft]);
+  const correctChars = useMemo(() => Array.from(input).reduce((count, char, i) => count + (char === Array.from(text)[i] ? 1 : 0), 0), [input, text]);
+  const accuracy = input.length ? Math.round((correctChars / input.length) * 100) : 100;
+  const wpm = input.length && elapsedMs >= 250 ? Math.round((correctChars / 5) / (Math.max(elapsedMs, 1) / 60000)) : 0;
+  const score = correctChars * 10 + wpm * 2;
+  const sessionActive = running || mobileFocused;
+  const languageName = LANGUAGES.find(([id]) => id === language)?.[1] || language;
+  const correctWords = input.trim().split(/\s+/).filter((word, i) => word && word === text.trim().split(/\s+/)[i]).length;
+
+  const finish = useCallback(() => {
+    setElapsedMs(startedAtRef.current ? Math.min(duration * 1000, performance.now() - startedAtRef.current) : 0);
+    setTimeLeft(0); setRunning(false); setFinished(true); setMobileFocused(false); mobileInputRef.current?.blur();
+  }, [duration]);
+
+  const typeCharacter = useCallback((character) => {
+    if (!character || character.length !== 1 || finished || input.length >= text.length) return;
+    if (!running) { startedAtRef.current = performance.now() - elapsedMs; setRunning(true); }
+    if (soundOn && !window.matchMedia?.("(pointer: coarse)").matches) {
+      try { const Audio = window.AudioContext || window.webkitAudioContext; const ctx = new Audio(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.frequency.value = 500; gain.gain.value = 0.025; osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.025); } catch {}
+    }
+    setInput((value) => value.length < text.length ? value + character : value);
+  }, [elapsedMs, finished, input.length, running, soundOn, text.length]);
+  const backspace = useCallback(() => { if (!finished && !noBackspace) setInput((value) => value.slice(0, -1)); }, [finished, noBackspace]);
+
+  useEffect(() => { if (text.length && input.length >= text.length && running && !finished) finish(); }, [finish, finished, input.length, running, text.length]);
+  useEffect(() => { appRef.current?.focus({ preventScroll: true }); }, []);
+  useEffect(() => {
+    if (!running || finished) return undefined;
+    let frame;
+    const tick = (now) => {
+      const elapsed = now - startedAtRef.current;
+      setElapsedMs(elapsed); setTimeLeft(Math.ceil(Math.max(0, duration * 1000 - elapsed) / 1000));
+      if (elapsed >= duration * 1000) { finish(); return; }
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [duration, finish, finished, running]);
+  useEffect(() => {
+    if (!finished || savedRef.current) return;
+    savedRef.current = true;
+    const nextBest = Math.max(bestWpm, wpm);
+    setBestWpm(nextBest); localStorage.setItem("Type Perfectly-best", String(nextBest));
+    const next = [{ mode, wpm, accuracy, duration, score, date: new Date().toLocaleString() }, ...history].slice(0, 6);
+    setHistory(next); localStorage.setItem("Type Perfectly-history", JSON.stringify(next));
+  }, [accuracy, bestWpm, duration, finished, history, mode, score, wpm]);
+
+  const focusTyping = useCallback(() => {
+    if (window.matchMedia?.("(pointer: coarse)").matches || window.innerWidth <= 768) {
+      setMobileFocused(true); mobileInputRef.current?.focus({ preventScroll: true });
+    } else appRef.current?.focus({ preventScroll: true });
+  }, []);
+  const handleKeyDown = useCallback((event) => {
+    const target = event.target;
+    if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || target instanceof HTMLButtonElement || target?.isContentEditable || target === mobileInputRef.current) return;
+    if (event.ctrlKey || event.altKey || event.metaKey) return;
+    if (event.key === "Tab") { event.preventDefault(); reset(); }
+    else if (event.key === "Escape") { event.preventDefault(); setRunning(false); setMobileFocused(false); mobileInputRef.current?.blur(); }
+    else if (event.key === "Backspace") { event.preventDefault(); backspace(); }
+    else if (event.key.length === 1) { event.preventDefault(); typeCharacter(event.key); }
+  }, [backspace, reset, typeCharacter]);
+  const handleMobileInput = (event) => {
+    const value = event.currentTarget.value;
+    const previous = mobileBufferRef.current;
+    if (value.length > previous.length) {
+      for (const char of value.slice(previous.length)) typeCharacter(char);
+    } else if (value.length < previous.length) {
+      if (noBackspace) event.currentTarget.value = previous;
+      else for (let i = 0; i < previous.length - value.length; i++) backspace();
+    }
+    mobileBufferRef.current = event.currentTarget.value;
+    if (mobileBufferRef.current.length > 40) { event.currentTarget.value = ""; mobileBufferRef.current = ""; }
+  };
+  const startCustom = () => {
+    if (!customWords.length) { setCustomError("Please paste at least one valid word."); return; }
+    reset("custom", duration, language, customWords, true);
+  };
+  const parsedText = useMemo(() => Array.from(text), [text]);
+
+  return (
+    <main ref={appRef} tabIndex={0} className={`app ${sessionActive ? "session-active" : ""} ${finished ? "result-active" : ""}`} onKeyDown={handleKeyDown}>
+      <header className="topbar">
+        <div className="brand"><div className="logo-mark"><img src="/TeksType.jpeg" alt="Type Perfectly logo" /></div><div><div className="brand-title">Type Perfectly</div><div className="brand-subtitle">Typing Performance Lab</div></div></div>
+        <div className="top-actions"><span className="key-hint"><kbd>Tab</kbd> Restart</span><span className="key-hint"><kbd>Esc</kbd> Pause</span>
+          <button type="button" className={`ghost-button ${noBackspace ? "active" : ""}`} onClick={() => setNoBackspace((value) => !value)}>{noBackspace ? "BACKSPACE OFF" : "BACKSPACE ON"}</button>
+          <button type="button" className={`ghost-button ${soundOn ? "active" : ""}`} onClick={() => setSoundOn((value) => !value)}>{soundOn ? "SOUND ON" : "SOUND OFF"}</button>
+        </div>
+      </header>
+      <section className="hero"><div className="hero-copy-wrap"><div className="eyebrow">FREE TYPING SPEED TEST</div><h1>Free Typing Test Online<br /><span>Check Your WPM in 15 Seconds</span></h1><p className="hero-description">Get instant WPM, accuracy and weak-key feedback with English, Hinglish, code and business typing practice.</p><button type="button" className="hero-cta" onClick={focusTyping}>START FREE TYPING TEST</button><div className="hero-trust">Free to use · No account required · Instant results</div></div><div className="hero-picture" role="img" aria-label="Purple Type Perfectly keyboard" /></section>
+      <section className="controls"><div className="control-section"><div className="control-label">Language</div><div className="button-strip"><div className="select-wrapper"><select className="lang-select" value={language} onChange={(event) => { setCustomActive(false); reset("words", duration, event.target.value); }}>{LANGUAGES.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></div></div></div>
+        <div className="control-section content-control"><div className="control-label">Content</div><div className="button-strip">{MODES.map((item) => <button key={item} type="button" className={mode === item ? "selected" : ""} onClick={() => reset(item, duration, language)}>{item.toUpperCase()}</button>)}</div></div>
+        <div className="control-section"><div className="control-label">Time</div><div className="button-strip time-buttons">{[15, 30, 60, 300].map((value) => <button key={value} type="button" className={duration === value ? "selected" : ""} onClick={() => reset(mode, value, language, mode === "custom" && customActive ? customWords : null, customActive)}>{value === 300 ? "5 MIN" : `${value}S`}</button>)}</div></div></section>
+      <section className="practice-layout">{finished ? <TypingResults wpm={wpm} accuracy={accuracy} characters={input.length} correctWords={correctWords} errors={Math.max(0, input.length - correctChars)} time={duration} language={languageName} mode={mode} onTryAgain={() => reset()} onChangeTest={() => { reset(); document.querySelector(".controls")?.scrollIntoView({ behavior: "smooth" }); }} /> : <>
+        <article className="typing-card"><input ref={mobileInputRef} className="mobile-capture" type="text" aria-label="Typing input" inputMode="text" autoCapitalize="off" autoCorrect="off" autoComplete="off" spellCheck={false} onFocus={() => setMobileFocused(true)} onBlur={() => setMobileFocused(false)} onInput={handleMobileInput} onKeyDown={(event) => { event.stopPropagation(); if (event.key === "Backspace" && noBackspace) event.preventDefault(); }} />
+          <div className="typing-card-header"><div><span>{duration === 300 ? "5 MIN" : `${duration}S`}</span><span>{language.toUpperCase()} / {mode.toUpperCase()}</span></div>{!(mode === "custom" && !customActive) && <button type="button" className="primary-button" onClick={focusTyping}>START TYPING</button>}</div>
+          {mode === "custom" && !customActive ? <div className="custom-practice-setup"><textarea className="custom-practice-textarea" value={customDraft} rows={8} placeholder="Paste your custom vocabulary or text here..." onChange={(event) => { setCustomDraft(event.target.value); setCustomError(""); }} />{customError && <p className="custom-practice-error" role="alert">{customError}</p>}<button type="button" className="primary-button custom-start-button" onClick={startCustom}>START PRACTICE</button></div> : <>
+            <div className={`typing-text ${language === "arabic" ? "rtl" : ""}`} dir={language === "arabic" ? "rtl" : "ltr"} role="textbox" aria-label="Typing practice text." tabIndex={0} onPointerDown={focusTyping}>
+              {parsedText.map((character, index) => <span key={index} className={`char ${index < input.length ? (Array.from(input)[index] === character ? "correct" : "wrong") : index === input.length ? "current" : "upcoming"}`}>{character}</span>)}
+              {input.length >= parsedText.length && <span className="char current end-caret" aria-hidden="true">&nbsp;</span>}
+            </div>
+            <div className="legend-row"><span><i className="dot correct-dot" />Correct</span><span><i className="dot wrong-dot" />Wrong</span><span><i className="dot upcoming-dot" />Upcoming</span></div>
+            <div className="typing-actions"><button type="button" className="restart-button" onClick={() => reset()}>RESTART SESSION</button></div>
+          </>}</article>
+        <aside className="stats-card"><div className="stats-title">Live Stats</div><div className="stats-grid"><div><span>Time</span><strong>{timeLeft}s</strong></div><div><span>WPM</span><strong>{wpm}</strong></div><div><span>Accuracy</span><strong>{accuracy}%</strong></div></div><div className="stats-title history-title">Best & Recent</div><div className="history-list"><p>Personal best: <strong>{bestWpm} WPM</strong></p>{history.map((item, index) => <p key={`${item.date}-${index}`}>{item.wpm} WPM · {item.accuracy}% · {item.mode}</p>)}</div></aside>
+      </>}</section>
+      <PublisherContent /><FAQ /><SocialFooter wpm={finished ? wpm : null} />
+    </main>
+  );
+}
