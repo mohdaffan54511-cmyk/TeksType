@@ -1251,3 +1251,29 @@ body {
 .typing-text {
   color: #64748b !important;
 }
+/* Expand Results Card to Full Professional Width */
+.practice-layout .typing-card,
+.practice-layout .results-card,
+.typing-results-card,
+.result-card,
+.typing-results {
+  width: 100% !important;
+  max-width: 1200px !important; /* Screen par wide expand karega */
+  margin: 0 auto 3rem auto !important; /* Centered aur neeche FAQ se breathing space */
+  padding: 2.5rem 3rem !important; /* Andar se spacious feel */
+}
+
+/* Results section container spacing */
+.practice-layout {
+  max-width: 1200px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  padding: 0 1rem !important;
+}
+
+/* Speed chart area expanded */
+.chart-container,
+.results-chart {
+  width: 100% !important;
+  min-height: 220px !important;
+}
