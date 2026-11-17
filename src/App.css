@@ -1204,3 +1204,31 @@ body {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
+/* Disable floating overlays and set clean, accurate caret */
+.smooth-caret,
+.floating-caret {
+  display: none !important;
+}
+
+.typing-text .char.current {
+  position: relative !important;
+  color: var(--purple-600) !important;
+}
+
+.typing-text .char.current::before {
+  content: "" !important;
+  position: absolute !important;
+  left: -2px !important;
+  top: 10% !important;
+  height: 80% !important;
+  width: 3px !important;
+  background-color: #7c3aed !important;
+  border-radius: 9999px !important;
+  pointer-events: none !important;
+  animation: tpCaretBlink 1.2s ease-in-out infinite !important;
+}
+
+@keyframes tpCaretBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
