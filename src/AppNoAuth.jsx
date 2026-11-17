@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import FAQ from "./FAQ";
 import SocialFooter from "./SocialFooter";
-import PublisherContent from "./PublisherContent";
 import TypingResults from "./TypingResults";
 import BlogSection from "./BlogSection";
 import { getGuestHistory, getGuestStreak, saveGuestResult } from "./lib/guestStorage";
@@ -42,7 +41,9 @@ const LANGUAGE_WORDS = {
   code_python: "def return import from class if else elif for while in try except with as lambda async await True False None print len range list dict set int str",
   code_javascript: "const let var function return import export default async await if else for while switch case break try catch throw new class extends element",
 };
+
 const pick = (items) => items[Math.floor(Math.random() * items.length)];
+
 const makeText = (mode, lang, customWords = null) => {
   if (customWords?.length) return Array.from({ length: 36 }, () => pick(customWords)).join(" ");
   if (mode === "custom") return "";
@@ -85,10 +86,10 @@ export default function App() {
     start: Array.from(text.slice(0, match.index)).length,
     whitespace: /^\s+$/u.test(match[0]),
   })), [text]);
+
   const correctChars = useMemo(() => inputChars.reduce((count, char, index) => count + (char === textChars[index] ? 1 : 0), 0), [inputChars, textChars]);
   const accuracy = inputChars.length ? Math.round((correctChars / inputChars.length) * 100) : 100;
   const wpm = inputChars.length && elapsedMs >= 250 ? Math.round((correctChars / 5) / (Math.max(elapsedMs, 1) / 60000)) : 0;
-  const score = correctChars * 10 + wpm * 2;
   const sessionActive = running || mobileFocused;
   const languageName = LANGUAGES.find(([id]) => id === language)?.[1] || language;
   const typedWords = input.trim().split(/\s+/);
@@ -157,7 +158,9 @@ export default function App() {
   useEffect(() => {
     if (textChars.length && inputChars.length >= textChars.length && running && !finished) finish();
   }, [finish, finished, inputChars.length, running, textChars.length]);
+
   useEffect(() => { appRef.current?.focus({ preventScroll: true }); }, []);
+
   useEffect(() => {
     if (!running || finished) return undefined;
     let frame;
@@ -171,6 +174,7 @@ export default function App() {
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
   }, [duration, finish, finished, running]);
+
   useEffect(() => {
     if (!finished || savedRef.current) return;
     savedRef.current = true;
@@ -193,8 +197,12 @@ export default function App() {
     if (window.matchMedia?.("(pointer: coarse)").matches || window.innerWidth <= 768) {
       setMobileFocused(true);
       mobileInputRef.current?.focus({ preventScroll: true });
-    } else appRef.current?.focus({ preventScroll: true });
+    } else {
+      appRef.current?.focus({ preventScroll: true });
+    }
+    document.querySelector(".practice-layout")?.scrollIntoView({ behavior: "smooth" });
   }, []);
+
   const handleKeyDown = useCallback((event) => {
     const target = event.target;
     if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || target instanceof HTMLButtonElement || target?.isContentEditable || target === mobileInputRef.current) return;
@@ -224,6 +232,7 @@ export default function App() {
       mobileBufferRef.current = "";
     }
   };
+
   const startCustom = () => {
     if (!customWords.length) { setCustomError("Please paste at least one valid word."); return; }
     reset("custom", duration, language, customWords, true);
@@ -232,44 +241,125 @@ export default function App() {
   return (
     <main ref={appRef} tabIndex={0} className={`app ${sessionActive ? "session-active" : ""} ${finished ? "result-active" : ""}`} onKeyDown={handleKeyDown}>
       <header className="topbar">
-        <div className="brand"><div className="logo-mark"><img src="/TeksType.jpeg" alt="Type Perfectly logo" /></div><div><div className="brand-title">Type Perfectly</div><div className="brand-subtitle">Typing Performance Lab</div></div></div>
+        <div className="brand">
+          <div className="logo-mark"><img src="/TeksType.jpeg" alt="Type Perfectly logo" /></div>
+          <div><div className="brand-title">Type Perfectly</div><div className="brand-subtitle">Typing Performance Lab</div></div>
+        </div>
         <div className="top-actions">
           <span className={`streak-badge ${streak > 1 ? "fire" : ""}`} aria-label={`${streak} day practice streak`}>🔥 {streak} day streak</span>
-          <span className="key-hint"><kbd>Tab</kbd> Restart</span><span className="key-hint"><kbd>Esc</kbd> Pause</span>
+          <span className="key-hint"><kbd>Tab</kbd> Restart</span>
+          <span className="key-hint"><kbd>Esc</kbd> Pause</span>
           <button type="button" className={`ghost-button ${noBackspace ? "active" : ""}`} onClick={() => setNoBackspace((value) => !value)}>{noBackspace ? "BACKSPACE OFF" : "BACKSPACE ON"}</button>
           <button type="button" className={`ghost-button ${soundOn ? "active" : ""}`} onClick={() => setSoundOn((value) => !value)}>{soundOn ? "SOUND ON" : "SOUND OFF"}</button>
         </div>
       </header>
-      <section className="hero"><div className="hero-copy-wrap"><div className="eyebrow">FREE TYPING SPEED TEST</div><h1>Free Typing Test Online<br /><span>Check Your WPM in 15 Seconds</span></h1><p className="hero-description">Get instant WPM, accuracy and weak-key feedback with English, Hinglish, code and business typing practice.</p><button type="button" className="hero-cta" onClick={focusTyping}>START FREE TYPING TEST</button><div className="hero-trust">Free to use · No account required · Instant results</div></div><div className="hero-picture" role="img" aria-label="Purple Type Perfectly keyboard" /></section>
+
+      <section className="hero">
+        <div className="hero-copy-wrap">
+          <div className="eyebrow">FREE TYPING SPEED TEST</div>
+          <h1>Free Typing Test Online<br /><span>Check Your WPM in 15 Seconds</span></h1>
+          <p className="hero-description">Get instant WPM, accuracy and weak-key feedback with English, Hinglish, code and business typing practice.</p>
+          <button type="button" className="hero-cta" onClick={focusTyping}>START FREE TYPING TEST</button>
+          <div className="hero-trust">Free to use · No account required · Instant results</div>
+        </div>
+        <div className="hero-picture" role="img" aria-label="Purple Type Perfectly keyboard" />
+      </section>
+
       <section className="controls">
-        <div className="control-section"><div className="control-label">Language</div><div className="button-strip"><div className="select-wrapper"><select className="lang-select" value={language} onChange={(event) => reset("words", duration, event.target.value)}>{LANGUAGES.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></div></div></div>
-        <div className="control-section content-control"><div className="control-label">Content</div><div className="button-strip">{MODES.map((item) => <button key={item} type="button" className={mode === item ? "selected" : ""} onClick={() => reset(item, duration, language)}>{item.toUpperCase()}</button>)}</div></div>
-        <div className="control-section"><div className="control-label">Time</div><div className="button-strip time-buttons">{[15, 30, 60, 300].map((value) => <button key={value} type="button" className={duration === value ? "selected" : ""} onClick={() => reset(mode, value, language, mode === "custom" && customActive ? customWords : null, customActive)}>{value === 300 ? "5 MIN" : `${value}S`}</button>)}</div></div>
+        <div className="control-section">
+          <div className="control-label">Language</div>
+          <div className="button-strip">
+            <div className="select-wrapper">
+              <select className="lang-select" value={language} onChange={(event) => reset("words", duration, event.target.value)}>
+                {LANGUAGES.map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div className="control-section content-control">
+          <div className="control-label">Content</div>
+          <div className="button-strip">
+            {MODES.map((item) => <button key={item} type="button" className={mode === item ? "selected" : ""} onClick={() => reset(item, duration, language)}>{item.toUpperCase()}</button>)}
+          </div>
+        </div>
+        <div className="control-section">
+          <div className="control-label">Time</div>
+          <div className="button-strip time-buttons">
+            {[15, 30, 60, 300].map((value) => <button key={value} type="button" className={duration === value ? "selected" : ""} onClick={() => reset(mode, value, language, mode === "custom" && customActive ? customWords : null, customActive)}>{value === 300 ? "5 MIN" : `${value}S`}</button>)}
+          </div>
+        </div>
       </section>
+
       <section className="practice-layout">
-        {finished ? <TypingResults wpm={wpm} accuracy={accuracy} characters={inputChars.length} correctWords={correctWords} errors={Math.max(0, inputChars.length - correctChars)} time={duration} language={languageName} mode={mode} onTryAgain={() => reset()} onChangeTest={() => { reset(); document.querySelector(".controls")?.scrollIntoView({ behavior: "smooth" }); }} /> : <>
-          <article className="typing-card">
-            <input ref={mobileInputRef} className="mobile-capture" type="text" aria-label="Typing input" inputMode="text" autoCapitalize="off" autoCorrect="off" autoComplete="off" spellCheck={false} onFocus={() => setMobileFocused(true)} onBlur={() => setMobileFocused(false)} onInput={handleMobileInput} onKeyDown={(event) => { event.stopPropagation(); if (event.key === "Backspace" && noBackspace) event.preventDefault(); }} />
-            <div className="typing-card-header"><div><span>{duration === 300 ? "5 MIN" : `${duration}S`}</span><span>{language.toUpperCase()} / {mode.toUpperCase()}</span></div>{!(mode === "custom" && !customActive) && <button type="button" className="primary-button" onClick={focusTyping}>START TYPING</button>}</div>
-            {mode === "custom" && !customActive ? <div className="custom-practice-setup"><textarea className="custom-practice-textarea" value={customDraft} rows={8} placeholder="Paste your custom vocabulary or text here..." onChange={(event) => { setCustomDraft(event.target.value); setCustomError(""); }} />{customError && <p className="custom-practice-error" role="alert">{customError}</p>}<button type="button" className="primary-button custom-start-button" onClick={startCustom}>START PRACTICE</button></div> : <>
-              <div className={`typing-text ${language === "arabic" ? "rtl" : ""}`} dir={language === "arabic" ? "rtl" : "ltr"} role="textbox" aria-label="Typing practice text." tabIndex={0} onPointerDown={focusTyping}>
-                {characterTokens.map(({ value, start, whitespace }) => whitespace
-                  ? <span className="typing-whitespace" key={`space-${start}`}>{value}</span>
-                  : <span className="word-group" key={`word-${start}`}>{Array.from(value).map((character, offset) => {
-                    const index = start + offset;
-                    const className = index < inputChars.length ? (inputChars[index] === character ? "correct" : "wrong") : index === inputChars.length ? "current" : "upcoming";
-                    return <span key={index} className={`char ${className}`}>{character}</span>;
-                  })}</span>)}
-                {inputChars.length >= textChars.length && <span className="char current end-caret" aria-hidden="true">&#8203;</span>}
+        {finished ? (
+          <TypingResults
+            wpm={wpm}
+            accuracy={accuracy}
+            characters={inputChars.length}
+            correctWords={correctWords}
+            errors={Math.max(0, inputChars.length - correctChars)}
+            time={duration}
+            language={languageName}
+            mode={mode}
+            onTryAgain={() => reset()}
+            onChangeTest={() => { reset(); document.querySelector(".controls")?.scrollIntoView({ behavior: "smooth" }); }}
+          />
+        ) : (
+          <>
+            <article className="typing-card">
+              <input ref={mobileInputRef} className="mobile-capture" type="text" aria-label="Typing input" inputMode="text" autoCapitalize="off" autoCorrect="off" autoComplete="off" spellCheck={false} onFocus={() => setMobileFocused(true)} onBlur={() => setMobileFocused(false)} onInput={handleMobileInput} onKeyDown={(event) => { event.stopPropagation(); if (event.key === "Backspace" && noBackspace) event.preventDefault(); }} />
+              <div className="typing-card-header">
+                <div><span>{duration === 300 ? "5 MIN" : `${duration}S`}</span><span>{language.toUpperCase()} / {mode.toUpperCase()}</span></div>
+                {!(mode === "custom" && !customActive) && <button type="button" className="primary-button" onClick={focusTyping}>START TYPING</button>}
               </div>
-              <div className="legend-row"><span><i className="dot correct-dot" />Correct</span><span><i className="dot wrong-dot" />Wrong</span><span><i className="dot upcoming-dot" />Upcoming</span></div>
-              <div className="typing-actions"><button type="button" className="restart-button" onClick={() => reset()}>RESTART SESSION</button></div>
-            </>}
-          </article>
-          <aside className="stats-card"><div className="stats-title">Live Stats</div><div className="stats-grid"><div><span>Time</span><strong>{timeLeft}s</strong></div><div><span>WPM</span><strong>{wpm}</strong></div><div><span>Accuracy</span><strong>{accuracy}%</strong></div></div><div className="stats-title history-title">Best &amp; Recent</div><div className="history-list"><p>Personal best: <strong>{bestWpm} WPM</strong></p>{history.slice(0, 5).map((item, index) => <p key={`${item.id}-${index}`}>{item.wpm} WPM · {item.accuracy}% · {item.mode}</p>)}</div></aside>
-        </>}
+              {mode === "custom" && !customActive ? (
+                <div className="custom-practice-setup">
+                  <textarea className="custom-practice-textarea" value={customDraft} rows={8} placeholder="Paste your custom vocabulary or text here..." onChange={(event) => { setCustomDraft(event.target.value); setCustomError(""); }} />
+                  {customError && <p className="custom-practice-error" role="alert">{customError}</p>}
+                  <button type="button" className="primary-button custom-start-button" onClick={startCustom}>START PRACTICE</button>
+                </div>
+              ) : (
+                <>
+                  <div className={`typing-text ${language === "arabic" ? "rtl" : ""}`} dir={language === "arabic" ? "rtl" : "ltr"} role="textbox" aria-label="Typing practice text." tabIndex={0} onPointerDown={focusTyping}>
+                    {characterTokens.map(({ value, start, whitespace }) => whitespace
+                      ? <span className="typing-whitespace" key={`space-${start}`}>{value}</span>
+                      : <span className="word-group" key={`word-${start}`}>{Array.from(value).map((character, offset) => {
+                          const index = start + offset;
+                          const className = index < inputChars.length ? (inputChars[index] === character ? "correct" : "wrong") : index === inputChars.length ? "current" : "upcoming";
+                          return <span key={index} className={`char ${className}`}>{character}</span>;
+                        })}</span>)}
+                    {inputChars.length >= textChars.length && <span className="char current end-caret" aria-hidden="true">&#8203;</span>}
+                  </div>
+                  <div className="legend-row">
+                    <span><i className="dot correct-dot" />Correct</span>
+                    <span><i className="dot wrong-dot" />Wrong</span>
+                    <span><i className="dot upcoming-dot" />Upcoming</span>
+                  </div>
+                  <div className="typing-actions">
+                    <button type="button" className="restart-button" onClick={() => reset()}>RESTART SESSION</button>
+                  </div>
+                </>
+              )}
+            </article>
+            <aside className="stats-card">
+              <div className="stats-title">Live Stats</div>
+              <div className="stats-grid">
+                <div><span>Time</span><strong>{timeLeft}s</strong></div>
+                <div><span>WPM</span><strong>{wpm}</strong></div>
+                <div><span>Accuracy</span><strong>{accuracy}%</strong></div>
+              </div>
+              <div className="stats-title history-title">Best &amp; Recent</div>
+              <div className="history-list">
+                <p>Personal best: <strong>{bestWpm} WPM</strong></p>
+                {history.slice(0, 5).map((item, index) => (
+                  <p key={`${item.id}-${index}`}>{item.wpm} WPM · {item.accuracy}% · {item.mode}</p>
+                ))}
+              </div>
+            </aside>
+          </>
+        )}
       </section>
-      <PublisherContent />
+
       <BlogSection onStartTyping={focusTyping} />
       <FAQ />
       <SocialFooter wpm={finished ? wpm : null} />
