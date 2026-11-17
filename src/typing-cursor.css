@@ -1,30 +1,68 @@
-.typing-text .char.current {
-  position: relative !important;
+/* Character spans remain inline inside a non-wrapping word wrapper. Actual
+   spaces/newlines between wrappers provide the only word break opportunities. */
+.typing-text {
+  white-space: pre-wrap !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+.typing-text .word-group {
   display: inline-block !important;
-  color: var(--purple-600, #6538ed) !important;
+  white-space: nowrap !important;
+  vertical-align: baseline;
+}
+
+.typing-text .typing-whitespace {
+  white-space: pre-wrap !important;
+}
+
+.typing-text .char {
+  position: relative;
+  display: inline !important;
+  white-space: pre !important;
+}
+
+.typing-text .char.correct {
+  color: var(--ink);
+  background: transparent;
+}
+
+/* Error highlighting belongs to the typed character, never to the caret. */
+.typing-text .char.wrong {
+  color: var(--wrong);
+  background: rgba(217, 45, 87, 0.12);
+  border-radius: 4px;
+}
+
+.typing-text .char.current {
+  color: var(--purple-600, #6538ed);
   background: transparent !important;
+  box-shadow: none !important;
 }
 
 .typing-text .char.current::before {
-  content: "" !important;
-  display: block !important;
-  position: absolute !important;
-  left: -2px !important;
-  top: 0.08em !important;
-  width: 2px !important;
-  height: 0.95em !important;
-  border-radius: 1px !important;
-  background: #171717 !important;
-  box-shadow: none !important;
-  pointer-events: none !important;
-  z-index: 20 !important;
+  content: "";
+  position: absolute;
+  inset-inline-start: -2px;
+  top: 0.08em;
+  width: 2px;
+  height: 0.95em;
+  border-radius: 2px;
+  background: var(--purple-500, #7c4dff);
+  pointer-events: none;
+  z-index: 20;
 }
 
+/* Zero-width target positions the caret after the final typed character. */
 .typing-text .char.end-caret {
+  display: inline-block !important;
+  position: relative;
   width: 0;
+  height: 1em;
   overflow: visible;
+  vertical-align: baseline;
 }
 
 .typing-text .char.end-caret::before {
-  left: 0 !important;
+  inset-inline-start: 0;
 }
