@@ -3,6 +3,23 @@
  * responsive overrides included break-anywhere and floating-caret styles.
  * These rules define the single active-character caret and word wrapping.
  */
+.mobile-capture {
+  position: absolute !important;
+  inline-size: 1px !important;
+  block-size: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  opacity: 0 !important;
+  color: transparent !important;
+  background: transparent !important;
+  caret-color: transparent !important;
+  pointer-events: none !important;
+}
+
 .typing-text .smooth-caret {
   display: none !important;
 }
