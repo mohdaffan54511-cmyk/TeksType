@@ -1248,3 +1248,6 @@ body {
   caret-color: transparent !important;
   color: transparent !important;
 }
+.typing-text {
+  color: #64748b !important;
+}
