@@ -19,6 +19,20 @@
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+}
+
+body {
+  overflow-x: hidden;
+  background-color: var(--page-bg);
+}
+
 button,
 input {
   font: inherit;
@@ -35,11 +49,14 @@ input:focus-visible {
   outline-offset: 3px;
 }
 
+/* =========================================================
+   APP CONTAINER
+   ========================================================= */
 .app {
-  width: min(1240px, calc(100% - 28px));
+  width: min(1380px, calc(100% - 32px));
   min-height: calc(100dvh - 24px);
   margin: 12px auto;
-  padding: 0 18px 18px;
+  padding: 0 20px 24px;
   color: var(--ink);
   border: 1px solid rgba(255, 255, 255, 0.86);
   border-radius: 28px;
@@ -52,6 +69,7 @@ input:focus-visible {
   overflow: clip;
 }
 
+/* Topbar */
 .topbar {
   min-height: 84px;
   display: flex;
@@ -70,14 +88,14 @@ input:focus-visible {
 }
 
 .logo-mark {
-  width: 64px;
-  height: 64px;
-  flex: 0 0 64px;
+  width: 60px;
+  height: 60px;
+  flex: 0 0 60px;
   position: relative;
   display: grid;
   place-items: center;
   overflow: hidden;
-  border-radius: 18px;
+  border-radius: 16px;
   background: #ffffff;
   box-shadow: var(--shadow);
 }
@@ -87,11 +105,10 @@ input:focus-visible {
   height: 100%;
   display: block;
   object-fit: cover;
-  padding: 0;
 }
 
 .brand-title {
-  font-size: 25px;
+  font-size: 24px;
   line-height: 1;
   font-weight: 800;
   letter-spacing: -0.035em;
@@ -113,6 +130,21 @@ input:focus-visible {
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.streak-badge {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 800;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--line);
+}
+
+.streak-badge.fire {
+  color: #e11d48;
+  background: rgba(225, 29, 72, 0.08);
+  border-color: rgba(225, 29, 72, 0.2);
 }
 
 .key-hint {
@@ -138,6 +170,7 @@ kbd {
   background: rgba(255, 255, 255, 0.88);
   box-shadow: 0 8px 20px rgba(74, 36, 199, 0.08);
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .ghost-button {
@@ -155,33 +188,36 @@ kbd {
   background: linear-gradient(135deg, var(--purple-500), var(--purple-700));
 }
 
+/* =========================================================
+   HERO SECTION
+   ========================================================= */
 .hero {
-  min-height: 350px;
+  min-height: 320px;
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
   align-items: center;
   gap: 30px;
-  padding: 34px 34px 26px;
+  padding: 30px 24px 20px;
 }
 
 .eyebrow {
   display: inline-flex;
-  padding: 8px 13px;
+  padding: 6px 12px;
   border: 1px solid rgba(101, 56, 237, 0.28);
   border-radius: 999px;
   color: var(--purple-700);
   background: rgba(255, 255, 255, 0.66);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.08em;
 }
 
 .hero h1 {
   max-width: 760px;
-  margin: 18px 0 12px;
-  font-size: clamp(52px, 6vw, 84px);
-  line-height: 0.93;
-  letter-spacing: -0.062em;
+  margin: 14px 0 10px;
+  font-size: clamp(42px, 5vw, 68px);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
   font-weight: 900;
 }
 
@@ -190,24 +226,20 @@ kbd {
 }
 
 .hero-description {
-  max-width: 610px;
-  margin: 18px 0 24px;
+  max-width: 580px;
+  margin: 14px 0 20px;
   color: var(--muted);
-  font-size: 18px;
-  line-height: 1.6;
+  font-size: 17px;
+  line-height: 1.5;
 }
 
 .hero-cta {
-  min-height: 58px;
-  padding: 0 25px;
+  min-height: 52px;
+  padding: 0 28px;
   border: 0;
-  border-radius: 17px;
+  border-radius: 16px;
   color: white;
-  background: linear-gradient(
-    135deg,
-    var(--purple-500),
-    var(--purple-700)
-  );
+  background: linear-gradient(135deg, var(--purple-500), var(--purple-700));
   box-shadow: 0 16px 30px rgba(74, 36, 199, 0.28);
   font-size: 15px;
   font-weight: 900;
@@ -220,43 +252,40 @@ kbd {
 }
 
 .hero-trust {
-  margin-top: 14px;
+  margin-top: 12px;
   color: #655b7d;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
 }
 
 .hero-picture {
-  width: min(100%, 560px);
-  height: 340px;
+  width: min(100%, 520px);
+  height: 300px;
   min-width: 0;
   justify-self: end;
-  border: 0;
-  border-radius: 28px;
-  background: url("/typing-hero.png") center / 135% auto no-repeat;
-  box-shadow: none;
+  border-radius: 24px;
+  background: url("/typing-hero.png") center / contain no-repeat;
   animation: keyboardFloat 4s ease-in-out infinite;
 }
 
 @keyframes keyboardFloat {
-  0%,
-  100% {
-    transform: translateY(0) scale(1);
-  }
-
-  50% {
-    transform: translateY(-8px) scale(1.02);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
+/* =========================================================
+   CONTROLS BAR
+   ========================================================= */
 .controls {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 18px;
-  padding: 18px;
-  margin: 0 8px 18px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  margin: 0 0 20px;
   border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 24px;
+  border-radius: 22px;
   background: var(--surface);
   box-shadow: var(--shadow);
   backdrop-filter: blur(18px);
@@ -267,38 +296,73 @@ kbd {
 }
 
 .control-label {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   color: var(--purple-700);
   font-size: 11px;
   font-weight: 900;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .button-strip {
   display: flex;
   flex-wrap: wrap;
-  gap: 9px;
+  gap: 8px;
 }
 
 .button-strip button {
-  min-height: 42px;
-  padding: 10px 13px;
+  min-height: 38px;
+  padding: 8px 12px;
   font-size: 11px;
   font-weight: 800;
 }
 
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+  min-width: 150px;
+}
+
+.lang-select {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 36px 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--purple-900);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 8px 20px rgba(74, 36, 199, 0.08);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.select-wrapper::after {
+  content: "▼";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--purple-600);
+  font-size: 9px;
+  pointer-events: none;
+}
+
+/* =========================================================
+   PRACTICE & ACTIVE TEST LAYOUT
+   ========================================================= */
 .practice-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 240px;
+  grid-template-columns: minmax(0, 1fr) 250px;
   align-items: start;
-  gap: 18px;
-  margin: 0 8px;
+  gap: 20px;
+  width: 100%;
 }
 
 .typing-card,
-.stats-card,
-.insight-card {
+.stats-card {
   border: 1px solid rgba(255, 255, 255, 0.9);
   background: var(--surface);
   box-shadow: var(--shadow);
@@ -307,7 +371,7 @@ kbd {
 
 .typing-card {
   position: relative;
-  padding: 20px;
+  padding: 24px;
   border-radius: 24px;
   overflow: hidden;
 }
@@ -330,909 +394,19 @@ kbd {
 }
 
 .primary-button,
-.restart-button,
-.finished-box button {
+.restart-button {
   border: 0;
   border-radius: 13px;
   color: white;
   background: linear-gradient(135deg, var(--purple-500), var(--purple-700));
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 12px 26px rgba(74, 36, 199, 0.24);
-}
-
-.primary-button {
-  padding: 11px 15px;
+  box-shadow: 0 10px 24px rgba(74, 36, 199, 0.24);
+  padding: 10px 18px;
   font-size: 12px;
 }
 
-/* =========================================================
-   CLEAN TYPING TEXT & MONKEYTYPE STYLE THIN CURSOR
-   ========================================================= */
-
-.typing-text {
-  position: relative;
-  min-height: 250px;
-  max-height: 390px;
-  padding: 8px 4px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-gutter: stable;
-  color: rgba(23, 17, 44, 0.34);
-  font-size: clamp(26px, 2.8vw, 40px);
-  line-height: 1.62;
-  letter-spacing: 0.01em;
-  font-weight: 700;
-  text-align: left;
-  white-space: pre-wrap;
-  overflow-wrap: normal;
-  word-break: normal;
-  cursor: text;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: geometricPrecision;
-}
-
-.word-group {
-  display: inline-block;
-  white-space: nowrap;
-}
-
-.space-group {
-  white-space: pre-wrap;
-}
-
-.char {
-  position: relative;
-  display: inline-block;
-  white-space: pre;
-  transition: none;
-}
-
-.char.correct {
-  color: var(--ink);
-}
-
-.char.wrong {
-  color: var(--wrong);
-  background: rgba(217, 45, 87, 0.12);
-  border-radius: 4px;
-}
-
-/* CURRENT CHARACTER: Box background hata diya gaya hai */
-.char.current {
-  color: var(--purple-600);
-  background: transparent !important;
-}
-
-.char.current::before {
-  display: none !important;
-}
-
-/* MONKEYTYPE STYLE THIN VERTICAL LINE CURSOR */
-.smooth-caret {
-  position: absolute;
-  left: 0;
-  top: 18%;
-  width: 2px;
-  height: 64%;
-  border-radius: 999px;
-  background: var(--purple-500, #7c4dff);
-  box-shadow: 0 0 6px rgba(124, 77, 255, 0.4);
-  pointer-events: none;
-  z-index: 10;
-  will-change: transform, left, top;
-  transition: transform 60ms cubic-bezier(0.2, 0.8, 0.2, 1), left 60ms ease-out, top 60ms ease-out;
-  animation: caretBlink 1.1s infinite;
-}
-
-@keyframes caretBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-.legend-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-  margin-top: 16px;
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.legend-row span {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-}
-
-.correct-dot {
-  background: var(--purple-500);
-}
-
-.wrong-dot {
-  background: var(--wrong);
-}
-
-.upcoming-dot {
-  background: #aaa4b7;
-}
-
-.typing-actions {
-  display: flex;
-  justify-content: center;
-  margin-top: 18px;
-}
-
-.restart-button {
-  padding: 12px 22px;
-  font-size: 12px;
-}
-
-.stats-card {
-  padding: 20px;
-  border-radius: 24px;
-}
-
-.stats-title,
-.insight-title {
-  margin-bottom: 14px;
-  color: var(--purple-700);
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.stats-grid {
-  display: grid;
-  gap: 10px;
-}
-
-.stats-grid > div {
-  padding: 15px;
-  border: 1px solid var(--line);
-  border-radius: 17px;
-  background: rgba(255, 255, 255, 0.78);
-}
-
-.stats-grid span {
-  display: block;
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.stats-grid strong {
-  display: block;
-  margin-top: 5px;
-  color: var(--purple-700);
-  font-size: 24px;
-}
-
-.finished-box {
-  display: grid;
-  gap: 8px;
-  margin-top: 14px;
-  padding: 14px;
-  border-radius: 17px;
-  color: white;
-  background: linear-gradient(135deg, var(--purple-600), var(--purple-900));
-}
-
-.finished-box span {
-  font-size: 12px;
-  opacity: 0.88;
-}
-
-.finished-box button {
-  padding: 10px;
-  color: var(--purple-700);
-  background: white;
-  box-shadow: none;
-}
-
-.select-wrapper {
-  position: relative;
-  display: inline-block;
-  min-width: 150px;
-}
-
-.lang-select {
-  width: 100%;
-  min-height: 42px;
-  padding: 10px 38px 10px 14px;
-  border: 1px solid var(--line);
-  border-radius: 13px;
-  color: var(--purple-900);
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 8px 20px rgba(74, 36, 199, 0.08);
-  font-size: 11px;
-  font-weight: 800;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  outline: none;
-}
-
-.lang-select:hover {
-  transform: translateY(-2px);
-}
-
-.lang-select:focus {
-  border-color: var(--purple-500);
-  box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.16);
-}
-
-.select-wrapper::after {
-  content: "▼";
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--purple-600);
-  font-size: 10px;
-  pointer-events: none;
-}
-
-.custom-practice-setup {
-  display: grid;
-  gap: 16px;
-  padding: 12px 4px 8px;
-}
-
-.custom-practice-textarea {
-  width: 100%;
-  min-height: 220px;
-  padding: 18px;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  outline: none;
-  resize: vertical;
-  color: var(--ink);
-  background: #ffffff;
-  font: inherit;
-  font-size: 16px;
-  line-height: 1.6;
-}
-
-.custom-practice-textarea:focus {
-  border-color: var(--purple-500);
-  box-shadow: 0 0 0 4px rgba(124, 77, 255, 0.12);
-}
-
-.custom-practice-error {
-  margin: 0;
-  color: var(--wrong);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.custom-start-button {
-  width: fit-content;
-  min-height: 48px;
-  padding: 0 24px;
-}
-
-.social-footer {
-  margin: 28px 8px 0;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.96),
-    rgba(242, 236, 255, 0.92)
-  );
-  box-shadow: 0 14px 34px rgba(74, 36, 199, 0.1);
-}
-
-.social-footer-top {
-  min-height: 82px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 18px 28px;
-}
-
-.social-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 11px;
-  color: var(--purple-700);
-  font-size: 22px;
-  font-weight: 900;
-  text-decoration: none;
-}
-
-.social-brand img {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  object-fit: cover;
-  box-shadow: 0 8px 20px rgba(74, 36, 199, 0.16);
-}
-
-.social-share {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.social-share a,
-.social-share button {
-  width: 42px;
-  height: 42px;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  border: 1px solid transparent;
-  border-radius: 50%;
-  color: var(--purple-900);
-  background: rgba(255, 255, 255, 0.62);
-  text-decoration: none;
-  cursor: pointer;
-  transition:
-    color 0.2s ease,
-    background 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.social-share a:hover,
-.social-share button:hover {
-  color: white;
-  background: linear-gradient(
-    135deg,
-    var(--purple-500),
-    var(--purple-700)
-  );
-  box-shadow: 0 8px 18px rgba(74, 36, 199, 0.22);
-  transform: translateY(-2px);
-}
-
-.social-footer-bottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 15px 28px;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.social-footer-bottom nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.social-footer-bottom a {
-  color: var(--purple-900);
-  text-decoration: none;
-}
-
-.social-footer-bottom a:hover {
-  color: var(--purple-600);
-  text-decoration: underline;
-}
-
-.social-share svg {
-  width: 21px;
-  height: 21px;
-  display: block;
-}
-
-.social-share a svg {
-  fill: currentColor;
-}
-
-.social-share a:nth-child(3) svg {
-  fill: none;
-}
-
-.app.session-active .social-footer {
-  display: none !important;
-}
-
-.app.session-active .hero,
-.app.session-active .controls,
-.app.session-active .insights-grid,
-.app.session-active .seo-content,
-.app.session-active .faq-section,
-.app.session-active .footer,
-.app.session-active .social-footer {
-  display: none !important;
-}
-
-@media (max-width: 980px) {
-  .hero {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-picture {
-    width: min(100%, 620px);
-    height: 320px;
-    justify-self: center;
-  }
-
-  .controls {
-    grid-template-columns: 1fr;
-  }
-
-  .practice-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .insights-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .history-card {
-    grid-column: span 2;
-  }
-}
-
-@media (max-width: 700px) {
-  .app {
-    width: 100%;
-    min-height: 100dvh;
-    margin: 0;
-    padding: 0 12px calc(18px + env(safe-area-inset-bottom));
-    border: 0;
-    border-radius: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: visible;
-  }
-
-  .topbar {
-    min-height: 74px;
-    padding: 10px 2px;
-  }
-
-  .hero {
-    min-height: 0;
-    padding: 20px 8px 14px;
-    gap: 14px;
-  }
-
-  .brand-title {
-    font-size: 21px;
-  }
-
-  .brand-subtitle,
-  .key-hint {
-    display: none;
-  }
-
-  .ghost-button {
-    min-height: 38px;
-    padding: 0 11px;
-    font-size: 10px;
-  }
-
-  .hero h1 {
-    margin-top: 14px;
-    font-size: clamp(42px, 12vw, 56px);
-    line-height: 0.95;
-  }
-
-  .hero-picture,
-  .hero-seo-title,
-  .hero p {
-    display: none;
-  }
-
-  .hero .hero-description {
-    display: block;
-    margin: 14px 0 19px;
-    font-size: 15px;
-  }
-
-  .hero-cta {
-    width: 100%;
-    min-height: 54px;
-    padding: 0 14px;
-    font-size: 14px;
-  }
-
-  .hero-trust {
-    font-size: 11px;
-    line-height: 1.5;
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .stats-grid > div {
-    padding: 12px 8px;
-    text-align: center;
-  }
-
-  .stats-grid strong {
-    font-size: 20px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-
-/* =========================================================
-   RESPONSIVE LAYOUT FIX
-   Added to keep the typing area and Live Stats side-by-side
-   without clipping or horizontal overflow.
-   ========================================================= */
-
-html,
-body,
-#root {
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-  margin: 0;
-}
-
-body {
-  overflow-x: hidden;
-}
-
-.app,
-.app * {
-  min-width: 0;
-}
-
-.app {
-  width: min(1440px, calc(100% - 28px));
-  max-width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.practice-layout {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) 240px !important;
-  align-items: start;
-  gap: 18px;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  margin-left: 0;
-  margin-right: 0;
-}
-
-.practice-layout > * {
-  min-width: 0;
-  max-width: 100%;
-}
-
-.typing-card,
-.stats-card,
-.insight-card {
-  min-width: 0;
-  max-width: 100%;
-}
-
-.typing-text {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overflow-wrap: anywhere;
-  word-break: normal;
-}
-
-.word-group {
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-
-.char {
-  white-space: pre-wrap;
-}
-
-.typing-card-header {
-  min-width: 0;
-  flex-wrap: wrap;
-}
-
-.typing-card-header > div {
-  min-width: 0;
-  flex-wrap: wrap;
-}
-
-.stats-grid {
-  width: 100%;
-  min-width: 0;
-}
-
-/* Medium screens: stats move below the typing card */
-@media (max-width: 980px) {
-  .app {
-    width: min(100%, calc(100% - 20px));
-  }
-
-  .practice-layout {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-/* Phones */
-@media (max-width: 700px) {
-  .app {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-
-  .practice-layout {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) !important;
-    gap: 14px;
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  .typing-card,
-  .stats-card {
-    width: 100%;
-    padding: 14px;
-    border-radius: 18px;
-  }
-
-  .typing-text {
-    min-height: 180px;
-    max-height: 320px;
-    font-size: clamp(21px, 6vw, 30px);
-    line-height: 1.55;
-    padding: 8px 2px;
-  }
-
-  .typing-card-header {
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .primary-button,
-  .restart-button {
-    max-width: 100%;
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  .stats-grid > div {
-    min-width: 0;
-    padding: 10px 6px;
-  }
-
-  .stats-grid strong {
-    font-size: clamp(17px, 5vw, 22px);
-  }
-
-  .social-footer-top,
-  .social-footer-bottom {
-    flex-wrap: wrap;
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-}
-
-/* Very narrow phones */
-@media (max-width: 380px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .typing-card-header > div {
-    letter-spacing: 0.06em;
-  }
-}
-
-
-/* =========================================================
-   TYPING CARET: simple editor-style vertical cursor
-   ========================================================= */
-
-.smooth-caret {
-  width: 3px !important;
-  height: 1.12em !important;
-  top: 0 !important;
-  border-radius: 1px !important;
-  background: #171717 !important;
-  box-shadow: none !important;
-  animation: none !important;
-  opacity: 1 !important;
-  transition:
-    transform 60ms linear,
-    left 60ms linear,
-    top 60ms linear !important;
-}
-
-/* Keep the current character clean; the caret is shown separately. */
-.char.current {
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-/* Avoid the old blinking animation on the caret. */
-@keyframes caretBlink {
-  0%, 100%, 50% {
-    opacity: 1;
-  }
-}
-
-
-/* =========================================================
-   FINAL CARET + WORD WRAPPING FIX
-   The old floating .smooth-caret overlay was stuck at the
-   left edge. Put the caret on the actual current character.
-   ========================================================= */
-
-/* Disable the separately-positioned caret overlay */
-.typing-text .smooth-caret {
-  display: none !important;
-}
-
-/* The active character owns its own caret position */
-.typing-text .char.current {
-  position: relative !important;
-  display: inline-block;
-  color: var(--purple-600, #6538ed);
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-/* Thin, solid black editor-style cursor */
-.typing-text .char.current::before {
-  content: "" !important;
-  display: block !important;
-  position: absolute !important;
-  left: -2px !important;
-  top: 0.08em !important;
-  width: 3px !important;
-  height: 0.95em !important;
-  border-radius: 1px !important;
-  background: #171717 !important;
-  box-shadow: none !important;
-  opacity: 1 !important;
-  pointer-events: none !important;
-  z-index: 20 !important;
-  animation: none !important;
-}
-
-/* Allow the typing text to wrap inside its card */
-.typing-text {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  white-space: pre-wrap !important;
-  overflow-x: hidden !important;
-  overflow-y: auto;
-  overflow-wrap: anywhere !important;
-  word-break: normal;
-}
-
-.typing-text .word-group {
-  display: inline !important;
-  white-space: normal !important;
-  overflow-wrap: anywhere !important;
-}
-
-.typing-text .char {
-  white-space: pre-wrap !important;
-}
-
-/* Keep the card and its children inside the viewport */
-.practice-layout,
-.practice-layout > *,
-.typing-card,
-.typing-card .typing-text {
-  min-width: 0 !important;
-  max-width: 100% !important;
-}
-/* =========================================================
-   MONKEYTYPE STYLE PERFECT THIN VERTICAL CARET (CURSOR)
-   ========================================================= */
-
-.typing-text {
-  position: relative;
-}
-
-/* Active letter ke peeche kisi bhi tarah ka background box ya highlight bilkul na aaye */
-.char.current {
-  background: transparent !important;
-  color: var(--purple-600);
-}
-
-.char.current::before,
-.char.current::after {
-  display: none !important;
-}
-
-/* Bilkul patli, saaf aur choti vertical line jo letter ke height ke mutabik ho */
-.smooth-caret {
-  position: absolute;
-  left: 0;
-  top: 50% !important;
-  transform: translateY(-50%);
-  width: 2px !important;
-  height: 1.15em !important;
-  border-radius: 999px;
-  background: var(--purple-500, #7c4dff);
-  box-shadow: 0 0 8px rgba(124, 77, 255, 0.4);
-  pointer-events: none;
-  z-index: 10;
-  will-change: transform, left, top;
-  transition: transform 70ms cubic-bezier(0.2, 0.8, 0.2, 1), left 70ms ease-out, top 70ms ease-out;
-  animation: caretBlink 1.1s infinite;
-}
-
-@keyframes caretBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-/* Disable floating overlays and set clean, accurate caret */
-.smooth-caret,
-.floating-caret {
-  display: none !important;
-}
-
-.typing-text .char.current {
-  position: relative !important;
-  color: var(--purple-600) !important;
-}
-
-.typing-text .char.current::before {
-  content: "" !important;
-  position: absolute !important;
-  left: -2px !important;
-  top: 10% !important;
-  height: 80% !important;
-  width: 3px !important;
-  background-color: #7c3aed !important;
-  border-radius: 9999px !important;
-  pointer-events: none !important;
-  animation: tpCaretBlink 1.2s ease-in-out infinite !important;
-}
-
-@keyframes tpCaretBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-/* Make mobile capture input completely invisible */
+/* Hidden capture input */
 .mobile-capture {
   position: absolute !important;
   width: 1px !important;
@@ -1248,51 +422,332 @@ body {
   caret-color: transparent !important;
   color: transparent !important;
 }
+
+/* =========================================================
+   TYPING TEXT & CLEAN CURSOR (NO OVERLAP)
+   ========================================================= */
 .typing-text {
+  position: relative;
+  min-height: 240px;
+  max-height: 360px;
+  padding: 6px 2px;
+  overflow-y: auto;
   color: #64748b !important;
+  font-size: clamp(24px, 2.6vw, 36px);
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  font-weight: 600;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: normal;
+  cursor: text;
 }
-/* ========================================================
-   FULL-WIDTH EXPANDED RESULTS CARD (Monkeytype Style)
-   ======================================================== */
 
-/* Jab test finish ho, layout ko full width container banayein */
+.word-group {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.typing-whitespace {
+  white-space: pre-wrap;
+}
+
+.char {
+  position: relative;
+  display: inline-block;
+  white-space: pre;
+}
+
+.char.correct {
+  color: var(--ink);
+}
+
+.char.wrong {
+  color: var(--wrong);
+  background: rgba(217, 45, 87, 0.12);
+  border-radius: 4px;
+}
+
+/* Disable old floating caret styles */
+.smooth-caret,
+.floating-caret {
+  display: none !important;
+}
+
+/* Current character styling */
+.char.current {
+  color: var(--purple-600) !important;
+  background: transparent !important;
+  position: relative !important;
+}
+
+/* Clean vertical caret positioned before character */
+.char.current::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  left: -3px !important;
+  top: 15% !important;
+  height: 70% !important;
+  width: 2.5px !important;
+  background-color: #7c3aed !important;
+  border-radius: 2px !important;
+  pointer-events: none !important;
+  z-index: 10 !important;
+  animation: tpCaretBlink 1.1s ease-in-out infinite !important;
+}
+
+@keyframes tpCaretBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.legend-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.correct-dot { background: var(--purple-500); }
+.wrong-dot { background: var(--wrong); }
+.upcoming-dot { background: #cbd5e1; }
+
+.typing-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+/* Live Stats Sidebar */
+.stats-card {
+  padding: 20px;
+  border-radius: 24px;
+}
+
+.stats-title {
+  margin-bottom: 12px;
+  color: var(--purple-700);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.stats-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.stats-grid > div {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.stats-grid span {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.stats-grid strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--purple-700);
+  font-size: 22px;
+}
+
+.history-list p {
+  margin: 6px 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* =========================================================
+   FULL-WIDTH EXPANDED RESULTS CARD (KEY FIX)
+   ========================================================= */
+
+/* Jab result finish ho: Grid ko Single Wide Column banayein */
 .app.result-active .practice-layout {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
+  display: block !important;
   width: 100% !important;
-  max-width: 1350px !important; /* Screen par wide expand karega */
-  margin: 0 auto 4rem auto !important;
-  padding: 0 1.5rem !important;
+  max-width: 100% !important;
+  margin: 0 0 3.5rem 0 !important;
 }
 
-/* Main Result Card ko horizontally pura stretch karein */
+/* Result Dashboard Card: Full width & comfortable padding */
 .app.result-active .results-screen,
 .app.result-active .typing-results,
 .app.result-active .results-card,
-.app.result-active article,
 .typing-results {
   width: 100% !important;
   max-width: 100% !important;
+  display: block !important;
   box-sizing: border-box !important;
-  padding: 3rem 4rem !important;
-  border-radius: 24px !important;
+  padding: 3rem 3.5rem !important;
+  border-radius: 26px !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  background: var(--surface) !important;
+  box-shadow: var(--shadow-strong) !important;
 }
 
-/* Speed chart area ko naturally spacious banayein */
+/* Canvas/Chart area across full card */
 .app.result-active canvas,
 .app.result-active .chart-wrap,
 .app.result-active .results-chart {
   width: 100% !important;
-  height: auto !important;
-  min-height: 260px !important;
+  min-height: 240px !important;
 }
 
-/* Bottom action buttons row centered & clean */
+/* Action buttons row */
 .app.result-active .results-actions,
 .app.result-active .action-row {
   display: flex !important;
   justify-content: center !important;
-  gap: 1.25rem !important;
-  margin-top: 2.5rem !important;
+  gap: 16px !important;
+  margin-top: 2rem !important;
+}
+
+/* Active session hides secondary sections */
+.app.session-active .hero,
+.app.session-active .controls,
+.app.session-active .social-footer {
+  display: none !important;
+}
+
+/* =========================================================
+   SOCIAL FOOTER
+   ========================================================= */
+.social-footer {
+  margin: 32px 0 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(242, 236, 255, 0.92));
+  box-shadow: 0 14px 34px rgba(74, 36, 199, 0.1);
+}
+
+.social-footer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 24px;
+}
+
+.social-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--purple-700);
+  font-size: 20px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.social-brand img {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.social-share {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.social-share a,
+.social-share button {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  color: var(--purple-900);
+  background: rgba(255, 255, 255, 0.62);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.social-share a:hover,
+.social-share button:hover {
+  color: white;
+  background: linear-gradient(135deg, var(--purple-500), var(--purple-700));
+}
+
+.social-footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 24px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.social-footer-bottom nav {
+  display: flex;
+  gap: 16px;
+}
+
+.social-footer-bottom a {
+  color: var(--purple-900);
+  text-decoration: none;
+}
+
+/* =========================================================
+   RESPONSIVE DESIGN (TABLETS & PHONES)
+   ========================================================= */
+@media (max-width: 980px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+  .hero-picture {
+    display: none;
+  }
+  .practice-layout {
+    grid-template-columns: 1fr;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .app {
+    width: 100%;
+    margin: 0;
+    padding: 0 12px 18px;
+    border: 0;
+    border-radius: 0;
+  }
+  .hero h1 {
+    font-size: clamp(34px, 10vw, 48px);
+  }
+  .app.result-active .results-screen,
+  .app.result-active .typing-results {
+    padding: 2rem 1.25rem !important;
+  }
 }
