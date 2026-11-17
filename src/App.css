@@ -1251,29 +1251,48 @@ body {
 .typing-text {
   color: #64748b !important;
 }
-/* Expand Results Card to Full Professional Width */
-.practice-layout .typing-card,
-.practice-layout .results-card,
-.typing-results-card,
-.result-card,
+/* ========================================================
+   FULL-WIDTH EXPANDED RESULTS CARD (Monkeytype Style)
+   ======================================================== */
+
+/* Jab test finish ho, layout ko full width container banayein */
+.app.result-active .practice-layout {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: 100% !important;
+  max-width: 1350px !important; /* Screen par wide expand karega */
+  margin: 0 auto 4rem auto !important;
+  padding: 0 1.5rem !important;
+}
+
+/* Main Result Card ko horizontally pura stretch karein */
+.app.result-active .results-screen,
+.app.result-active .typing-results,
+.app.result-active .results-card,
+.app.result-active article,
 .typing-results {
   width: 100% !important;
-  max-width: 1200px !important; /* Screen par wide expand karega */
-  margin: 0 auto 3rem auto !important; /* Centered aur neeche FAQ se breathing space */
-  padding: 2.5rem 3rem !important; /* Andar se spacious feel */
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 3rem 4rem !important;
+  border-radius: 24px !important;
 }
 
-/* Results section container spacing */
-.practice-layout {
-  max-width: 1200px !important;
+/* Speed chart area ko naturally spacious banayein */
+.app.result-active canvas,
+.app.result-active .chart-wrap,
+.app.result-active .results-chart {
   width: 100% !important;
-  margin: 0 auto !important;
-  padding: 0 1rem !important;
+  height: auto !important;
+  min-height: 260px !important;
 }
 
-/* Speed chart area expanded */
-.chart-container,
-.results-chart {
-  width: 100% !important;
-  min-height: 220px !important;
+/* Bottom action buttons row centered & clean */
+.app.result-active .results-actions,
+.app.result-active .action-row {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 1.25rem !important;
+  margin-top: 2.5rem !important;
 }
