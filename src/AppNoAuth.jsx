@@ -1,3 +1,4 @@
+import AnalyticsDashboard from "./components/AnalyticsDashboard";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import FAQ from "./FAQ";
 import SocialFooter from "./SocialFooter";
