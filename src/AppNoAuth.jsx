@@ -4,6 +4,7 @@ import SocialFooter from "./SocialFooter";
 import TypingResults from "./TypingResults";
 import BlogSection from "./BlogSection";
 import { getGuestHistory, getGuestStreak, saveGuestResult } from "./lib/guestStorage";
+import { DEVELOPER_LANGUAGES, CODE_SNIPPETS } from "./data/developerSnippets";
 import "./App.css";
 import "./typing-cursor.css";
 
@@ -15,20 +16,34 @@ const LANGUAGES = [
   ["german", "German"], ["german_1k", "German 1k"], ["russian", "Russian"],
   ["russian_1k", "Russian 1k"], ["portuguese", "Portuguese"],
   ["portuguese_1k", "Portuguese 1k"], ["bangla", "Bangla"],
-  ["code_python", "Python Code"], ["code_python_1k", "Python 1k"], ["code_javascript", "JavaScript Code"],
 ];
-const MODES = ["words", "hinglish", "business", "conversation", "quotes", "code", "bigrams", "trigrams", "custom"];
+
+const MODES = ["words", "code", "hinglish", "business", "conversation", "quotes", "bigrams", "trigrams", "custom"];
+const DIFFICULTIES = ["beginner", "intermediate", "advanced"];
+
 const WORDS = "home now even used said government once any to and know world number another something until without when right less school both there almost people system place group around because through while every important possible between business support future strong learn focus better growth skill progress".split(" ");
+
 const POOLS = {
   words: WORDS,
   bigrams: "th he in er an re on at en nd ti es or te of ed is it al ar st to nt ng se ha as ou io le".split(" "),
   trigrams: "the ing and ion ent her tha nth was eth for hat his you ter ere all res ver not".split(" "),
-  code: "const return function import export async await array object string number boolean component state effect promise server client render props value index".split(" "),
   business: "client report project meeting growth revenue profit budget invoice market sales target dashboard strategy analysis finance team planning success quality".split(" "),
-  quotes: ["The quick brown fox jumps over the lazy dog.", "Small steps every day build big results tomorrow.", "Focus on progress, not on perfection.", "Discipline today creates freedom tomorrow."],
-  hinglish: ["Subah alarm baja, lekin maine snooze kar diya. Paanch minute baad alarm phir baja. Maine socha, thodi aur neend le leta hoon. Aankh khuli to office ka time ho chuka tha.", "Main chai peene dukaan par gaya. Chai wale bhaiya ne poocha, strong ya normal? Maine bola, strong bana do."],
-  conversation: ["Aman: Did you study today? Ravi: Yes, I opened the book. Aman: Then what happened? Ravi: I fell asleep.", "Boss: Is the report complete? Employee: Almost, sir. Boss: What does almost mean? Employee: The data is still loading."],
+  quotes: [
+    "The quick brown fox jumps over the lazy dog.",
+    "Small steps every day build big results tomorrow.",
+    "Focus on progress, not on perfection.",
+    "Discipline today creates freedom tomorrow."
+  ],
+  hinglish: [
+    "Subah alarm baja, lekin maine snooze kar diya. Paanch minute baad alarm phir baja. Maine socha, thodi aur neend le leta hoon. Aankh khuli to office ka time ho chuka tha.",
+    "Main chai peene dukaan par gaya. Chai wale bhaiya ne poocha, strong ya normal? Maine bola, strong bana do."
+  ],
+  conversation: [
+    "Aman: Did you study today? Ravi: Yes, I opened the book. Aman: Then what happened? Ravi: I fell asleep.",
+    "Boss: Is the report complete? Employee: Almost, sir. Boss: What does almost mean? Employee: The data is still loading."
+  ],
 };
+
 const LANGUAGE_WORDS = {
   hindi: "का के कि में है और से ने को इस पर यह भी कर दिए रहे हो गए हुआ अपने साथ तो या",
   arabic: "من على إلى عن في كان هذا التي الذي مع ما لا الله كل بعد حتى بين ذلك",
@@ -38,13 +53,15 @@ const LANGUAGE_WORDS = {
   russian: "что и в не на с он как я но все по его из за у так о от же сказать",
   portuguese: "que de nao a o e um uma para com por os as do da se em como mais mas sua",
   bangla: "না এবং এই কি তার সে করে তারা কে আমি বা জন্য সাথে থেকে হয় ছিল",
-  code_python: "def return import from class if else elif for while in try except with as lambda async await True False None print len range list dict set int str",
-  code_javascript: "const let var function return import export default async await if else for while switch case break try catch throw new class extends element",
 };
 
 const pick = (items) => items[Math.floor(Math.random() * items.length)];
 
-const makeText = (mode, lang, customWords = null) => {
+const makeText = (mode, lang, customWords = null, devLang = "javascript", devDiff = "beginner") => {
+  if (mode === "code") {
+    const list = CODE_SNIPPETS[devLang]?.[devDiff] || CODE_SNIPPETS.javascript.beginner;
+    return pick(list);
+  }
   if (customWords?.length) return Array.from({ length: 36 }, () => pick(customWords)).join(" ");
   if (mode === "custom") return "";
   if (["quotes", "hinglish", "conversation"].includes(mode)) return pick(POOLS[mode]);
@@ -56,6 +73,8 @@ const makeText = (mode, lang, customWords = null) => {
 export default function App() {
   const [language, setLanguage] = useState("english");
   const [mode, setMode] = useState("words");
+  const [devLanguage, setDevLanguage] = useState("javascript");
+  const [devDifficulty, setDevDifficulty] = useState("beginner");
   const [duration, setDuration] = useState(15);
   const [text, setText] = useState(() => makeText("words", "english"));
   const [input, setInput] = useState("");
@@ -72,6 +91,7 @@ export default function App() {
   const [bestWpm, setBestWpm] = useState(() => Number(localStorage.getItem("Type Perfectly-best") || 0));
   const [history, setHistory] = useState(getGuestHistory);
   const [streak, setStreak] = useState(() => getGuestStreak().currentStreak);
+
   const appRef = useRef(null);
   const mobileInputRef = useRef(null);
   const mobileBufferRef = useRef("");
@@ -91,16 +111,18 @@ export default function App() {
   const accuracy = inputChars.length ? Math.round((correctChars / inputChars.length) * 100) : 100;
   const wpm = inputChars.length && elapsedMs >= 250 ? Math.round((correctChars / 5) / (Math.max(elapsedMs, 1) / 60000)) : 0;
   const sessionActive = running || mobileFocused;
-  const languageName = LANGUAGES.find(([id]) => id === language)?.[1] || language;
+  const languageName = mode === "code" ? `Code (${devLanguage})` : (LANGUAGES.find(([id]) => id === language)?.[1] || language);
   const typedWords = input.trim().split(/\s+/);
   const targetWords = text.trim().split(/\s+/);
   const correctWords = typedWords.filter((word, index) => word && word === targetWords[index]).length;
 
-  const reset = useCallback((nextMode = mode, nextDuration = duration, nextLanguage = language, nextCustomWords = null, keepCustom = false) => {
+  const reset = useCallback((nextMode = mode, nextDuration = duration, nextLanguage = language, nextCustomWords = null, keepCustom = false, nextDevLang = devLanguage, nextDevDiff = devDifficulty) => {
     setMode(nextMode);
     setDuration(nextDuration);
     setLanguage(nextLanguage);
-    setText(makeText(nextMode, nextLanguage, nextCustomWords));
+    setDevLanguage(nextDevLang);
+    setDevDifficulty(nextDevDiff);
+    setText(makeText(nextMode, nextLanguage, nextCustomWords, nextDevLang, nextDevDiff));
     setInput("");
     setRunning(false);
     setFinished(false);
@@ -117,7 +139,7 @@ export default function App() {
       mobileInputRef.current.blur();
     }
     requestAnimationFrame(() => appRef.current?.focus({ preventScroll: true }));
-  }, [duration, language, mode]);
+  }, [devDifficulty, devLanguage, duration, language, mode]);
 
   const finish = useCallback(() => {
     setElapsedMs(startedAtRef.current ? Math.min(duration * 1000, performance.now() - startedAtRef.current) : 0);
@@ -186,12 +208,12 @@ export default function App() {
       accuracy,
       errors: Math.max(0, inputChars.length - correctChars),
       duration: duration === 300 ? "5 min" : `${duration}s`,
-      mode,
+      mode: mode === "code" ? `code-${devLanguage}` : mode,
       language,
     });
     setHistory(updatedHistory);
     setStreak(getGuestStreak().currentStreak);
-  }, [accuracy, bestWpm, correctChars, duration, finished, inputChars.length, language, mode, wpm]);
+  }, [accuracy, bestWpm, correctChars, devLanguage, duration, finished, inputChars.length, language, mode, wpm]);
 
   const focusTyping = useCallback(() => {
     if (window.matchMedia?.("(pointer: coarse)").matches || window.innerWidth <= 768) {
@@ -214,8 +236,14 @@ export default function App() {
       setMobileFocused(false);
       mobileInputRef.current?.blur();
     } else if (event.key === "Backspace") { event.preventDefault(); backspace(); }
-    else if (Array.from(event.key).length === 1) { event.preventDefault(); typeCharacter(event.key); }
-  }, [backspace, reset, typeCharacter]);
+    else if (event.key === "Enter" && mode === "code") {
+      event.preventDefault();
+      typeCharacter("\n");
+    } else if (Array.from(event.key).length === 1) {
+      event.preventDefault();
+      typeCharacter(event.key);
+    }
+  }, [backspace, mode, reset, typeCharacter]);
 
   const handleMobileInput = (event) => {
     const value = Array.from(event.currentTarget.value);
@@ -271,26 +299,83 @@ export default function App() {
       </section>
 
       <section className="controls">
-        <div className="control-section">
-          <div className="control-label">Language</div>
-          <div className="button-strip">
-            <div className="select-wrapper">
-              <select className="lang-select" value={language} onChange={(event) => reset("words", duration, event.target.value)}>
-                {LANGUAGES.map(([id, name]) => <option key={id} value={id}>{name}</option>)}
-              </select>
+        {mode === "code" ? (
+          <>
+            <div className="control-section">
+              <div className="control-label">Code Language</div>
+              <div className="button-strip">
+                <div className="select-wrapper">
+                  <select
+                    className="lang-select"
+                    value={devLanguage}
+                    onChange={(e) => reset("code", duration, language, null, false, e.target.value, devDifficulty)}
+                  >
+                    {DEVELOPER_LANGUAGES.map((lang) => (
+                      <option key={lang.id} value={lang.id}>{lang.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="control-section">
+              <div className="control-label">Difficulty</div>
+              <div className="button-strip">
+                {DIFFICULTIES.map((diff) => (
+                  <button
+                    key={diff}
+                    type="button"
+                    className={devDifficulty === diff ? "selected" : ""}
+                    onClick={() => reset("code", duration, language, null, false, devLanguage, diff)}
+                  >
+                    {diff.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="control-section">
+            <div className="control-label">Language</div>
+            <div className="button-strip">
+              <div className="select-wrapper">
+                <select className="lang-select" value={language} onChange={(event) => reset("words", duration, event.target.value)}>
+                  {LANGUAGES.map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+                </select>
+              </div>
             </div>
           </div>
-        </div>
+        )}
+
         <div className="control-section content-control">
           <div className="control-label">Content</div>
           <div className="button-strip">
-            {MODES.map((item) => <button key={item} type="button" className={mode === item ? "selected" : ""} onClick={() => reset(item, duration, language)}>{item.toUpperCase()}</button>)}
+            {MODES.map((item) => (
+              <button
+                key={item}
+                type="button"
+                className={mode === item ? "selected" : ""}
+                onClick={() => reset(item, duration, language, null, false, devLanguage, devDifficulty)}
+              >
+                {item === "code" ? "⚡ CODE" : item.toUpperCase()}
+              </button>
+            ))}
           </div>
         </div>
+
         <div className="control-section">
           <div className="control-label">Time</div>
           <div className="button-strip time-buttons">
-            {[15, 30, 60, 300].map((value) => <button key={value} type="button" className={duration === value ? "selected" : ""} onClick={() => reset(mode, value, language, mode === "custom" && customActive ? customWords : null, customActive)}>{value === 300 ? "5 MIN" : `${value}S`}</button>)}
+            {[15, 30, 60, 300].map((value) => (
+              <button
+                key={value}
+                type="button"
+                className={duration === value ? "selected" : ""}
+                onClick={() => reset(mode, value, language, mode === "custom" && customActive ? customWords : null, customActive, devLanguage, devDifficulty)}
+              >
+                {value === 300 ? "5 MIN" : `${value}S`}
+              </button>
+            ))}
           </div>
         </div>
       </section>
@@ -311,10 +396,13 @@ export default function App() {
           />
         ) : (
           <>
-            <article className="typing-card">
+            <article className={`typing-card ${mode === "code" ? "code-editor-card" : ""}`}>
               <input ref={mobileInputRef} className="mobile-capture" type="text" aria-label="Typing input" inputMode="text" autoCapitalize="off" autoCorrect="off" autoComplete="off" spellCheck={false} onFocus={() => setMobileFocused(true)} onBlur={() => setMobileFocused(false)} onInput={handleMobileInput} onKeyDown={(event) => { event.stopPropagation(); if (event.key === "Backspace" && noBackspace) event.preventDefault(); }} />
               <div className="typing-card-header">
-                <div><span>{duration === 300 ? "5 MIN" : `${duration}S`}</span><span>{language.toUpperCase()} / {mode.toUpperCase()}</span></div>
+                <div>
+                  <span>{duration === 300 ? "5 MIN" : `${duration}S`}</span>
+                  <span>{mode === "code" ? `DEV / ${devLanguage.toUpperCase()} (${devDifficulty.toUpperCase()})` : `${language.toUpperCase()} / ${mode.toUpperCase()}`}</span>
+                </div>
                 {!(mode === "custom" && !customActive) && <button type="button" className="primary-button" onClick={focusTyping}>START TYPING</button>}
               </div>
               {mode === "custom" && !customActive ? (
@@ -325,7 +413,7 @@ export default function App() {
                 </div>
               ) : (
                 <>
-                  <div className={`typing-text ${language === "arabic" ? "rtl" : ""}`} dir={language === "arabic" ? "rtl" : "ltr"} role="textbox" aria-label="Typing practice text." tabIndex={0} onPointerDown={focusTyping}>
+                  <div className={`typing-text ${mode === "code" ? "code-font" : ""} ${language === "arabic" ? "rtl" : ""}`} dir={language === "arabic" ? "rtl" : "ltr"} role="textbox" aria-label="Typing practice text." tabIndex={0} onPointerDown={focusTyping}>
                     {characterTokens.map(({ value, start, whitespace }) => whitespace
                       ? <span className="typing-whitespace" key={`space-${start}`}>{value}</span>
                       : <span className="word-group" key={`word-${start}`}>{Array.from(value).map((character, offset) => {
@@ -339,6 +427,7 @@ export default function App() {
                     <span><i className="dot correct-dot" />Correct</span>
                     <span><i className="dot wrong-dot" />Wrong</span>
                     <span><i className="dot upcoming-dot" />Upcoming</span>
+                    {mode === "code" && <span><kbd style={{ fontSize: "10px" }}>Enter</kbd> Next Line</span>}
                   </div>
                   <div className="typing-actions">
                     <button type="button" className="restart-button" onClick={() => reset()}>RESTART SESSION</button>
@@ -365,7 +454,6 @@ export default function App() {
         )}
       </section>
 
-      {/* Structured Sections Anchor (SEO Guides -> FAQ -> Footer) */}
       <div className="content-stack">
         <BlogSection onStartTyping={focusTyping} />
         <FAQ />
