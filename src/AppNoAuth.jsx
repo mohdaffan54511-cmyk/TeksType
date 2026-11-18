@@ -239,7 +239,12 @@ export default function App() {
   };
 
   return (
-    <main ref={appRef} tabIndex={0} className={`app ${sessionActive ? "session-active" : ""} ${finished ? "result-active" : ""}`} onKeyDown={handleKeyDown}>
+    <main
+      ref={appRef}
+      tabIndex={0}
+      className={`app ${sessionActive ? "session-active" : ""} ${finished ? "result-active" : ""}`}
+      onKeyDown={handleKeyDown}
+    >
       <header className="topbar">
         <div className="brand">
           <div className="logo-mark"><img src="/TeksType.jpeg" alt="Type Perfectly logo" /></div>
@@ -360,9 +365,12 @@ export default function App() {
         )}
       </section>
 
-      <BlogSection onStartTyping={focusTyping} />
-      <FAQ />
-      <SocialFooter wpm={finished ? wpm : null} />
+      {/* Structured Sections Anchor (SEO Guides -> FAQ -> Footer) */}
+      <div className="content-stack">
+        <BlogSection onStartTyping={focusTyping} />
+        <FAQ />
+        <SocialFooter wpm={finished ? wpm : null} />
+      </div>
     </main>
   );
 }
