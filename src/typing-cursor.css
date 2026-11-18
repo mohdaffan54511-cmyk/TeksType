@@ -103,3 +103,57 @@
   top: 15% !important;
   height: 70% !important;
 }
+/* =========================================================
+   ULTRA-SMOOTH TYPING ENGINE (Hardware Accelerated)
+   ========================================================= */
+
+/* Text rendering optimization */
+.typing-text {
+  text-rendering: optimizeLegibility !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  user-select: none !important;
+}
+
+/* Character micro-transitions (Zero layout shift) */
+.typing-text .char {
+  display: inline-block !important;
+  transition: color 0.08s cubic-bezier(0.2, 0, 0, 1) !important;
+  will-change: color !important;
+}
+
+/* Gliding Smooth Caret */
+.typing-text .char.current::before {
+  content: "" !important;
+  position: absolute !important;
+  left: -2px !important;
+  top: 15% !important;
+  bottom: 15% !important;
+  width: 2.5px !important;
+  background-color: var(--purple-600, #7c3aed) !important;
+  border-radius: 2px !important;
+  pointer-events: none !important;
+  will-change: transform, opacity !important;
+  animation: smoothPulse 1s ease-in-out infinite alternate !important;
+}
+
+/* Caret Breathing Animation */
+@keyframes smoothPulse {
+  0% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  50% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0.4;
+    transform: scaleY(0.95);
+  }
+}
+
+/* Active typing state: cursor blink stops while actively typing */
+.session-active .typing-text .char.current::before {
+  animation: none !important;
+  opacity: 1 !important;
+}
