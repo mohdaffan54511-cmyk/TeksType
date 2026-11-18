@@ -91,3 +91,45 @@ export function clearGuestData() {
     // Ignore storage errors.
   }
 }
+// Export data in JSON format
+export const exportDataAsJSON = () => {
+  const data = {
+    bestWpm: localStorage.getItem("Type Perfectly-best") || 0,
+    streak: getGuestStreak(),
+    history: getGuestHistory(),
+    exportedAt: new Date().toISOString(),
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `tekstype-data-${new Date().toISOString().split("T")[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+// Export session logs in CSV format for Excel
+export const exportDataAsCSV = () => {
+  const history = getGuestHistory();
+  if (!history || !history.length) return false;
+
+  const headers = ["Session ID", "Mode", "Language", "WPM", "Accuracy (%)", "Errors", "Duration", "Timestamp"];
+  const rows = history.map((item) => [
+    `"${item.id || ""}"`,
+    `"${item.mode || ""}"`,
+    `"${item.language || ""}"`,
+    item.wpm || 0,
+    item.accuracy || 0,
+    item.errors || 0,
+    `"${item.duration || ""}"`,
+    `"${item.timestamp ? new Date(item.timestamp).toLocaleString("en-IN") : ""}"`,
+  ]);
+
+  const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+  const encodedUri = encodeURI(csvContent);
+  const a = document.createElement("a");
+  a.href = encodedUri;
+  a.download = `tekstype-sessions-${new Date().toISOString().split("T")[0]}.csv`;
+  a.click();
+  return true;
+};
