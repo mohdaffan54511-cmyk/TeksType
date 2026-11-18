@@ -1148,3 +1148,23 @@ body {
     padding: 14px 16px !important;
   }
 }
+/* Footer ko hamesha page ke sabse end mein bhejne ke liye */
+.app {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.social-footer {
+  order: 99 !important; /* Page ke kisi bhi element se neeche render hoga */
+  margin-top: 3.5rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.faq-section {
+  order: 90 !important;
+}
+
+.seo-content,
+.blog-section {
+  order: 80 !important;
+}
