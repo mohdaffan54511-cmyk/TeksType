@@ -84,6 +84,7 @@ export default function App() {
   const [timeLeft, setTimeLeft] = useState(15);
   const [soundOn, setSoundOn] = useState(false);
   const [noBackspace, setNoBackspace] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const [customDraft, setCustomDraft] = useState("");
   const [customActive, setCustomActive] = useState(false);
   const [customError, setCustomError] = useState("");
@@ -281,6 +282,7 @@ export default function App() {
         </div>
         <div className="top-actions">
           <span className={`streak-badge ${streak > 1 ? "fire" : ""}`} aria-label={`${streak} day practice streak`}>🔥 {streak} day streak</span>
+          <button type="button" className="ghost-button" onClick={() => setShowAnalytics(true)}>📊 Analytics</button>
           <span className="key-hint"><kbd>Tab</kbd> Restart</span>
           <span className="key-hint"><kbd>Esc</kbd> Pause</span>
           <button type="button" className={`ghost-button ${noBackspace ? "active" : ""}`} onClick={() => setNoBackspace((value) => !value)}>{noBackspace ? "BACKSPACE OFF" : "BACKSPACE ON"}</button>
@@ -460,6 +462,14 @@ export default function App() {
         <FAQ />
         <SocialFooter wpm={finished ? wpm : null} />
       </div>
+
+      <AnalyticsDashboard
+        isOpen={showAnalytics}
+        onClose={() => setShowAnalytics(false)}
+        history={history}
+        streak={streak}
+        bestWpm={bestWpm}
+      />
     </main>
   );
 }
