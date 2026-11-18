@@ -91,6 +91,7 @@ export function clearGuestData() {
     // Ignore storage errors.
   }
 }
+
 // Export data in JSON format
 export const exportDataAsJSON = () => {
   const data = {
@@ -113,17 +114,21 @@ export const exportDataAsCSV = () => {
   const history = getGuestHistory();
   if (!history || !history.length) return false;
 
-  const headers = ["Session ID", "Mode", "Language", "WPM", "Accuracy (%)", "Errors", "Duration", "Timestamp"];
-  const rows = history.map((item) => [
-    `"${item.id || ""}"`,
-    `"${item.mode || ""}"`,
-    `"${item.language || ""}"`,
-    item.wpm || 0,
-    item.accuracy || 0,
-    item.errors || 0,
-    `"${item.duration || ""}"`,
-    `"${item.timestamp ? new Date(item.timestamp).toLocaleString("en-IN") : ""}"`,
-  ]);
+  const headers = ["Session ID", "Mode", "Language", "WPM", "Accuracy (%)", "Errors", "Duration", "Date"];
+  const rows = history.map((item) => {
+    const rawDate = item.date || item.timestamp;
+    const formattedDate = rawDate ? new Date(rawDate).toLocaleString("en-IN") : "";
+    return [
+      `"${item.id || ""}"`,
+      `"${item.mode || ""}"`,
+      `"${item.language || ""}"`,
+      item.wpm || 0,
+      item.accuracy || 0,
+      item.errors || 0,
+      `"${item.duration || ""}"`,
+      `"${formattedDate}"`,
+    ];
+  });
 
   const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
   const encodedUri = encodeURI(csvContent);
