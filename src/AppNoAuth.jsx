@@ -286,7 +286,7 @@ export default function App() {
         </div>
         <div className="top-actions">
           <span className={`streak-badge ${streak > 1 ? "fire" : ""}`} aria-label={`${streak} day practice streak`}>🔥 {streak} day streak</span>
-          <button type="button" className="ghost-button" onClick={() => setShowAnalytics(true)}>📊 Analytics</button>
+          <button type="button" className="ghost-button" onClick={() => setShowAnalytics(true)}> Analytics</button>
           <span className="key-hint"><kbd>Tab</kbd> Restart</span>
           <span className="key-hint"><kbd>Esc</kbd> Pause</span>
           <button type="button" className={`ghost-button ${noBackspace ? "active" : ""}`} onClick={() => setNoBackspace((value) => !value)}>{noBackspace ? "BACKSPACE OFF" : "BACKSPACE ON"}</button>
