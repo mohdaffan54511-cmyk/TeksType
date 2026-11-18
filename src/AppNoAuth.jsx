@@ -6,6 +6,7 @@ import TypingResults from "./TypingResults";
 import BlogSection from "./BlogSection";
 import { getGuestHistory, getGuestStreak, saveGuestResult } from "./lib/guestStorage";
 import { DEVELOPER_LANGUAGES, CODE_SNIPPETS } from "./data/developerSnippets";
+import { playSwitchSound } from "./lib/soundEffects";
 import "./App.css";
 import "./typing-cursor.css";
 
@@ -21,6 +22,7 @@ const LANGUAGES = [
 
 const MODES = ["words", "code", "hinglish", "business", "conversation", "quotes", "bigrams", "trigrams", "custom"];
 const DIFFICULTIES = ["beginner", "intermediate", "advanced"];
+const SWITCH_PROFILES = ["blue", "brown", "red"];
 
 const WORDS = "home now even used said government once any to and know world number another something until without when right less school both there almost people system place group around because through while every important possible between business support future strong learn focus better growth skill progress".split(" ");
 
@@ -82,7 +84,8 @@ export default function App() {
   const [running, setRunning] = useState(false);
   const [finished, setFinished] = useState(false);
   const [timeLeft, setTimeLeft] = useState(15);
-  const [soundOn, setSoundOn] = useState(false);
+  const [soundOn, setSoundOn] = useState(true);
+  const [soundProfile, setSoundProfile] = useState("blue");
   const [noBackspace, setNoBackspace] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [customDraft, setCustomDraft] = useState("");
@@ -159,25 +162,19 @@ export default function App() {
       setRunning(true);
     }
     if (soundOn && !window.matchMedia?.("(pointer: coarse)").matches) {
-      try {
-        const Audio = window.AudioContext || window.webkitAudioContext;
-        const context = new Audio();
-        const oscillator = context.createOscillator();
-        const gain = context.createGain();
-        oscillator.frequency.value = 500;
-        gain.gain.value = 0.025;
-        oscillator.connect(gain);
-        gain.connect(context.destination);
-        oscillator.start();
-        oscillator.stop(context.currentTime + 0.025);
-      } catch {}
+      playSwitchSound(soundProfile);
     }
     setInput((value) => Array.from(value).length < textChars.length ? value + character : value);
-  }, [elapsedMs, finished, inputChars.length, running, soundOn, textChars.length]);
+  }, [elapsedMs, finished, inputChars.length, running, soundOn, soundProfile, textChars.length]);
 
   const backspace = useCallback(() => {
-    if (!finished && !noBackspace) setInput((value) => Array.from(value).slice(0, -1).join(""));
-  }, [finished, noBackspace]);
+    if (!finished && !noBackspace) {
+      if (soundOn && !window.matchMedia?.("(pointer: coarse)").matches) {
+        playSwitchSound(soundProfile);
+      }
+      setInput((value) => Array.from(value).slice(0, -1).join(""));
+    }
+  }, [finished, noBackspace, soundOn, soundProfile]);
 
   useEffect(() => {
     if (textChars.length && inputChars.length >= textChars.length && running && !finished) finish();
@@ -268,6 +265,13 @@ export default function App() {
     reset("custom", duration, language, customWords, true);
   };
 
+  const cycleSoundProfile = () => {
+    const nextIdx = (SWITCH_PROFILES.indexOf(soundProfile) + 1) % SWITCH_PROFILES.length;
+    const next = SWITCH_PROFILES[nextIdx];
+    setSoundProfile(next);
+    playSwitchSound(next);
+  };
+
   return (
     <main
       ref={appRef}
@@ -282,11 +286,16 @@ export default function App() {
         </div>
         <div className="top-actions">
           <span className={`streak-badge ${streak > 1 ? "fire" : ""}`} aria-label={`${streak} day practice streak`}>🔥 {streak} day streak</span>
-          <button type="button" className="ghost-button" onClick={() => setShowAnalytics(true)}> Analytics</button>
+          <button type="button" className="ghost-button" onClick={() => setShowAnalytics(true)}>📊 Analytics</button>
           <span className="key-hint"><kbd>Tab</kbd> Restart</span>
           <span className="key-hint"><kbd>Esc</kbd> Pause</span>
           <button type="button" className={`ghost-button ${noBackspace ? "active" : ""}`} onClick={() => setNoBackspace((value) => !value)}>{noBackspace ? "BACKSPACE OFF" : "BACKSPACE ON"}</button>
-          <button type="button" className={`ghost-button ${soundOn ? "active" : ""}`} onClick={() => setSoundOn((value) => !value)}>{soundOn ? "SOUND ON" : "SOUND OFF"}</button>
+          <button type="button" className={`ghost-button ${soundOn ? "active" : ""}`} onClick={() => setSoundOn((value) => !value)}>{soundOn ? `🔊 SOUND ON` : "🔈 SOUND OFF"}</button>
+          {soundOn && (
+            <button type="button" className="ghost-button" onClick={cycleSoundProfile} title="Click to change switch type">
+              SWITCH: {soundProfile.toUpperCase()}
+            </button>
+          )}
         </div>
       </header>
 
