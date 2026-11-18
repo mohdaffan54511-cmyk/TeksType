@@ -1,3 +1,4 @@
+import { exportDataAsCSV, exportDataAsJSON } from "../lib/guestStorage";
 import { useMemo } from "react";
 
 export default function AnalyticsDashboard({ isOpen, onClose, history = [], streak = 0, bestWpm = 0 }) {
@@ -24,14 +25,16 @@ export default function AnalyticsDashboard({ isOpen, onClose, history = [], stre
   }, [history]);
 
   return (
-    <div className="analytics-overlay" onClick={onClose}>
+    <div className="analytics-overlay" onClick={onClose} role="dialog" aria-modal="true">
       <div className="analytics-modal" onClick={(e) => e.stopPropagation()}>
         <div className="analytics-header">
           <div>
             <h2 className="analytics-title">Performance Analytics</h2>
             <p className="analytics-subtitle">Real metrics from your practice history</p>
           </div>
-          <button type="button" className="analytics-close-btn" onClick={onClose}>✕</button>
+          <button type="button" className="analytics-close-btn" onClick={onClose} aria-label="Close dashboard">
+            ✕
+          </button>
         </div>
 
         <div className="analytics-kpi-grid">
@@ -62,9 +65,20 @@ export default function AnalyticsDashboard({ isOpen, onClose, history = [], stre
         </div>
 
         <div className="analytics-section">
-          <h3 className="analytics-section-title">Recent Session Logs</h3>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "8px" }}>
+            <h3 className="analytics-section-title" style={{ margin: 0 }}>Recent Session Logs</h3>
+            <div className="analytics-export-strip" style={{ display: "flex", gap: "8px" }}>
+              <button type="button" className="ghost-button export-btn" onClick={exportDataAsCSV}>
+                📥 Export CSV
+              </button>
+              <button type="button" className="ghost-button export-btn" onClick={exportDataAsJSON}>
+                💾 Backup JSON
+              </button>
+            </div>
+          </div>
+
           {history.length === 0 ? (
-            <div className="analytics-empty">No sessions recorded yet.</div>
+            <div className="analytics-empty">No sessions recorded yet. Complete a test to see your analytics.</div>
           ) : (
             <div className="table-responsive">
               <table className="analytics-table">
