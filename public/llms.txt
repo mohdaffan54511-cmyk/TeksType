@@ -1,0 +1,6 @@
+# TypePerfectly
+
+> Free online touch-typing performance lab and speed test platform.
+
+- [Main App](https://www.typeperfectly.com/): Online typing test with mechanical switch sounds.
+- Features: Hinglish typing, developer code syntax (JavaScript, Python, C++, SQL), real-time WPM, and accuracy metrics.
