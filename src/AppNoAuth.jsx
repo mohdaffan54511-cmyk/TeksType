@@ -30,20 +30,39 @@ const POOLS = {
   words: WORDS,
   bigrams: "th he in er an re on at en nd ti es or te of ed is it al ar st to nt ng se ha as ou io le".split(" "),
   trigrams: "the ing and ion ent her tha nth was eth for hat his you ter ere all res ver not".split(" "),
-  business: "client report project meeting growth revenue profit budget invoice market sales target dashboard strategy analysis finance team planning success quality".split(" "),
+  business: [
+    "Please find the attached weekly analytics report for your review and necessary approval.",
+    "Let us schedule a quick sync call tomorrow morning to align our cross-functional deliverables.",
+    "We need to optimize our customer retention metrics before launching the quarter three marketing campaign.",
+    "Kindly ensure that all client deliverables maintain strict data validation and formatting standards.",
+    "The quarterly financial forecast indicates a twenty percent increase in operational efficiency.",
+    "Our team automated seventy-four client reports, saving fifty hours of repetitive manual data entry.",
+    "The executive dashboard provides real-time visibility into revenue, pipeline velocity, and conversion rates.",
+    "Please review the updated service agreement and confirm the milestone schedule before Friday."
+  ],
   quotes: [
     "The quick brown fox jumps over the lazy dog.",
     "Small steps every day build big results tomorrow.",
     "Focus on progress, not on perfection.",
-    "Discipline today creates freedom tomorrow."
+    "Discipline today creates freedom tomorrow.",
+    "Simplicity is the soul of efficiency.",
+    "The secret of getting ahead is getting started."
   ],
   hinglish: [
-    "Subah alarm baja, lekin maine snooze kar diya. Paanch minute baad alarm phir baja. Maine socha, thodi aur neend le leta hoon. Aankh khuli to office ka time ho chuka tha.",
-    "Main chai peene dukaan par gaya. Chai wale bhaiya ne poocha, strong ya normal? Maine bola, strong bana do."
+    "Subah alarm baja, lekin maine snooze kar diya. Paanch minute baad alarm phir baja. Maine socha thodi aur neend le leta hoon, aankh khuli to office ka time ho chuka tha.",
+    "Main chai peene dukaan par gaya. Chai wale bhaiya ne poocha, strong ya normal? Maine bola, ekdum kadak bana do.",
+    "Bhai kal subah meeting se pehle slides check kar lena, client ko final numbers present karne hain.",
+    "Maine Excel file mein pivot table add kar diya hai, monthly revenue numbers clearly show ho rahe hain.",
+    "Code mein ek chota sa syntax bug aa raha tha, usko fix karke production par deploy kar diya hai.",
+    "Aaj shaam ko thoda time mile to call karna, pending project ka roadmap discuss karke finalize karna hai.",
+    "Laptop ka keyboard bohot smooth hai, Blue Switch sound ke saath typing speed automatic fast ho jati hai.",
+    "Client ko dashboard ka walkthrough video bhej diya hai, unka feedback aate hi final delivery complete ho jayegi."
   ],
   conversation: [
     "Aman: Did you study today? Ravi: Yes, I opened the book. Aman: Then what happened? Ravi: I fell asleep.",
-    "Boss: Is the report complete? Employee: Almost, sir. Boss: What does almost mean? Employee: The data is still loading."
+    "Boss: Is the report complete? Employee: Almost, sir. Boss: What does almost mean? Employee: The data is still loading.",
+    "Client: Can you deliver this by tomorrow? Freelancer: Done, consider it already on your desk.",
+    "Dev: The code works on my machine. Manager: But we are not shipping your machine to the client."
   ],
 };
 
@@ -58,7 +77,18 @@ const LANGUAGE_WORDS = {
   bangla: "না এবং এই কি তার সে করে তারা কে আমি বা জন্য সাথে থেকে হয় ছিল",
 };
 
-const pick = (items) => items[Math.floor(Math.random() * items.length)];
+// Anti-repeat picker
+let lastPickedItem = null;
+const pick = (items) => {
+  if (!items || !items.length) return "";
+  if (items.length === 1) return items[0];
+  let chosen;
+  do {
+    chosen = items[Math.floor(Math.random() * items.length)];
+  } while (chosen === lastPickedItem);
+  lastPickedItem = chosen;
+  return chosen;
+};
 
 const makeText = (mode, lang, customWords = null, devLang = "javascript", devDiff = "beginner") => {
   if (mode === "code") {
@@ -67,7 +97,7 @@ const makeText = (mode, lang, customWords = null, devLang = "javascript", devDif
   }
   if (customWords?.length) return Array.from({ length: 36 }, () => pick(customWords)).join(" ");
   if (mode === "custom") return "";
-  if (["quotes", "hinglish", "conversation"].includes(mode)) return pick(POOLS[mode]);
+  if (["quotes", "hinglish", "conversation", "business"].includes(mode)) return pick(POOLS[mode]);
   const langWords = LANGUAGE_WORDS[lang.replace(/_1k$/, "")];
   const pool = langWords ? langWords.split(" ") : (POOLS[mode] || WORDS);
   return Array.from({ length: mode === "bigrams" ? 50 : mode === "trigrams" ? 42 : 36 }, () => pick(pool)).join(" ");
